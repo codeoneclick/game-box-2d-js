@@ -6,18 +6,41 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <script src="src/utils/debug.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
         <script src="src/math/vec2.js"></script>
         <title>game-box-2d</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="text/javascript">
+            var gl_context;
             function app_start() {
-                var vector_01 = new vec2(0, 1);
+                var canvas = document.getElementById("gl_canvas");
+                try 
+                {
+                    gl_context = canvas.getContext("experimental-webgl");
+                    gl_context.viewportWidth = canvas.width;
+                    gl_context.viewportHeight = canvas.height;
+                } 
+                catch (exception) 
+                {
+                    
+                }
+                if (!gl_context) 
+                {
+                    alert("could not initialise WebGL");
+                }
+                else
+                {
+                    gl_context.clearColor(0.0, 0.0, 0.0, 1.0);
+                    gl_context.enable(gl_context.DEPTH_TEST);
+                    
+                    gl_context.viewport(0, 0, gl_context.viewportWidth, gl_context.viewportHeight);
+                    gl_context.clear(gl_context.COLOR_BUFFER_BIT | gl_context.DEPTH_BUFFER_BIT);
+                }
             }
         </script>
     </head>
     <body onload="app_start();">
-        <div>game-box-2d</div>
+        <canvas id="gl_canvas" style="border: none;" width="640" height="480"></canvas>
     </body>
 </html>
