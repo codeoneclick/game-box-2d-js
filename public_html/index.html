@@ -8,39 +8,24 @@ and open the template in the editor.
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
         <script src="src/render/gl_context.js"></script>
+        <script src="src/foundation/game_loop.js"></script>
         <title>game-box-2d</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="text/javascript">
-            var webgl_context;
-            function app_start() {
-                var canvas = document.getElementById("gl_canvas");
-                try 
-                {
-                    webgl_context = canvas.getContext("experimental-webgl");
-                    webgl_context.viewportWidth = canvas.width;
-                    webgl_context.viewportHeight = canvas.height;
-                    
-                    webgl_context.clearColor(0.0, 0.0, 0.0, 1.0);
-                    
-                    gl_context.get_instance();
-                } 
-                catch (exception) 
-                {
-                    
-                }
-                if (!webgl_context) 
-                {
-                    alert("could not initialise WebGL");
-                }
-                else
-                {
-                    //webgl_context.clearColor(0.0, 0.0, 0.0, 1.0);
-                    webgl_context.enable(webgl_context.DEPTH_TEST);
-                    
-                    webgl_context.viewport(0, 0, webgl_context.viewportWidth, webgl_context.viewportHeight);
-                    webgl_context.clear(webgl_context.COLOR_BUFFER_BIT | webgl_context.DEPTH_BUFFER_BIT);
-                }
+            
+            function on_update()
+            {
+                //window.requestAnimationFrame(on_update);
+                //.on_update(on_update);
+                console.log("TICK");
+            }
+            
+            function app_start() 
+            {
+                gl_context.get_instance();
+                game_loop.get_instance();
+                on_update();
             }
         </script>
     </head>
