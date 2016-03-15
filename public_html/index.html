@@ -7,35 +7,37 @@ and open the template in the editor.
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-        <script src="src/math/vec2.js"></script>
+        <script src="src/render/gl_context.js"></script>
         <title>game-box-2d</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="text/javascript">
-            var gl_context;
+            var webgl_context;
             function app_start() {
                 var canvas = document.getElementById("gl_canvas");
                 try 
                 {
-                    gl_context = canvas.getContext("experimental-webgl");
-                    gl_context.viewportWidth = canvas.width;
-                    gl_context.viewportHeight = canvas.height;
+                    webgl_context = canvas.getContext("experimental-webgl");
+                    webgl_context.viewportWidth = canvas.width;
+                    webgl_context.viewportHeight = canvas.height;
+                    
+                    gl_context.get_instance();
                 } 
                 catch (exception) 
                 {
                     
                 }
-                if (!gl_context) 
+                if (!webgl_context) 
                 {
                     alert("could not initialise WebGL");
                 }
                 else
                 {
-                    gl_context.clearColor(0.0, 0.0, 0.0, 1.0);
-                    gl_context.enable(gl_context.DEPTH_TEST);
+                    webgl_context.clearColor(0.0, 0.0, 0.0, 1.0);
+                    webgl_context.enable(webgl_context.DEPTH_TEST);
                     
-                    gl_context.viewport(0, 0, gl_context.viewportWidth, gl_context.viewportHeight);
-                    gl_context.clear(gl_context.COLOR_BUFFER_BIT | gl_context.DEPTH_BUFFER_BIT);
+                    webgl_context.viewport(0, 0, webgl_context.viewportWidth, webgl_context.viewportHeight);
+                    webgl_context.clear(webgl_context.COLOR_BUFFER_BIT | webgl_context.DEPTH_BUFFER_BIT);
                 }
             }
         </script>
