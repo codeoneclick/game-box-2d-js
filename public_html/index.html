@@ -21,6 +21,8 @@ and open the template in the editor.
                     webgl_context.viewportWidth = canvas.width;
                     webgl_context.viewportHeight = canvas.height;
                     
+                    webgl_context.clearColor(0.0, 0.0, 0.0, 1.0);
+                    
                     gl_context.get_instance();
                 } 
                 catch (exception) 
@@ -33,7 +35,7 @@ and open the template in the editor.
                 }
                 else
                 {
-                    webgl_context.clearColor(0.0, 0.0, 0.0, 1.0);
+                    //webgl_context.clearColor(0.0, 0.0, 0.0, 1.0);
                     webgl_context.enable(webgl_context.DEPTH_TEST);
                     
                     webgl_context.viewport(0, 0, webgl_context.viewportWidth, webgl_context.viewportHeight);

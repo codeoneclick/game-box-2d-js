@@ -10,8 +10,7 @@ var gl_context = (function (window)
  
     function init()
     {
-        gl_context_instance = window.gl_context;
-        alert(gl_context_instance.viewportWidth);
+        gl_context_instance = window.webgl_context;
     }
  
     return {
