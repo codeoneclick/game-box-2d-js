@@ -36,7 +36,6 @@ shader_loading_operation.prototype.commit = function()
     this.m_status = k_resource_loading_operation_status_in_progress;
     this.m_commiter = new shader_commiter_glsl(this.m_guid,
                                                this.m_resource);
-    console.log(this.m_commiter);
     this.m_commiter.commit(this.m_transfering_data);
     this.m_status = this.m_commiter.get_status() == k_commiter_status_success ? k_resource_loading_operation_status_success : k_resource_loading_operation_status_failure;
 };

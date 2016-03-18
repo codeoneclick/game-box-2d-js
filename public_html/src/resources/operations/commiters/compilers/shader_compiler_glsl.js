@@ -61,9 +61,9 @@ shader_compiler_glsl.prototype =
         
         graphics_context.get_instance().linkProgram(shader_handler);
         
-        var link_message = graphics_context.get_instance().getShaderInfoLog(shader_handler) || "";
+        var link_message = graphics_context.get_instance().getProgramInfoLog(shader_handler) || "";
         
-        if(!graphics_context.get_instance().getShaderParameter(shader_handler, graphics_context.get_instance().LINK_STATUS))
+        if(!graphics_context.get_instance().getProgramParameter(shader_handler, graphics_context.get_instance().LINK_STATUS))
         {
             console.error(link_message);
             

@@ -27,7 +27,6 @@ shader_serializer_glsl.prototype.serialize = function(transfering_data)
     $.ajax({dataType: "text", url: this.m_fs_filename, data: {}, async: false, success: function(value) {
         transfering_data.set_fs_source_code(value);
     }});
-
     this.m_resource.on_transfering_data_serialized(transfering_data);
 
     this.m_status = transfering_data.get_vs_source_code().length != 0 && transfering_data.get_fs_source_code().length != 0 ? 
