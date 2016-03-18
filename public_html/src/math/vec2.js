@@ -4,8 +4,6 @@
  * and open the template in the editor.
  */
 
-$.getScript("src/utils/debug.js");
-
 function vec2 ()
 {
     if(typeof arguments[0] === 'vec2')

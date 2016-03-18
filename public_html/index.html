@@ -7,25 +7,62 @@ and open the template in the editor.
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-        <script src="src/render/gl_context.js"></script>
+        <script src="src/render/graphics_context.js"></script>
         <script src="src/foundation/game_loop.js"></script>
+        <script src="src/configurations/configuration_base.js"></script>
+        <script src="src/configurations/game_object_configuration.js"></script>
+        <script src="src/configurations/material_configuration.js"></script>
+        <script src="src/resources/operations/serializers/resource_serializer.js"></script>
+        <script src="src/resources/operations/commiters/resource_commiter.js"></script>
+        <script src="src/resources/operations/serializers/shader_serializer_glsl.js"></script>
+        <script src="src/configurations/material_configuration.js"></script>
+        <script src="src/resources/operations/commiters/compilers/shader_compiler_glsl.js"></script>
+        <script src="src/resources/resource_base.js"></script>
+        <script src="src/resources/operations/resource_loading_operation.js"></script>
+        <script src="src/resources/operations/shader_loading_operation.js"></script>
         <title>game-box-2d</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="text/javascript">
             
-            function on_update()
+            function resource_loading_listener ()
             {
-                //window.requestAnimationFrame(on_update);
-                //.on_update(on_update);
-                console.log("TICK");
+
             }
+
+            resource_loading_listener.prototype = 
+            { 
+                constructor: resource_base,
+    
+                on_resource_loaded: function(success)
+                {
+    
+                }
+            };
             
             function app_start() 
             {
-                gl_context.get_instance();
+                graphics_context.get_instance();
+                
+                console.log(graphics_context.get_instance());
+                
+                var configuration_01 = new game_object_configuration();
+                var configuration_02 = new game_object_configuration();
+                configuration_02.set_attribute("a", "a");
+                configuration_02.set_attribute("b", 2);
+                configuration_01.set_configuration("materials", configuration_02);
+                console.log(configuration_01.get_materials_configurations());
+                
+                var configuration_03 = new material_configuration();
+                configuration_03.serialize("data/resources/configurations/material.sprite_01.base.json");
+                console.log(configuration_03);
+                
+                var shader_resource = new resource_base("shader_tex2d_a_color");
+                var loading_operation = new shader_loading_operation("shader_tex2d_a_color", shader_resource);
+                loading_operation.serialize();
+                loading_operation.commit();
+
                 game_loop.get_instance();
-                on_update();
             }
         </script>
     </head>

@@ -11,7 +11,6 @@ var game_loop = (function(window)
     function on_update()
     {
         m_instance.attach_to_runloop()(on_update);
-        console.log("on_update");
     }
  
     function init()
@@ -31,6 +30,7 @@ var game_loop = (function(window)
         };
         
         return {
+            instance : m_instance,
             attach_to_runloop : m_instance.attach_to_runloop
         };
     }
@@ -40,7 +40,7 @@ var game_loop = (function(window)
         {
             if (!m_instance)
             {
-                m_instance = init();
+                m_instance = init().instance;
                 on_update();
             }
             return m_instance;

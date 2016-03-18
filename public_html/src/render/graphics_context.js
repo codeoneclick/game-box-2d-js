@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-var gl_context = (function() 
+var graphics_context = (function() 
 {
     var m_instance = null;
  
@@ -33,6 +33,7 @@ var gl_context = (function()
             m_instance.viewport(0, 0, m_instance.viewportWidth, m_instance.viewportHeight);
             m_instance.clear(m_instance.COLOR_BUFFER_BIT | m_instance.DEPTH_BUFFER_BIT);
         }
+        return m_instance;
     }
  
     return {
