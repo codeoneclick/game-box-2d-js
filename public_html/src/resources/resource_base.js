@@ -97,7 +97,7 @@ resource_base.prototype =
         {
             this.m_listeners.splice(index, 1);
         }
-        else 
+        else
         {
             console.error("resource doesn't contain this listener");
         }
