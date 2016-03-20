@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+var gl = null;
 var graphics_context = (function() 
 {
     var m_instance = null;
@@ -42,6 +43,7 @@ var graphics_context = (function()
             if (!m_instance)
             {
                 m_instance = init();
+                gl = m_instance;
             }
             return m_instance;
         }

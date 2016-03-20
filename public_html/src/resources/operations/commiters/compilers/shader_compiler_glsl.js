@@ -33,20 +33,20 @@ shader_compiler_glsl.prototype =
    
     compile: function(source_code, shader_type)
     {
-        var handler = graphics_context.get_instance().createShader(shader_type);
+        var handler = gl.createShader(shader_type);
         if(!handler)
         {
             console.error("can't create shader");
             return -1;
         }
         
-        graphics_context.get_instance().shaderSource(handler, shader_type === graphics_context.get_instance().VERTEX_SHADER ? 
+        gl.shaderSource(handler, shader_type === gl.VERTEX_SHADER ? 
         (this.m_vs_shader_header + source_code).trim() :
         (this.m_fs_shader_header + source_code).trim());
-        graphics_context.get_instance().compileShader(handler);
+        gl.compileShader(handler);
         
-        var compile_message = graphics_context.get_instance().getShaderInfoLog(handler) || "";
-        if(!graphics_context.get_instance().getShaderParameter(handler, graphics_context.get_instance().COMPILE_STATUS))
+        var compile_message = gl.getShaderInfoLog(handler) || "";
+        if(!gl.getShaderParameter(handler, gl.COMPILE_STATUS))
         {
             console.error(compile_message);
         }
@@ -55,22 +55,22 @@ shader_compiler_glsl.prototype =
     
     link: function(vs_handler, fs_handler)
     {
-        var shader_handler = graphics_context.get_instance().createProgram();
-        graphics_context.get_instance().attachShader(shader_handler, vs_handler);
-        graphics_context.get_instance().attachShader(shader_handler, fs_handler);
+        var shader_handler = gl.createProgram();
+        gl.attachShader(shader_handler, vs_handler);
+        gl.attachShader(shader_handler, fs_handler);
         
-        graphics_context.get_instance().linkProgram(shader_handler);
+        gl.linkProgram(shader_handler);
         
-        var link_message = graphics_context.get_instance().getProgramInfoLog(shader_handler) || "";
+        var link_message = gl.getProgramInfoLog(shader_handler) || "";
         
-        if(!graphics_context.get_instance().getProgramParameter(shader_handler, graphics_context.get_instance().LINK_STATUS))
+        if(!gl.getProgramParameter(shader_handler, gl.LINK_STATUS))
         {
             console.error(link_message);
             
-            graphics_context.get_instance().detachShader(shader_handler, vs_handler);
-            graphics_context.get_instance().detachShader(shader_handler, fs_handler);
-            graphics_context.get_instance().deleteShader(vs_handler);
-            graphics_context.get_instance().deleteShader(fs_handler);
+            gl.detachShader(shader_handler, vs_handler);
+            gl.detachShader(shader_handler, fs_handler);
+            gl.deleteShader(vs_handler);
+            gl.deleteShader(fs_handler);
             
             shader_handler = -1;
         }
