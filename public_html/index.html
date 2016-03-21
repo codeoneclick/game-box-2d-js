@@ -32,6 +32,9 @@ and open the template in the editor.
             {
                 graphics_context.get_instance();
                 
+                var vector = new gb.vec2(99.67, 76.33);
+                console.log(new Float32Array(vector.to_array()));
+                
                 console.log(graphics_context.get_instance());
                 
                 var configuration_01 = new gb.game_object_configuration();

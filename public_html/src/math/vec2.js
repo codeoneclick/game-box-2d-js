@@ -1,12 +1,8 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/* global gb */
 
-function vec2 ()
+gb.vec2 = function()
 {
-    if(typeof arguments[0] === 'vec2')
+    if(typeof arguments[0] === 'gb.vec2')
     {
         this.x = arguments[0].get_x();
         this.y = arguments[0].get_y();
@@ -26,11 +22,11 @@ function vec2 ()
         this.x = 0;
         this.y = 0;
     }
-}
+};
 
-vec2.prototype = 
+gb.vec2.prototype = 
 { 
-    constructor: vec2,
+    constructor: gb.vec2,
     
     clone: function() 
     {
@@ -204,5 +200,13 @@ vec2.prototype =
     equals: function (value) 
     {
 	return ((value.x === this.x) && (value.y === this.y ));
+    },
+    
+    to_array: function()
+    {
+        var array = new Array();
+        array[0] = this.x;
+        array[1] = this.y;
+        return array;
     }
 };
