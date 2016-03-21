@@ -1,10 +1,7 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/* global gb */
 
-var gl = null;
+gb.gl = null;
+
 var graphics_context = (function() 
 {
     var m_instance = null;
@@ -43,7 +40,7 @@ var graphics_context = (function()
             if (!m_instance)
             {
                 m_instance = init();
-                gl = m_instance;
+                gb.gl = m_instance;
             }
             return m_instance;
         }

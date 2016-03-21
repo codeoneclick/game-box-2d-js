@@ -1,8 +1,4 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/* global gb */
 
 $.getScript("src/resources/transfering_data/resource_transfering_data.js");
 
@@ -14,7 +10,7 @@ gb.shader_transfering_data = function()
     this.m_vs_source_code = "";
     this.m_fs_source_code = "";
     this.m_shader_id = -1;
-}
+};
 
 gb.shader_transfering_data.prototype = Object.create(gb.resource_transfering_data.prototype);
 gb.shader_transfering_data.prototype.constructor = gb.shader_transfering_data;

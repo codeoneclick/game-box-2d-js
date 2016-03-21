@@ -1,8 +1,4 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/* global gb */
 
 $.getScript("src/resources/transfering_data/shader_transfering_data.js");
 $.getScript("src/resources/operations/serializers/shader_serializer_glsl.js");

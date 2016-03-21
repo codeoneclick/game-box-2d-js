@@ -1,8 +1,4 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/* global gb, _ */
 
 $.getScript("lib/underscore/underscore-min.js");
 
@@ -26,7 +22,7 @@ gb.resource_base = function (guid)
     
     this.m_listeners = new Array();
     this.m_callbacks = new Array();
-}
+};
 
 gb.resource_base.prototype = 
 { 

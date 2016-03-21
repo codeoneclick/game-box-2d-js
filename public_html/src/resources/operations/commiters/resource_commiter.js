@@ -1,8 +1,4 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/* global gb */
 
 gb.commiter_status = {
     undefined : 0,
@@ -16,7 +12,7 @@ gb.resource_commiter = function(guid, resource)
     this.m_guid = guid;
     this.m_resource = resource;
     this.m_status = gb.commiter_status.undefined;
-}
+};
 
 gb.resource_commiter.prototype = 
 { 
