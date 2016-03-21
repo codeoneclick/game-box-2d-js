@@ -4,21 +4,23 @@
  * and open the template in the editor.
  */
 
-var k_commiter_status_undefined = 0;
-var k_commiter_status_in_progress = 1;
-var k_commiter_status_failure = 2;
-var k_commiter_status_success = 3;
+gb.commiter_status = {
+    undefined : 0,
+    in_progress : 1,
+    failure : 2,
+    success : 3
+};
 
-function resource_commiter (guid, resource)
+gb.resource_commiter = function(guid, resource)
 {
     this.m_guid = guid;
     this.m_resource = resource;
-    this.m_status = k_commiter_status_undefined;
+    this.m_status = gb.commiter_status.undefined;
 }
 
-resource_commiter.prototype = 
+gb.resource_commiter.prototype = 
 { 
-    constructor: resource_commiter,
+    constructor: gb.resource_commiter,
     
     clone: function() 
     {

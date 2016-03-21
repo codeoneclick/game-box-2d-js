@@ -7,6 +7,7 @@ and open the template in the editor.
 <html>
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script src="src/game_box.js"></script>
         <script src="src/render/graphics_context.js"></script>
         <script src="src/foundation/game_loop.js"></script>
         <script src="src/configurations/configuration_base.js"></script>
@@ -32,7 +33,7 @@ and open the template in the editor.
 
             resource_loading_listener.prototype = 
             { 
-                constructor: resource_base,
+                constructor: gb.resource_base,
     
                 on_resource_loaded: function(success)
                 {
@@ -46,19 +47,19 @@ and open the template in the editor.
                 
                 console.log(graphics_context.get_instance());
                 
-                var configuration_01 = new game_object_configuration();
-                var configuration_02 = new game_object_configuration();
+                var configuration_01 = new gb.game_object_configuration();
+                var configuration_02 = new gb.game_object_configuration();
                 configuration_02.set_attribute("a", "a");
                 configuration_02.set_attribute("b", 2);
                 configuration_01.set_configuration("materials", configuration_02);
                 console.log(configuration_01.get_materials_configurations());
                 
-                var configuration_03 = new material_configuration();
+                var configuration_03 = new gb.material_configuration();
                 configuration_03.serialize("data/resources/configurations/material.sprite_01.base.json");
                 console.log(configuration_03);
                 
-                var shader_resource = new resource_base("shader_tex2d_a_color");
-                var loading_operation = new shader_loading_operation("data/resources/shaders/shader_tex2d_a_color", shader_resource);
+                var shader_resource = new gb.resource_base("shader_tex2d_a_color");
+                var loading_operation = new gb.shader_loading_operation("data/resources/shaders/shader_tex2d_a_color", shader_resource);
                 loading_operation.serialize();
                 loading_operation.commit();
 

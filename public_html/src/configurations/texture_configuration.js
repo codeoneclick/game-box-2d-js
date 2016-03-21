@@ -6,46 +6,46 @@
 
 $.getScript("src/configurations/configuration_base.js");
 
-function texture_configuration ()
+gb.texture_configuration = function()
 {
-    configuration_base.call(this);
+    gb.configuration_base.call(this);
     this.json = null;
-}
+};
 
-texture_configuration.prototype = Object.create(configuration_base.prototype);
-texture_configuration.prototype.constructor = texture_configuration;
+gb.texture_configuration.prototype = Object.create(gb.configuration_base.prototype);
+gb.texture_configuration.prototype.constructor = gb.texture_configuration;
 
-texture_configuration.prototype.serialize = function(value) 
+gb.texture_configuration.prototype.serialize = function(value) 
 {
     this.json = value;
 };
 
-texture_configuration.prototype.get_filename = function() 
+gb.texture_configuration.prototype.get_filename = function() 
 {
     return this.json.filename;
 };
 
-texture_configuration.prototype.get_render_technique_name = function() 
+gb.texture_configuration.prototype.get_render_technique_name = function() 
 {
     return this.json.render_technique_name;
 };
 
-texture_configuration.prototype.get_sampler_index = function() 
+gb.texture_configuration.prototype.get_sampler_index = function() 
 {
     return this.json.sampler_index;
 };
 
-texture_configuration.prototype.get_wrap_mode = function() 
+gb.texture_configuration.prototype.get_wrap_mode = function() 
 {
     return this.json.wrap_mode;
 };
 
-texture_configuration.prototype.get_mag_filter = function() 
+gb.texture_configuration.prototype.get_mag_filter = function() 
 {
     return this.json.mag_filter;
 };
 
-texture_configuration.prototype.get_min_filter = function() 
+gb.texture_configuration.prototype.get_min_filter = function() 
 {
     return this.json.min_filter;
 };

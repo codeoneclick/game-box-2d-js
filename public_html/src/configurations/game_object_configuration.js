@@ -6,15 +6,15 @@
 
 $.getScript("src/configurations/configuration_base.js");
 
-function game_object_configuration ()
+gb.game_object_configuration = function()
 {
-    configuration_base.call(this);
-}
+    gb.configuration_base.call(this);
+};
 
-game_object_configuration.prototype = Object.create(configuration_base.prototype);
-game_object_configuration.prototype.constructor = game_object_configuration;
+gb.game_object_configuration.prototype = Object.create(gb.configuration_base.prototype);
+gb.game_object_configuration.prototype.constructor = gb.game_object_configuration;
 
-game_object_configuration.prototype.get_materials_configurations = function() 
+gb.game_object_configuration.prototype.get_materials_configurations = function() 
 {
     if(this.m_configurations instanceof Object)
     {

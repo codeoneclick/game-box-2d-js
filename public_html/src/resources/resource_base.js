@@ -6,27 +6,31 @@
 
 $.getScript("lib/underscore/underscore-min.js");
 
-var k_resource_type_undefined = 0;
-var k_resource_type_shader = 1;
-var k_resource_type_texture = 2;
+gb.resource_type = {
+    undefined : 0,
+    shader : 1,
+    texture : 2
+};
 
-var k_resource_status_unloaded = 0;
-var k_resource_status_loaded = 1;
-var k_resource_status_commited = 2;
+gb.resource_status = {
+    unloaded : 0,
+    loaded : 1,
+    commited : 2
+};
 
-function resource_base (guid)
+gb.resource_base = function (guid)
 {
     this.m_guid = guid;
-    this.m_type = k_resource_type_undefined;
-    this.m_status = k_resource_status_unloaded;
+    this.m_type = gb.resource_type.undefined;
+    this.m_status = gb.resource_status.unloaded;
     
     this.m_listeners = new Array();
     this.m_callbacks = new Array();
 }
 
-resource_base.prototype = 
+gb.resource_base.prototype = 
 { 
-    constructor: resource_base,
+    constructor: gb.resource_base,
     
     get_guid: function()
     {

@@ -6,21 +6,21 @@
 
 $.getScript("src/configurations/configuration_base.js");
 
-function shader_configuration ()
+gb.shader_configuration = function()
 {
-    configuration_base.call(this);
+    gb.configuration_base.call(this);
     this.json = null;
-}
+};
 
-shader_configuration.prototype = Object.create(configuration_base.prototype);
-shader_configuration.prototype.constructor = shader_configuration;
+gb.shader_configuration.prototype = Object.create(gb.configuration_base.prototype);
+gb.shader_configuration.prototype.constructor = gb.shader_configuration;
 
-shader_configuration.prototype.serialize = function(value) 
+gb.shader_configuration.prototype.serialize = function(value) 
 {
     this.json = value;
 };
 
-shader_configuration.prototype.get_filename = function() 
+gb.shader_configuration.prototype.get_filename = function() 
 {
     return this.json.filename;
 };

@@ -4,9 +4,7 @@
  * and open the template in the editor.
  */
 
-$.getScript("src/render/graphics_context.js");
-
-function shader_compiler_glsl ()
+gb.shader_compiler_glsl = function()
 {
     this.m_vs_shader_header = "precision highp float;\n\
     #if defined(__OPENGL_30__)\n\
@@ -27,9 +25,9 @@ function shader_compiler_glsl ()
     #endif\n";
 }
 
-shader_compiler_glsl.prototype = 
+gb.shader_compiler_glsl.prototype = 
 { 
-    constructor: shader_compiler_glsl,
+    constructor: gb.shader_compiler_glsl,
    
     compile: function(source_code, shader_type)
     {

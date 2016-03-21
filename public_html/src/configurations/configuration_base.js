@@ -4,15 +4,15 @@
  * and open the template in the editor.
  */
 
-function configuration_base ()
+gb.configuration_base = function()
 {
     this.m_attributes = new Array();
     this.m_configurations = new Array();
-}
+};
 
-configuration_base.prototype = 
+gb.configuration_base.prototype = 
 { 
-    constructor: configuration_base,
+    constructor: gb.configuration_base,
     
     clone: function() 
     {
