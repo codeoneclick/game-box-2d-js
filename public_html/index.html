@@ -1,9 +1,4 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
     <head>
         <title>game-box-2d</title>
@@ -31,11 +26,16 @@ and open the template in the editor.
             function app_start() 
             {
                 graphics_context.get_instance();
-                
-                var vector = new gb.vec2(99.67, 76.33);
-                console.log(new Float32Array(vector.to_array()));
-                
                 console.log(graphics_context.get_instance());
+                
+                var vector_01 = new gb.vec2(1, 1);
+                var vector_02 = new gb.vec2(2);
+                vector_01.add(vector_02);
+                var vector_03 = gb.vec2.add(vector_01, vector_02);
+                console.log(vector_03);
+                
+                var vector_04 = gb.vec2.lerp(new gb.vec2(1), new gb.vec2(2), 0.5);
+                console.log(vector_04);
                 
                 var configuration_01 = new gb.game_object_configuration();
                 var configuration_02 = new gb.game_object_configuration();

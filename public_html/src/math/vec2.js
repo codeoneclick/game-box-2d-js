@@ -2,84 +2,87 @@
 
 gb.vec2 = function()
 {
-    if(typeof arguments[0] === 'gb.vec2')
+    if(arguments[0] instanceof gb.vec2)
     {
-        this.x = arguments[0].get_x();
-        this.y = arguments[0].get_y();
+        this.m_x = arguments[0].x;
+        this.m_y = arguments[0].y;
     }
     else if(arguments.length === 1)
     {
-        this.x = arguments[0];
-        this.y = arguments[0];
+        this.m_x = arguments[0];
+        this.m_y = arguments[0];
     }
     else if(arguments.length === 2)
     {
-        this.x = arguments[0];
-        this.y = arguments[1];
+        this.m_x = arguments[0];
+        this.m_y = arguments[1];
     }
     else
     {
-        this.x = 0;
-        this.y = 0;
+        this.m_x = 0;
+        this.m_y = 0;
     }
+    
+    Object.defineProperty(this, 'x', {
+        get: function()
+        {
+            return this.m_x;
+        },
+        set: function(value)
+        {
+            this.m_x = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'y', {
+        get: function()
+        {
+            return this.m_y;
+        },
+        set: function(value)
+        {
+            this.m_y = value;
+        }
+    });
+};
+
+gb.vec2.add = function(vector_01, vector_02)
+{
+    return new gb.vec2(vector_01.x + vector_02.x,
+                       vector_01.y + vector_02.y);
+};
+
+gb.vec2.sub = function(vector_01, vector_02)
+{
+    return new gb.vec2(vector_01.x - vector_02.x,
+                       vector_01.y - vector_02.y);
+};
+
+gb.vec2.lerp = function(vector_01, vector_02, alpha) 
+{
+    return gb.vec2.sub(vector_02, vector_01).multiply_scalar(alpha).add(vector_01);
+};
+
+gb.vec2.equals = function(vector_01, vector_02) 
+{
+    return ((vector_01.x === vector_02.x) && (vector_01.y === vector_02.y ));
 };
 
 gb.vec2.prototype = 
 { 
     constructor: gb.vec2,
-    
-    clone: function() 
-    {
-        return new this.constructor(this.x, this.y);
-    },
 
-    copy: function(value)
+    add: function(vector)
     {
-	this.x = value.x;
-	this.y = value.y;
-	return this;
-    },
-    
-    set_x: function(value)
-    {
-        this.x = value;
+        this.x += vector.x;
+        this.y += vector.y;
         return this;
     },
     
-    set_y: function(value)
+    add_scalar: function(scalar)
     {
-        this.y = value;
-        return this;
-    },
-    
-    get_x: function()
-    {
-        return this.x;
-    },
-    
-    get_y: function()
-    {
-        return this.y;
-    },
-    
-    add: function(value)
-    {
-        this.x += value.x;
-        this.y += value.y;
-        return this;
-    },
-    
-    add_scalar: function(value)
-    {
-        this.x += value;
-        this.y += value;
-        return this;
-    },
-    
-    add_vectors: function(value_01, value_02)
-    {
-        this.x = value_01.x + value_02.x;
-        this.y = value_01.y + value_02.y;
+        this.x += scalar;
+        this.y += scalar;
         return this;
     },
     
@@ -96,14 +99,7 @@ gb.vec2.prototype =
         this.y -= value;
         return this;
     },
-    
-    sub_vectors: function(value_01, value_02)
-    {
-        this.x = value_01.x - value_02.x;
-        this.y = value_01.y - value_02.y;
-        return this;
-    },
-    
+  
     multiply: function(value)
     {
         this.x *= value.x;
@@ -188,12 +184,6 @@ gb.vec2.prototype =
     {
 	this.x += (value.x - this.x) * alpha;
 	this.y += (value.y - this.y) * alpha;
-	return this;
-    },
-
-    lerp_vectors: function(value_01, value_02, alpha) 
-    {
-	this.sub_vectors(value_02, value_01).multiply_scalar(alpha).add(value_01);
 	return this;
     },
 
