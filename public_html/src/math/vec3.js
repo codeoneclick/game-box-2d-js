@@ -4,79 +4,87 @@ gb.vec3 = function()
 {
     if(typeof arguments[0] === 'gb.vec3')
     {
-        this.x = arguments[0].get_x();
-        this.y = arguments[0].get_y();
-        this.z = arguments[0].get_z();
+        this.m_x = arguments[0].x;
+        this.m_y = arguments[0].y;
+        this.m_z = arguments[0].z;
     }
     else if(arguments.length === 1)
     {
-        this.x = arguments[0];
-        this.y = arguments[0];
-        this.z = arguments[0];
+        this.m_x = arguments[0];
+        this.m_y = arguments[0];
+        this.m_z = arguments[0];
     }
     else if(arguments.length === 3)
     {
-        this.x = arguments[0];
-        this.y = arguments[1];
-        this.z = arguments[2];
+        this.m_x = arguments[0];
+        this.m_y = arguments[1];
+        this.m_z = arguments[2];
     }
     else
     {
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
+        this.m_x = 0;
+        this.m_y = 0;
+        this.m_z = 0;
     }
+    
+    Object.defineProperty(this, 'x', {
+        get: function()
+        {
+            return this.m_x;
+        },
+        set: function(value)
+        {
+            this.m_x = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'y', {
+        get: function()
+        {
+            return this.m_y;
+        },
+        set: function(value)
+        {
+            this.m_y = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'z', {
+        get: function()
+        {
+            return this.m_z;
+        },
+        set: function(value)
+        {
+            this.m_z = value;
+        }
+    });
+};
+
+gb.vec3.add = function(vector_01, vector_02)
+{
+    return new gb.vec3(vector_01.x + vector_02.x,
+                       vector_01.y + vector_02.y,
+                       vector_01.z + vector_02.z);
+};
+            
+gb.vec3.sub = function(vector_01, vector_02)
+{
+    return new gb.vec3(vector_01.x - vector_02.x,
+                       vector_01.y - vector_02.y,
+                       vector_01.z - vector_02.z);
+};
+
+gb.vec3.cross = function(vector_01, vector_02)
+{
+    return new gb.vec3(vector_01.y * vector_02.z - vector_01.z * vector_02.y,
+                       vector_01.z * vector_02.x - vector_01.x * vector_02.z,
+                       vector_01.x * vector_02.y - vector_01.y * vector_02.x);
 };
 
 gb.vec3.prototype = 
 { 
     constructor: gb.vec3,
-    
-    clone: function() 
-    {
-        return new this.constructor(this.x, this.y, this.z);
-    },
-
-    copy: function(value)
-    {
-	this.x = value.x;
-	this.y = value.y;
-        this.z = value.z;
-	return this;
-    },
-    
-    set_x: function(value)
-    {
-        this.x = value;
-        return this;
-    },
-    
-    set_y: function(value)
-    {
-        this.y = value;
-        return this;
-    },
-    
-    set_z: function(value)
-    {
-        this.z = value;
-        return this;
-    },
-    
-    get_x: function()
-    {
-        return this.x;
-    },
-    
-    get_y: function()
-    {
-        return this.y;
-    },
-    
-    get_z: function()
-    {
-        return this.z;
-    },
     
     add: function(value)
     {
@@ -94,14 +102,6 @@ gb.vec3.prototype =
         return this;
     },
     
-    add_vectors: function(value_01, value_02)
-    {
-        this.x = value_01.x + value_02.x;
-        this.y = value_01.y + value_02.y;
-        this.z = value_01.z + value_02.z;
-        return this;
-    },
-    
     sub: function(value)
     {
         this.x -= value.x;
@@ -115,14 +115,6 @@ gb.vec3.prototype =
         this.x -= value;
         this.y -= value;
         this.z -= value;
-        return this;
-    },
-    
-    sub_vectors: function(value_01, value_02)
-    {
-        this.x = value_01.x - value_02.x;
-        this.y = value_01.y - value_02.y;
-        this.z = value_01.z - value_02.z;
         return this;
     },
     
@@ -199,6 +191,11 @@ gb.vec3.prototype =
     length: function() 
     {
 	return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    },
+    
+    length_sq: function () 
+    {
+	return this.x * this.x + this.y * this.y + this.z * this.z;
     },
 
     normalize: function() 
