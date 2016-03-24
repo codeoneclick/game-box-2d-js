@@ -2,23 +2,23 @@
 
 gb.shader_compiler_glsl = function()
 {
-    this.m_vs_shader_header = "precision highp float;"
-    + "#if defined(__OPENGL_30__)"
-    + "layout (location = 0) in vec2 a_position;"
-    + "layout (location = 1) in vec2 a_texcoord;"
-    + "layout (location = 4) in vec4 a_color;"
-    + "#else"
-    + "attribute vec2 a_position;"
-    + "attribute vec2 a_texcoord;"
-    + "attribute vec4 a_color;"
-    + "#endif";
+    this.m_vs_shader_header = "precision highp float;\n"
+    + "#if defined(__OPENGL_30__)\n"
+    + "layout (location = 0) in vec2 a_position;\n"
+    + "layout (location = 1) in vec2 a_texcoord;\n"
+    + "layout (location = 4) in vec4 a_color;\n"
+    + "#else\n"
+    + "attribute vec2 a_position;\n"
+    + "attribute vec2 a_texcoord;\n"
+    + "attribute vec4 a_color;\n"
+    + "#endif\n";
     
-    this.m_fs_shader_header = "precision highp float;"
-    + "#if defined(__OPENGL_30__)"
-    + "layout (location = 0) out vec4 attachment_01;"
-    + "#define gl_FragColor attachment_01"
-    + "#define texture2D texture"
-    + "#endif";
+    this.m_fs_shader_header = "precision highp float;\n"
+    + "#if defined(__OPENGL_30__)\n"
+    + "layout (location = 0) out vec4 attachment_01;\n"
+    + "#define gl_FragColor attachment_01\n"
+    + "#define texture2D texture\n"
+    + "#endif\n";
 };
 
 gb.shader_compiler_glsl.prototype = 
