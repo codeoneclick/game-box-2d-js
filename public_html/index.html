@@ -70,11 +70,13 @@
                 
                 var shader_resource = new gb.shader("shader_tex2d_a_color");
                 var loading_operation = new gb.shader_loading_operation("data/resources/shaders/shader_tex2d_a_color", shader_resource);
-                loading_operation.serialize();
-                loading_operation.commit();
+                loading_operation.start(function() {
+                    console.log(shader_resource);
+                });
+        
+                //loading_operation.serialize();
+                //loading_operation.commit();
                 
-                console.log(shader_resource);
-
                 game_loop.get_instance();
             }
         </script>

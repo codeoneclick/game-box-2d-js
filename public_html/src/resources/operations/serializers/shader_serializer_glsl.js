@@ -14,17 +14,23 @@ gb.shader_serializer_glsl = function(vs_filename, fs_filename, resource)
 gb.shader_serializer_glsl.prototype = Object.create(gb.resource_serializer.prototype);
 gb.shader_serializer_glsl.prototype.constructor = gb.shader_serializer_glsl;
 
-gb.shader_serializer_glsl.prototype.serialize = function(transfering_data) 
+gb.shader_serializer_glsl.prototype.serialize = function(transfering_data, callback) 
 {
     this.m_status = gb.serializer_status.in_progress;
-    $.ajax({dataType: "text", url: this.m_vs_filename, data: {}, async: false, success: function(value) {
+    
+    var self = this;
+    $.ajax({dataType: "text", url: this.m_vs_filename, data: {}, async: true, success: function(value) {
         transfering_data.set_vs_source_code(value);
-    }});
-    $.ajax({dataType: "text", url: this.m_fs_filename, data: {}, async: false, success: function(value) {
-        transfering_data.set_fs_source_code(value);
-    }});
-    this.m_resource.on_transfering_data_serialized(transfering_data);
+        
+        $.ajax({dataType: "text", url: self.m_fs_filename, data: {}, async: true, success: function(value) {
+            transfering_data.set_fs_source_code(value);
+            
+            self.m_resource.on_transfering_data_serialized(transfering_data);
 
-    this.m_status = transfering_data.get_vs_source_code().length !== 0 && transfering_data.get_fs_source_code().length !== 0 ? 
-    gb.serializer_status.success : gb.serializer_status.failure;
+            self.m_status = transfering_data.get_vs_source_code().length !== 0 && transfering_data.get_fs_source_code().length !== 0 ? 
+            gb.serializer_status.success : gb.serializer_status.failure;
+            
+            callback();
+        }});
+    }});
 };
