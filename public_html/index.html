@@ -23,8 +23,21 @@
                 }
             };
             
+            function initTextures() {
+                var cubeTexture = 1;
+                var cubeImage = new Image();
+                cubeImage.onload = function() { handleTextureLoaded(cubeImage, cubeTexture); }
+                cubeImage.src = "data/resources/textures/box_01.png";
+            }
+
+            function handleTextureLoaded(image, texture) {
+                console.log(image);
+                console.log(texture);
+            }
+            
             function app_start() 
             {
+                initTextures();
                 graphics_context.get_instance();
                 console.log(graphics_context.get_instance());
                 
