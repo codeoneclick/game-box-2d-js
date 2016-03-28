@@ -9,6 +9,7 @@ gb.texture_transfering_data = function()
     this.m_type = gb.resource_transfering_data_type.texture;
     this.m_width = 0;
     this.m_height = 0;
+    this.m_data = null;
     this.m_texture_id = -1;
     
     Object.defineProperty(this, 'width', {
@@ -41,6 +42,17 @@ gb.texture_transfering_data = function()
         set: function(value)
         {
             this.m_texture_id = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'data', {
+        get: function()
+        {
+            return this.m_data;
+        },
+        set: function(value)
+        {
+            this.m_data = value;
         }
     });
 };

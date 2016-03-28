@@ -19,7 +19,7 @@ gb.texture.prototype.on_transfering_data_serialized = function(transfering_data)
 {
     switch(transfering_data.type)
     {
-        case gb.resource_transfering_data_type.shader :
+        case gb.resource_transfering_data_type.texture :
         {
             this.m_status = gb.resource_status.loaded;
         }
@@ -31,11 +31,10 @@ gb.texture.prototype.on_transfering_data_commited = function(transfering_data)
 {
     switch(transfering_data.type)
     {
-        case gb.resource_transfering_data_type.shader :
+        case gb.resource_transfering_data_type.texture :
         {
-            this.m_shader_id = transfering_data.shader_id;
+            this.m_texture_id = transfering_data.texture_id;
             this.m_status = gb.resource_status.commited;
-            this.setup();
         }
         break;
     }  

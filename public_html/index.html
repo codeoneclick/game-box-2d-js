@@ -23,21 +23,8 @@
                 }
             };
             
-            function initTextures() {
-                var cubeTexture = 1;
-                var cubeImage = new Image();
-                cubeImage.onload = function() { handleTextureLoaded(cubeImage, cubeTexture); }
-                cubeImage.src = "data/resources/textures/box_01.png";
-            }
-
-            function handleTextureLoaded(image, texture) {
-                console.log(image);
-                console.log(texture);
-            }
-            
             function app_start() 
             {
-                initTextures();
                 graphics_context.get_instance();
                 console.log(graphics_context.get_instance());
                 
@@ -69,13 +56,16 @@
                 console.log(configuration_03);
                 
                 var shader_resource = new gb.shader("shader_tex2d_a_color");
-                var loading_operation = new gb.shader_loading_operation("data/resources/shaders/shader_tex2d_a_color", shader_resource);
-                loading_operation.start(function() {
+                var shader_loading_operation_01 = new gb.shader_loading_operation("data/resources/shaders/shader_tex2d_a_color", shader_resource);
+                shader_loading_operation_01.start(function() {
                     console.log(shader_resource);
                 });
-        
-                //loading_operation.serialize();
-                //loading_operation.commit();
+                
+                var texture_resource = new gb.texture("box_01");
+                var texture_loading_operation_01 = new gb.texture_loading_operation("data/resources/textures/box_01.png", texture_resource);
+                texture_loading_operation_01.start(function() {
+                    console.log(texture_resource);
+                });
                 
                 game_loop.get_instance();
             }

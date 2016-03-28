@@ -38,7 +38,3 @@ gb.shader_commiter_glsl.prototype.commit = function(transfering_data)
     this.m_resource.on_transfering_data_commited(transfering_data);
     this.m_status = status;
 };
-
-
-
-
