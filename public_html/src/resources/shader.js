@@ -272,9 +272,9 @@ gb.shader.prototype.setup = function()
     this.m_attributes[gb.shader_attribute_type.color] = gb.gl.getAttribLocation(this.m_shader_id, gb.attribute_names.a_color);
 };
 
-gb.shader.prototype.on_transfering_data_serialized = function(data)
+gb.shader.prototype.on_transfering_data_serialized = function(transfering_data)
 {
-    switch(data.get_type())
+    switch(transfering_data.type)
     {
         case gb.resource_transfering_data_type.shader :
         {
@@ -284,13 +284,13 @@ gb.shader.prototype.on_transfering_data_serialized = function(data)
     }
 };
     
-gb.shader.prototype.on_transfering_data_commited = function(data)
+gb.shader.prototype.on_transfering_data_commited = function(transfering_data)
 {
-    switch(data.get_type())
+    switch(transfering_data.type)
     {
         case gb.resource_transfering_data_type.shader :
         {
-            this.m_shader_id = data.get_shader_id();
+            this.m_shader_id = transfering_data.shader_id;
             this.m_status = gb.resource_status.commited;
             this.setup();
         }

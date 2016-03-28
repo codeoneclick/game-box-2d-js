@@ -20,14 +20,14 @@ gb.shader_commiter_glsl.prototype.commit = function(transfering_data)
     var shader_compiler = new gb.shader_compiler_glsl();
     var status = gb.commiter_status.failure;
 
-    var vs_handler = shader_compiler.compile(transfering_data.get_vs_source_code(), graphics_context.get_instance().VERTEX_SHADER);
+    var vs_handler = shader_compiler.compile(transfering_data.vs_source_code, graphics_context.get_instance().VERTEX_SHADER);
     if(vs_handler !== -1)
     {
-        var fs_handler = shader_compiler.compile(transfering_data.get_fs_source_code(), graphics_context.get_instance().FRAGMENT_SHADER);
+        var fs_handler = shader_compiler.compile(transfering_data.fs_source_code, graphics_context.get_instance().FRAGMENT_SHADER);
         if(fs_handler !== -1)
         {
             var shader_handler = shader_compiler.link(vs_handler, fs_handler);
-            transfering_data.set_shader_id(shader_handler);
+            transfering_data.shader_id = shader_handler;
             if(shader_handler !== -1)
             {
                 status = gb.commiter_status.success;

@@ -10,38 +10,41 @@ gb.shader_transfering_data = function()
     this.m_vs_source_code = "";
     this.m_fs_source_code = "";
     this.m_shader_id = -1;
+    
+    Object.defineProperty(this, 'vs_source_code', {
+        get: function()
+        {
+            return this.m_vs_source_code;
+        },
+        set: function(value)
+        {
+            this.m_vs_source_code = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'fs_source_code', {
+        get: function()
+        {
+            return this.m_fs_source_code;
+        },
+        set: function(value)
+        {
+            this.m_fs_source_code = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'shader_id', {
+        get: function()
+        {
+            return this.m_shader_id;
+        },
+        set: function(value)
+        {
+            this.m_shader_id = value;
+        }
+    });
 };
 
 gb.shader_transfering_data.prototype = Object.create(gb.resource_transfering_data.prototype);
 gb.shader_transfering_data.prototype.constructor = gb.shader_transfering_data;
-
-gb.shader_transfering_data.prototype.set_vs_source_code = function(source_code) 
-{
-    this.m_vs_source_code = source_code;
-};
-
-gb.shader_transfering_data.prototype.get_vs_source_code = function()
-{
-    return this.m_vs_source_code;
-};
-
-gb.shader_transfering_data.prototype.set_fs_source_code = function(source_code) 
-{
-    this.m_fs_source_code = source_code;
-};
-
-gb.shader_transfering_data.prototype.get_fs_source_code = function()
-{
-    return this.m_fs_source_code;
-};
-
-gb.shader_transfering_data.prototype.set_shader_id = function(shader_id) 
-{
-    this.m_shader_id = shader_id;
-};
-
-gb.shader_transfering_data.prototype.get_shader_id = function()
-{
-    return this.m_shader_id;
-};
 

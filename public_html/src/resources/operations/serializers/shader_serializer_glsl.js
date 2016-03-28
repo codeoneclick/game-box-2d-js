@@ -20,14 +20,14 @@ gb.shader_serializer_glsl.prototype.serialize = function(transfering_data, callb
     
     var self = this;
     $.ajax({dataType: "text", url: this.m_vs_filename, data: {}, async: true, success: function(value) {
-        transfering_data.set_vs_source_code(value);
+        transfering_data.vs_source_code = value;
         
         $.ajax({dataType: "text", url: self.m_fs_filename, data: {}, async: true, success: function(value) {
-            transfering_data.set_fs_source_code(value);
+            transfering_data.fs_source_code = value;
             
             self.m_resource.on_transfering_data_serialized(transfering_data);
 
-            self.m_status = transfering_data.get_vs_source_code().length !== 0 && transfering_data.get_fs_source_code().length !== 0 ? 
+            self.m_status = transfering_data.vs_source_code.length !== 0 && transfering_data.fs_source_code.length !== 0 ? 
             gb.serializer_status.success : gb.serializer_status.failure;
             
             callback();
