@@ -68,6 +68,22 @@ gb.vec2.equals = function(vector_01, vector_02)
     return ((vector_01.x === vector_02.x) && (vector_01.y === vector_02.y ));
 };
 
+gb.vec2.min = function(vector_01, vector_02)
+{
+    var vector_03 = new gb.vec2(0);
+    vector_03.x = Math.min(vector_01.x, vector_02.x);
+    vector_03.y = Math.min(vector_01.y, vector_02.y);
+    return vector_03;
+};
+    
+gb.vec2.max = function(vector_01, vector_02)
+{
+    var vector_03 = new gb.vec2(0);
+    vector_03.x = Math.max(vector_01.x, vector_02.x);
+    vector_03.y = Math.max(vector_01.y, vector_02.y);
+    return vector_03;
+};
+
 gb.vec2.prototype = 
 { 
     constructor: gb.vec2,
@@ -125,20 +141,6 @@ gb.vec2.prototype =
     {
         this.x /= value;
         this.y /= value;
-        return this;
-    },
-    
-    min: function(value)
-    {
-        this.x = Math.min(this.x, value.x);
-        this.y = Math.min(this.y, value.y);
-        return this;
-    },
-    
-    max: function(value)
-    {
-        this.x = Math.max(this.x, value.x);
-        this.y = Math.max(this.y, value.y);
         return this;
     },
     

@@ -1,8 +1,11 @@
 /* global gb */
 
+var INT16_MAX = 32767;
+var INT16_MIN = -32768;
+
 gb.math = function()
 {
-
+    
 };
 
 gb.math.radians = function(degrees)
