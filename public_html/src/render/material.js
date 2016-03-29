@@ -198,41 +198,41 @@ gb.material_cached_parameters.prototype =
     constructor: gb.material_cached_parameters
 };
 
-var g_cached_parameters = (function()
+var g_cached_parameters = null;
+
+gb.material_cached_parameters.get_cached_parameters = function() 
 {
-    function init()
+    if(g_cached_parameters === null)
     {
-        var cached_parameters = new gb.material_cached_parameters();
+        g_cached_parameters = new gb.material_cached_parameters();
         
-        cached_parameters.is_cull_face = true;
+        g_cached_parameters.is_cull_face = true;
         gl.enable(gl.CULL_FACE);
-        cached_parameters.cull_face_mode = gl.BACK;
+        g_cached_parameters.cull_face_mode = gl.BACK;
         gl.cullFace(gl.BACK);
         
-        cached_parameters.is_blending = true;
+        g_cached_parameters.is_blending = true;
         gl.enable(gl.BLEND);
-        cached_parameters.blending_function_source = gl.SRC_ALPHA;
-        cached_parameters.blending_function_destination = gl.ONE_MINUS_SRC_ALPHA;
+        g_cached_parameters.blending_function_source = gl.SRC_ALPHA;
+        g_cached_parameters.blending_function_destination = gl.ONE_MINUS_SRC_ALPHA;
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         
-        cached_parameters.is_stencil_test = false;
+        g_cached_parameters.is_stencil_test = false;
         gl.disable(gl.STENCIL_TEST);
-        cached_parameters.stencil_function = gl.ALWAYS;
-        cached_parameters.stencil_function_parameter_1 = 0;
-        cached_parameters.stencil_function_parameter_2 = 0;
+        g_cached_parameters.stencil_function = gl.ALWAYS;
+        g_cached_parameters.stencil_function_parameter_1 = 0;
+        g_cached_parameters.stencil_function_parameter_2 = 0;
         gl.stencilFunc(gl.ALWAYS, 0, 0);
-        cached_parameters.m_stencil_mask_parameter = 0;
+        g_cached_parameters.m_stencil_mask_parameter = 0;
         gl.stencilMask(0);
         
-        cached_parameters.is_depth_test = true;
+        g_cached_parameters.is_depth_test = true;
         gl.enable(gl.DEPTH_TEST);
-        cached_parameters.is_depth_mask = true;
+        g_cached_parameters.is_depth_mask = true;
         gl.depthMask(gl.TRUE);
-        
-        return cached_parameters;
     }
-    return init();
-})();
+    return g_cached_parameters;
+};
 
 gb.material = function()
 {
@@ -461,11 +461,115 @@ gb.material.prototype =
     
     bind : function()
     {
-
+        this.m_parameters.shader.bind();
+        
+        for(var i = 0; i < 8; ++i)
+        {
+            if(this.m_parameters.textures[i] !== null)
+            {
+                this.m_parameters.shader.set_texture(this.m_parameters.textures[i], i);
+            }
+        }
+        
+        if(this.m_parameters.is_depth_test && this.m_parameters.is_depth_test !== gb.material_cached_parameters.get_cached_parameters.is_depth_test)
+        {
+            gl.enable(gl.DEPTH_TEST);
+            gb.material_cached_parameters.get_cached_parameters.is_depth_test = this.m_parameters.is_depth_test;
+        }
+        else if(this.m_parameters.is_depth_test !== gb.material_cached_parameters.get_cached_parameters.is_depth_test)
+        {
+            gl.disable(gl.DEPTH_TEST);
+            gb.material_cached_parameters.get_cached_parameters.is_depth_test = this.m_parameters.is_depth_test;
+        }
+        
+        if(this.m_parameters.is_depth_mask && this.m_parameters.is_depth_mask !== gb.material_cached_parameters.get_cached_parameters.is_depth_mask)
+        {
+            gl.depthMask(gl.TRUE);
+            gb.material_cached_parameters.get_cached_parameters.is_depth_mask = this.m_parameters.is_depth_mask;
+        }
+        else if(this.m_parameters.is_depth_mask !== gb.material_cached_parameters.get_cached_parameters.is_depth_mask)
+        {
+            gl.depthMask(gl.TRUE);
+            gb.material_cached_parameters.get_cached_parameters.is_depth_mask = this.m_parameters.is_depth_mask;
+        }
+        
+        if(this.m_parameters.is_cull_face && this.m_parameters.is_cull_face !== gb.material_cached_parameters.get_cached_parameters.is_cull_face)
+        {
+            gl.enable(gl.CULL_FACE);
+            gb.material_cached_parameters.get_cached_parameters.is_cull_face = this.m_parameters.is_cull_face;
+        }
+        else if(this.m_parameters.is_cull_face !== gb.material_cached_parameters.get_cached_parameters.is_cull_face)
+        {
+            gl.disable(gl.CULL_FACE);
+            gb.material_cached_parameters.get_cached_parameters.is_cull_face = this.m_parameters.is_cull_face;
+        }
+        
+        if(this.m_parameters.cull_face_mode && this.m_parameters.cull_face_mode !== gb.material_cached_parameters.get_cached_parameters.cull_face_mode)
+        {
+            gl.cullFace(this.m_parameters.cull_face_mode);
+            gb.material_cached_parameters.get_cached_parameters.cull_face_mode = this.m_parameters.cull_face_mode;
+        }
+        else if(this.m_parameters.cull_face_mode !== gb.material_cached_parameters.get_cached_parameters.cull_face_mode)
+        {
+            gl.cullFace(this.m_parameters.cull_face_mode);
+            gb.material_cached_parameters.get_cached_parameters.cull_face_mode = this.m_parameters.cull_face_mode;
+        }
+        
+        if(this.m_parameters.is_blending && this.m_parameters.is_blending !== gb.material_cached_parameters.get_cached_parameters.is_blending)
+        {
+            gl.enable(gl.BLEND);
+            gb.material_cached_parameters.get_cached_parameters.is_blending = this.m_parameters.is_blending;
+        }
+        else if(this.m_parameters.is_blending !== gb.material_cached_parameters.get_cached_parameters.is_blending)
+        {
+            gl.disable(gl.BLEND);
+            gb.material_cached_parameters.get_cached_parameters.is_blending = this.m_parameters.is_blending;
+        }
+        
+        if(this.m_parameters.blending_function_source !== gb.material_cached_parameters.get_cached_parameters.blending_function_source ||
+           this.m_parameters.blending_function_destination !== gb.material_cached_parameters.get_cached_parameters.blending_function_destination)
+        {
+            gl.blendFunc(this.m_parameters.blending_function_source, this.m_parameters.blending_function_destination);
+            gb.material_cached_parameters.get_cached_parameters.blending_function_source = this.m_parameters.blending_function_source;
+            gb.material_cached_parameters.get_cached_parameters.blending_function_destination = this.m_parameters.blending_function_destination;
+        }
+        
+        if(this.m_parameters.blending_equation !== gb.material_cached_parameters.get_cached_parameters.blending_equation)
+        {
+            gl.blendEquation(this.m_parameters.blending_equation);
+            gb.material_cached_parameters.get_cached_parameters.blending_equation = this.m_parameters.blending_equation;
+        }
+        
+        if(this.m_parameters.is_stencil_test && this.m_parameters.is_stencil_test !== gb.material_cached_parameters.get_cached_parameters.is_stencil_test)
+        {
+            gl.enable(gl.STENCIL_TEST);
+            gb.material_cached_parameters.get_cached_parameters.is_stencil_test = this.m_parameters.is_stencil_test;
+        }
+        else if(this.m_parameters.is_stencil_test !== gb.material_cached_parameters.get_cached_parameters.is_stencil_test)
+        {
+            gl.disable(gl.STENCIL_TEST);
+            gb.material_cached_parameters.get_cached_parameters.is_stencil_test = this.m_parameters.is_stencil_test;
+        }
+        
+        if(this.m_parameters.stencil_function !== gb.material_cached_parameters.get_cached_parameters.stencil_function ||
+           this.m_parameters.stencil_function_parameter_1 !== gb.material_cached_parameters.get_cached_parameters.stencil_function_parameter_1 ||
+           this.m_parameters.stencil_function_parameter_2 !== gb.material_cached_parameters.get_cached_parameters.stencil_function_parameter_2)
+        {
+            gl.stencilFunc(this.m_parameters.stencil_function, this.m_parameters.stencil_function_parameter_1, this.m_parameters.stencil_function_parameter_2);
+            gb.material_cached_parameters.get_cached_parameters.stencil_function = this.m_parameters.stencil_function;
+            gb.material_cached_parameters.get_cached_parameters.stencil_function_parameter_1 = this.m_parameters.stencil_function_parameter_1;
+            gb.material_cached_parameters.get_cached_parameters.stencil_function_parameter_2 = this.m_parameters.stencil_function_parameter_2;
+        }
+        
+        if(this.m_parameters.stencil_mask_parameter !== gb.material_cached_parameters.get_cached_parameters.stencil_mask_parameter)
+        {
+            gl.stencilMask(this.m_parameters.stencil_mask_parameter);
+            gb.material_cached_parameters.get_cached_parameters.stencil_mask_parameter = this.m_parameters.stencil_mask_parameter;
+        }
     },
     
     unbind : function()
     {
-
+        this.m_parameters.shader.unbind();
     }
 };
