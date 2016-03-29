@@ -1,0 +1,471 @@
+/* global gb, gl */
+
+gb.material_cached_parameters = function()
+{
+    this.m_is_cull_face = false;
+    this.m_cull_face_mode = -1;
+    
+    this.m_is_blending = false;
+    this.m_blending_function_source = -1;
+    this.m_blending_function_destination = -1;
+    this.m_blending_equation = -1;
+    
+    this.m_is_stencil_test = false;
+    this.m_stencil_function = -1;
+    this.m_stencil_function_parameter_1 = -1;
+    this.m_stencil_function_parameter_2 = -1;
+    this.m_stencil_mask_parameter = -1;
+    
+    this.m_is_depth_test = false;
+    this.m_is_depth_mask = false;
+    
+    this.m_shader = null;
+    
+    this.m_textures = new Array();
+    for(var i = 0; i < 8; ++i)
+    {
+        this.m_textures[i] = null;
+    }
+    
+    Object.defineProperty(this, 'is_cull_face', {
+        get: function()
+        {
+            return this.m_is_cull_face;
+        },
+        set: function(value)
+        {
+            this.m_is_cull_face = value;
+        }
+    });
+
+    Object.defineProperty(this, 'cull_face_mode', {
+        get: function()
+        {
+            return this.m_cull_face_mode;
+        },
+        set: function(value)
+        {
+            this.m_cull_face_mode = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'is_blending', {
+        get: function()
+        {
+            return this.m_is_blending;
+        },
+        set: function(value)
+        {
+            this.m_is_blending = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'blending_function_source', {
+        get: function()
+        {
+            return this.m_blending_function_source;
+        },
+        set: function(value)
+        {
+            this.m_blending_function_source = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'blending_function_destination', {
+        get: function()
+        {
+            return this.m_blending_function_destination;
+        },
+        set: function(value)
+        {
+            this.m_blending_function_destination = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'blending_equation', {
+        get: function()
+        {
+            return this.m_blending_equation;
+        },
+        set: function(value)
+        {
+            this.m_blending_equation = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'is_stencil_test', {
+        get: function()
+        {
+            return this.m_is_stencil_test;
+        },
+        set: function(value)
+        {
+            this.m_is_stencil_test = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_function', {
+        get: function()
+        {
+            return this.m_stencil_function;
+        },
+        set: function(value)
+        {
+            this.m_stencil_function = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_function_parameter_1', {
+        get: function()
+        {
+            return this.m_stencil_function_parameter_1;
+        },
+        set: function(value)
+        {
+            this.m_stencil_function_parameter_1 = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_function_parameter_2', {
+        get: function()
+        {
+            return this.m_stencil_function_parameter_2;
+        },
+        set: function(value)
+        {
+            this.m_stencil_function_parameter_2 = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_mask_parameter', {
+        get: function()
+        {
+            return this.m_stencil_mask_parameter;
+        },
+        set: function(value)
+        {
+            this.m_stencil_mask_parameter = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'is_depth_test', {
+        get: function()
+        {
+            return this.m_is_depth_test;
+        },
+        set: function(value)
+        {
+            this.m_is_depth_test = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'is_depth_mask', {
+        get: function()
+        {
+            return this.m_is_depth_mask;
+        },
+        set: function(value)
+        {
+            this.m_is_depth_mask = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'shader', {
+        get: function()
+        {
+            return this.m_shader;
+        },
+        set: function(value)
+        {
+            this.m_shader = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'textures', {
+        get: function()
+        {
+            return this.m_textures;
+        },
+        set: function(value)
+        {
+            this.m_textures = value;
+        }
+    });
+};
+
+gb.material_cached_parameters.prototype = 
+{ 
+    constructor: gb.material_cached_parameters
+};
+
+var g_cached_parameters = (function()
+{
+    function init()
+    {
+        var cached_parameters = new gb.material_cached_parameters();
+        
+        cached_parameters.is_cull_face = true;
+        gl.enable(gl.CULL_FACE);
+        cached_parameters.cull_face_mode = gl.BACK;
+        gl.cullFace(gl.BACK);
+        
+        cached_parameters.is_blending = true;
+        gl.enable(gl.BLEND);
+        cached_parameters.blending_function_source = gl.SRC_ALPHA;
+        cached_parameters.blending_function_destination = gl.ONE_MINUS_SRC_ALPHA;
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        
+        cached_parameters.is_stencil_test = false;
+        gl.disable(gl.STENCIL_TEST);
+        cached_parameters.stencil_function = gl.ALWAYS;
+        cached_parameters.stencil_function_parameter_1 = 0;
+        cached_parameters.stencil_function_parameter_2 = 0;
+        gl.stencilFunc(gl.ALWAYS, 0, 0);
+        cached_parameters.m_stencil_mask_parameter = 0;
+        gl.stencilMask(0);
+        
+        cached_parameters.is_depth_test = true;
+        gl.enable(gl.DEPTH_TEST);
+        cached_parameters.is_depth_mask = true;
+        gl.depthMask(gl.TRUE);
+        
+        return cached_parameters;
+    }
+    return init();
+})();
+
+gb.material = function()
+{
+    this.m_parameters = new gb.material_cached_parameters();
+    this.m_custom_shader_uniforms = new Array();
+    this.m_guid = "";
+    
+    Object.defineProperty(this, 'is_cull_face', {
+        get: function()
+        {
+            return this.m_parameters.is_cull_face;
+        },
+        set: function(value)
+        {
+            this.m_parameters.is_culling = value;
+        }
+    });
+
+    Object.defineProperty(this, 'cull_face_mode', {
+        get: function()
+        {
+            return this.m_parameters.cull_face_mode;
+        },
+        set: function(value)
+        {
+            this.m_parameters.cull_face_mode = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'is_blending', {
+        get: function()
+        {
+            return this.m_parameters.is_blending;
+        },
+        set: function(value)
+        {
+            this.m_parameters.is_blending = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'blending_function_source', {
+        get: function()
+        {
+            return this.m_parameters.blending_function_source;
+        },
+        set: function(value)
+        {
+            this.m_parameters.blending_function_source = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'blending_function_destination', {
+        get: function()
+        {
+            return this.m_parameters.blending_function_destination;
+        },
+        set: function(value)
+        {
+            this.m_parameters.blending_function_destination = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'blending_equation', {
+        get: function()
+        {
+            return this.m_parameters.blending_equation;
+        },
+        set: function(value)
+        {
+            this.m_parameters.blending_equation = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'is_stencil_test', {
+        get: function()
+        {
+            return this.m_parameters.is_stencil_test;
+        },
+        set: function(value)
+        {
+            this.m_parameters.is_stencil_test = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_function', {
+        get: function()
+        {
+            return this.m_parameters.stencil_function;
+        },
+        set: function(value)
+        {
+            this.m_parameters.stencil_function = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_function_parameter_1', {
+        get: function()
+        {
+            return this.m_parameters.stencil_function_parameter_1;
+        },
+        set: function(value)
+        {
+            this.m_parameters.stencil_function_parameter_1 = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_function_parameter_2', {
+        get: function()
+        {
+            return this.m_parameters.stencil_function_parameter_2;
+        },
+        set: function(value)
+        {
+            this.m_parameters.stencil_function_parameter_2 = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_mask_parameter', {
+        get: function()
+        {
+            return this.m_parameters.stencil_mask_parameter;
+        },
+        set: function(value)
+        {
+            this.m_parameters.stencil_mask_parameter = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'is_depth_test', {
+        get: function()
+        {
+            return this.m_parameters.is_depth_test;
+        },
+        set: function(value)
+        {
+            this.m_parameters.is_depth_test = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'is_depth_mask', {
+        get: function()
+        {
+            return this.m_parameters.is_depth_mask;
+        },
+        set: function(value)
+        {
+            this.m_parameters.is_depth_mask = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'shader', {
+        get: function()
+        {
+            return this.m_shader;
+        },
+        set: function(value)
+        {
+            this.m_shader = value;
+        }
+    });
+    
+    Object.defineProperty(this, 'guid', {
+        get: function()
+        {
+            return this.m_guid;
+        },
+        set: function(value)
+        {
+            this.m_guid = value;
+        }
+    });
+};
+
+gb.material.construct = function(configuration)
+{
+    var material = new gb.material();
+        
+    material.is_cull_face = configuration.is_cull_face;
+    material.cull_face_mode = configuration.cull_face_mode;
+        
+    material.is_blending = configuration.is_blending;
+    material.blending_function_source = configuration.blending_function_source;
+    material.blending_function_destination = configuration.blending_function_destination;
+    material.blending_equation = configuration.blending_equation;
+        
+    material.is_stencil_test = configuration.is_stencil_test;
+    material.stencil_function = configuration.stencil_function;
+    material.stencil_function_parameter_1 = configuration.stencil_function_parameter_1;
+    material.stencil_function_parameter_2 = configuration.stencil_function_parameter_2;
+    material.stencil_mask_parameter = configuration.stencil_mask_parameter;
+        
+    material.guid = "" + configuration.technique_name + configuration.technique_pass + configuration.shader_configuration.filename;
+        
+    return material;
+};
+
+gb.material.set_shader = function(material, configuration, resource_accessor)
+{
+    resource_accessor.get_shader(configuration.shader_configuration.filename, function(shader) {
+        material.shader = shader;
+    });
+};
+
+gb.material.set_textures = function(material, configuration, resource_accessor)
+{
+    for(var i = 0; i < configuration.textures_configurations.length; ++i)
+    {
+        var texture_configuration = configuration.textures_configurations[i];
+        resource_accessor.get_texture(texture_configuration.filename.length !== 0 ? texture_configuration.filename : texture_configuration.technique_name, function(texture) {
+            texture.wrap_mode = texture_configuration.wrap_mode;
+            texture.mag_filter = texture_configuration.mag_filter;
+            texture.min_filter = texture_configuration.min_filter;
+            material.set_texture(texture, texture_configuration.sampler_index);
+        });
+    }
+};
+
+gb.material.prototype = 
+{ 
+    constructor: gb.material,
+
+    set_texture: function(texture, sampler)
+    {
+        this.m_parameters.textures[sampler] = texture;
+    },
+    
+    bind : function()
+    {
+
+    },
+    
+    unbind : function()
+    {
+
+    }
+};
