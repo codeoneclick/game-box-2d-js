@@ -431,8 +431,9 @@ gb.material.construct = function(configuration)
 
 gb.material.set_shader = function(material, configuration, resource_accessor)
 {
-    resource_accessor.get_shader(configuration.shader_configuration.filename, function(shader) {
-        material.shader = shader;
+    var shader = resource_accessor.get_shader(configuration.shader_configuration.filename);
+    shader.add_resource_loading_callback(function(resource) {
+       material.shader = resource;
     });
 };
 

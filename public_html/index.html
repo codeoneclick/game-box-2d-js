@@ -59,7 +59,10 @@
                 var material_01 = gb.material.construct(configuration_03);
                 console.log(material_01);
                 
-                var shader_resource = new gb.shader("shader_tex2d_a_color");
+                var resource_accessor = new gb.resource_accessor();
+                gb.material.set_shader(material_01, configuration_03, resource_accessor);
+                
+                /*var shader_resource = new gb.shader("shader_tex2d_a_color");
                 var shader_loading_operation_01 = new gb.shader_loading_operation("data/resources/shaders/shader_tex2d_a_color", shader_resource);
                 shader_loading_operation_01.start(function() {
                     console.log(shader_resource);
@@ -69,7 +72,7 @@
                 var texture_loading_operation_01 = new gb.texture_loading_operation("data/resources/textures/box_01.png", texture_resource);
                 texture_loading_operation_01.start(function() {
                     console.log(texture_resource);
-                });
+                });*/
                 
                 game_loop.get_instance();
             }

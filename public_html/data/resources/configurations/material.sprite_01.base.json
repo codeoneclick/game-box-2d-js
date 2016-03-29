@@ -17,12 +17,12 @@
     "is_debugging": "0",
     "shader": 
             {
-                "filename": "shader_tex2d_a_color"
+                "filename": "data/resources/shaders/shader_tex2d_a_color"
             },
     "textures": 
             [
                 {
-                    "filename": "sprite_01.png",
+                    "filename": "data/resources/textures/box_01.png",
                     "technique_name": "",
                     "sampler_index": "0",
                     "wrap_mode": "GL_REPEAT",

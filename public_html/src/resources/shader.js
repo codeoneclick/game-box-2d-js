@@ -258,14 +258,14 @@ gb.shader.prototype.setup = function()
     this.m_uniforms[gb.shader_uniform_type.mat_v] = gl.getUniformLocation(this.m_shader_id, gb.uniform_names.u_mat_v);
     this.m_uniforms[gb.shader_uniform_type.mat_p] = gl.getUniformLocation(this.m_shader_id, gb.uniform_names.u_mat_p);
     
-    this.m_uniforms[gb.shader_sampler_type.sampler_01] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_01);
-    this.m_uniforms[gb.shader_sampler_type.sampler_02] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_02);
-    this.m_uniforms[gb.shader_sampler_type.sampler_03] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_03);
-    this.m_uniforms[gb.shader_sampler_type.sampler_04] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_04);
-    this.m_uniforms[gb.shader_sampler_type.sampler_05] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_05);
-    this.m_uniforms[gb.shader_sampler_type.sampler_06] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_06);
-    this.m_uniforms[gb.shader_sampler_type.sampler_07] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_07);
-    this.m_uniforms[gb.shader_sampler_type.sampler_08] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_08);
+    this.m_samplers[gb.shader_sampler_type.sampler_01] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_01);
+    this.m_samplers[gb.shader_sampler_type.sampler_02] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_02);
+    this.m_samplers[gb.shader_sampler_type.sampler_03] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_03);
+    this.m_samplers[gb.shader_sampler_type.sampler_04] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_04);
+    this.m_samplers[gb.shader_sampler_type.sampler_05] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_05);
+    this.m_samplers[gb.shader_sampler_type.sampler_06] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_06);
+    this.m_samplers[gb.shader_sampler_type.sampler_07] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_07);
+    this.m_samplers[gb.shader_sampler_type.sampler_08] = gl.getUniformLocation(this.m_shader_id, gb.sampler_names.sampler_08);
     
     this.m_attributes[gb.shader_attribute_type.position] = gl.getAttribLocation(this.m_shader_id, gb.attribute_names.a_position);
     this.m_attributes[gb.shader_attribute_type.texcoord] = gl.getAttribLocation(this.m_shader_id, gb.attribute_names.a_texcoord);
