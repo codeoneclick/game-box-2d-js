@@ -1,48 +1,52 @@
 /* global gb */
 
-gb.gl = null;
+var g_graphics_context = null;
 
 var graphics_context = (function() 
 {
-    var m_instance = null;
- 
     function init()
     {
         var canvas = document.getElementById("gl_canvas");
         try 
         {
-            m_instance = canvas.getContext("experimental-webgl");
-            m_instance.viewportWidth = canvas.width;
-            m_instance.viewportHeight = canvas.height;
+            g_graphics_context = canvas.getContext("experimental-webgl");
+            g_graphics_context.viewportWidth = canvas.width;
+            g_graphics_context.viewportHeight = canvas.height;
+            console.log("OpenGL context created");
+            console.log("viewport: [ " + canvas.width + ", " + canvas.height + " ]");
         } 
         catch (exception) 
         {
                     
         }
-        if (!m_instance) 
+        if (!g_graphics_context) 
         {
             alert("could not initialise gl context");
         }
         else
         {
-            m_instance.clearColor(0.0, 0.0, 0.0, 1.0);
-            m_instance.enable(m_instance.DEPTH_TEST);
+            g_graphics_context.clearColor(0.0, 0.0, 0.0, 1.0);
+            g_graphics_context.enable(g_graphics_context.DEPTH_TEST);
                     
-            m_instance.viewport(0, 0, m_instance.viewportWidth, m_instance.viewportHeight);
-            m_instance.clear(m_instance.COLOR_BUFFER_BIT | m_instance.DEPTH_BUFFER_BIT);
+            g_graphics_context.viewport(0, 0, g_graphics_context.viewportWidth, g_graphics_context.viewportHeight);
+            g_graphics_context.clear(g_graphics_context.COLOR_BUFFER_BIT | g_graphics_context.DEPTH_BUFFER_BIT);
         }
-        return m_instance;
+        return g_graphics_context;
     }
  
     return {
         get_instance: function() 
         {
-            if (!m_instance)
+            if (!g_graphics_context)
             {
-                m_instance = init();
-                gb.gl = m_instance;
+                g_graphics_context = init();
             }
-            return m_instance;
+            return g_graphics_context;
         }
     };
+})();
+
+var gl = (function() 
+{
+    return graphics_context.get_instance();
 })();

@@ -1,8 +1,8 @@
-/* global gb */
+/* global gb, gl */
 
 gb.ibo = function(size, mode)
 {
-    this.m_handler = gb.gl.createBuffer();
+    this.m_handler = gl.createBuffer();
     this.m_allocated_size = size;
     this.m_used_size = 0;
     this.m_mode = mode;
@@ -40,15 +40,15 @@ gb.ibo.prototype =
     unlock: function()
     {
         this.m_used_size = arguments.length !== 0 && arguments[0] > 0 && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
-        gb.gl.bindBuffer(gb.gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
-        gb.gl.bufferData(gb.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.m_data), this.m_mode);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.m_data), this.m_mode);
     },
     
     bind : function()
     {
         if(this.m_used_size !== 0)
         {
-            gb.gl.bindBuffer(gb.gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
         }
     },
     
@@ -56,7 +56,7 @@ gb.ibo.prototype =
     {
         if(this.m_used_size !== 0)
         {
-            gb.gl.bindBuffer(gb.gl.ELEMENT_ARRAY_BUFFER, null);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         }
     }
 };

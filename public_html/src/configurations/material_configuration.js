@@ -8,6 +8,142 @@ gb.material_configuration = function()
 {
     gb.configuration_base.call(this);
     this.json = null;
+    
+    Object.defineProperty(this, 'technique_name', {
+        get: function()
+        {
+            return this.json.technique_name;
+        }
+    });
+    
+    Object.defineProperty(this, 'technique_pass', {
+        get: function()
+        {
+            return this.json.technique_pass;
+        }
+    });
+    
+    Object.defineProperty(this, 'is_depth_test', {
+        get: function()
+        {
+            return Boolean(this.json.is_depth_test);
+        }
+    });
+    
+    Object.defineProperty(this, 'is_depth_mask', {
+        get: function()
+        {
+            return Boolean(this.json.is_depth_mask);
+        }
+    });
+    
+    Object.defineProperty(this, 'is_cull_face', {
+        get: function()
+        {
+            return Boolean(this.json.is_cull_face);
+        }
+    });
+    
+    Object.defineProperty(this, 'cull_face_mode', {
+        get: function()
+        {
+            return gb.configuration_base.string_to_glenum()[this.json.cull_face_mode];
+        }
+    });
+    
+    Object.defineProperty(this, 'is_blending', {
+        get: function()
+        {
+            return Boolean(this.json.is_blending);
+        }
+    });
+    
+    Object.defineProperty(this, 'blending_function_source', {
+        get: function()
+        {
+            return gb.configuration_base.string_to_glenum()[this.json.blending_function_source];
+        }
+    });
+    
+    Object.defineProperty(this, 'blending_function_destination', {
+        get: function()
+        {
+            return gb.configuration_base.string_to_glenum()[this.json.blending_function_destination];
+        }
+    });
+    
+    Object.defineProperty(this, 'blending_equation', {
+        get: function()
+        {
+            return gb.configuration_base.string_to_glenum()[this.json.blending_equation];
+        }
+    });
+    
+    Object.defineProperty(this, 'is_stencil_test', {
+        get: function()
+        {
+            return Boolean(this.json.is_stencil_test);
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_function', {
+        get: function()
+        {
+            return gb.configuration_base.string_to_glenum()[this.json.stencil_function];
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_function_parameter_1', {
+        get: function()
+        {
+            return this.json.stencil_function_parameter_1;
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_function_parameter_2', {
+        get: function()
+        {
+            return this.json.stencil_function_parameter_2;
+        }
+    });
+    
+    Object.defineProperty(this, 'stencil_mask_parameter', {
+        get: function()
+        {
+            return this.json.stencil_mask_parameter;
+        }
+    });
+    
+    Object.defineProperty(this, 'shader_configuration', {
+        get: function()
+        {
+            if(this.m_configurations instanceof Object)
+            {
+                if(this.m_configurations["shader"] instanceof Object)
+                {
+                    if(this.m_configurations["shader"].length > 0)
+                    {
+                        return this.m_configurations["shader"][0];
+                    }
+                }
+            }
+            return null;
+        }
+    });
+    
+    Object.defineProperty(this, 'textures_configurations', {
+        get: function()
+        {
+            if(this.m_configurations instanceof Object)
+            {
+                if(this.m_configurations["textures"] instanceof Object)
+                {
+                    return this.m_configurations["textures"];
+                }
+            }
+            return null;
+        }
+    });
 };
 
 gb.material_configuration.prototype = Object.create(gb.configuration_base.prototype);
@@ -31,111 +167,3 @@ gb.material_configuration.prototype.serialize = function(filename)
         }
     }});
 };
-
-gb.material_configuration.prototype.get_technique_name = function() 
-{
-    return this.json.technique_name;
-};
-
-gb.material_configuration.prototype.get_technique_pass = function() 
-{
-    return this.json.technique_pass;
-};
-
-gb.material_configuration.prototype.get_depth_test = function() 
-{
-    return this.json.is_depth_test;
-};
-
-gb.material_configuration.prototype.get_depth_mask = function() 
-{
-    return this.json.is_depth_mask;
-};
-
-gb.material_configuration.prototype.get_cull_face = function() 
-{
-    return this.json.is_cull_face;
-};
-
-gb.material_configuration.prototype.get_cull_face_mode = function() 
-{
-    return this.json.cull_face_mode;
-};
-
-gb.material_configuration.prototype.get_blending = function() 
-{
-    return this.json.is_blending;
-};
-
-gb.material_configuration.prototype.get_blending_function_source = function() 
-{
-    return this.json.blending_function_source;
-};
-
-gb.material_configuration.prototype.get_blending_function_destination = function() 
-{
-    return this.json.blending_function_destination;
-};
-
-gb.material_configuration.prototype.get_blending_equation = function() 
-{
-    return this.json.blending_equation;
-};
-
-gb.material_configuration.prototype.get_stencil_test = function() 
-{
-    return this.json.is_stencil_test;
-};
-
-gb.material_configuration.prototype.get_stencil_function = function() 
-{
-    return this.json.is_stencil_function;
-};
-
-gb.material_configuration.prototype.get_stencil_function_parameter_1 = function() 
-{
-    return this.json.stencil_function_parameter_1;
-};
-
-gb.material_configuration.prototype.get_stencil_function_parameter_2 = function() 
-{
-    return this.json.stencil_function_parameter_2;
-};
-
-gb.material_configuration.prototype.get_stencil_mask_parameter = function() 
-{
-    return this.json.stencil_mask_parameter;
-};
-
-gb.material_configuration.prototype.get_debugging = function() 
-{
-    return this.json.is_debugging;
-};
-
-gb.material_configuration.prototype.get_shader_configuration = function() 
-{
-    if(this.m_configurations instanceof Object)
-    {
-        if(this.m_configurations["shader"] instanceof Object)
-        {
-            if(this.m_configurations["shader"].length > 0)
-            {
-                return this.m_configurations["shader"][0];
-            }
-        }
-    }
-    return null;
-};
-
-gb.material_configuration.prototype.get_textures_configurations = function() 
-{
-    if(this.m_configurations instanceof Object)
-    {
-        if(this.m_configurations["textures"] instanceof Object)
-        {
-            return this.m_configurations["textures"];
-        }
-    }
-    return null;
-};
-

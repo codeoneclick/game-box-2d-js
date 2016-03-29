@@ -1,4 +1,4 @@
-/* global gb  */
+/* global gb, gl  */
 
 gb.mesh = function(vbo, ibo, mode)
 {
@@ -39,6 +39,6 @@ gb.mesh.prototype =
     
     draw : function()
     {
-        gb.gl.drawElements(gb.gl.TRIANGLES, this.m_ibo.used_size, gb.gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLES, this.m_ibo.used_size, gl.UNSIGNED_SHORT, 0);
     }
 };

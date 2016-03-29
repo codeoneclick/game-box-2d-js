@@ -5,7 +5,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-        <script src="src/game_box-min.js"></script>
         <script type="text/javascript">
             
             function resource_loading_listener ()
@@ -25,8 +24,7 @@
             
             function app_start() 
             {
-                graphics_context.get_instance();
-                console.log(graphics_context.get_instance());
+                console.log(gl);
                 
                 var vector_01 = new gb.vec2(1, 1);
                 var vector_02 = new gb.vec2(2);
@@ -52,11 +50,14 @@
                 configuration_02.set_attribute("a", "a");
                 configuration_02.set_attribute("b", 2);
                 configuration_01.set_configuration("materials", configuration_02);
-                console.log(configuration_01.get_materials_configurations());
+                console.log(configuration_01.materials_configurations);
                 
                 var configuration_03 = new gb.material_configuration();
                 configuration_03.serialize("data/resources/configurations/material.sprite_01.base.json");
                 console.log(configuration_03);
+                
+                var material_01 = gb.material.construct(configuration_03);
+                console.log(material_01);
                 
                 var shader_resource = new gb.shader("shader_tex2d_a_color");
                 var shader_loading_operation_01 = new gb.shader_loading_operation("data/resources/shaders/shader_tex2d_a_color", shader_resource);
@@ -76,5 +77,6 @@
     </head>
     <body onload="app_start();">
         <canvas id="gl_canvas" style="border: none;" width="640" height="480"></canvas>
+        <script src="src/game_box-min.js"></script>
     </body>
 </html>

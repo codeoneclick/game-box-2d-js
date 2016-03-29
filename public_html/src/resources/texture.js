@@ -1,4 +1,4 @@
-/* global gb */
+/* global gb, gl */
 
 $.getScript("src/resources/resource_base.js");
 
@@ -11,11 +11,11 @@ gb.texture = function(guid)
     this.m_width = 0;
     this.m_height = 0;
     this.m_setted_wrap_mode = 0;
-    this.m_presseted_wrap_mode = gb.gl.REPEAT;
+    this.m_presseted_wrap_mode = gl.REPEAT;
     this.m_setted_mag_filter = 0;
-    this.m_presetted_mag_filter = gb.gl.NEAREST;
+    this.m_presetted_mag_filter = gl.NEAREST;
     this.m_setted_min_filter = 0;
-    this.m_presetted_min_filter = gb.gl.NEAREST;
+    this.m_presetted_min_filter = gl.NEAREST;
     
     Object.defineProperty(this, 'texture_id', {
         get: function()
@@ -94,27 +94,27 @@ gb.texture.prototype.bind = function()
 {
     if(this.get_status() === gb.resource_status.commited)
     {
-        gb.gl.bindTexture(gb.gl.TEXTURE_2D, this.texture_id);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture_id);
         if(this.m_presseted_wrap_mode !== this.m_setted_wrap_mode)
         {
             this.m_setted_wrap_mode = this.m_presseted_wrap_mode;
-            gb.gl.texParameteri(gb.gl.TEXTURE_2D, gb.gl.TEXTURE_WRAP_S, this.m_setted_wrap_mode);
-            gb.gl.texParameteri(gb.gl.TEXTURE_2D, gb.gl.TEXTURE_WRAP_T, this.m_setted_wrap_mode);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.m_setted_wrap_mode);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.m_setted_wrap_mode);
         }
         if(this.m_presetted_min_filter !== this.m_setted_min_filter)
         {
             this.m_setted_min_filter = this.m_presetted_min_filter;
-            gb.gl.texParameteri(gb.gl.TEXTURE_2D, gb.gl.TEXTURE_MIN_FILTER, this.m_setted_min_filter);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.m_setted_min_filter);
         }
         if(this.m_presetted_mag_filter !== this.m_setted_mag_filter)
         {
             this.m_setted_mag_filter = this.m_presetted_mag_filter;
-            gb.gl.texParameteri(gb.gl.TEXTURE_2D, gb.gl.TEXTURE_MAG_FILTER, this.m_setted_mag_filter);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.m_setted_mag_filter);
         }
     }
 };
 
 gb.texture.prototype.unbind = function()
 {
-    gb.gl.bindTexture(gb.gl.TEXTURE_2D, null);
+    gl.bindTexture(gl.TEXTURE_2D, null);
 };

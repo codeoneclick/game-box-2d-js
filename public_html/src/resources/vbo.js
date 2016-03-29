@@ -1,4 +1,4 @@
-/* global gb, INT16_MAX, INT16_MIN */
+/* global gb, INT16_MAX, INT16_MIN, gl */
 
 gb.vertex_attribute = function()
 {
@@ -54,7 +54,7 @@ gb.vertex_attribute.prototype =
 
 gb.vbo = function(size, mode)
 {
-    this.m_handler = gb.gl.createBuffer();
+    this.m_handler = gl.createBuffer();
     this.m_allocated_size = size;
     this.m_used_size = 0;
     this.m_mode = mode;
@@ -108,12 +108,11 @@ gb.vbo.prototype =
     unlock: function()
     {
         this.m_used_size = arguments.length !== 0 && arguments[0] > 0 && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
-        gb.gl.bindBuffer(gb.gl.ARRAY_BUFFER, this.m_handler);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler);
         var vertices = new Array();
         for(var i = 0; i < this.m_used_size; ++i)
         {
             var vertex_attribute_array = this.m_data[i].to_array();
-            console.log(vertex_attribute_array);
             for(var j = 0; j < vertex_attribute_array.length; ++j)
             {
                 vertices.push(vertex_attribute_array[j]);
@@ -122,29 +121,28 @@ gb.vbo.prototype =
             this.m_min_bound = gb.vec2.min(vertex_position, this.m_min_bound);
             this.m_max_bound = gb.vec2.max(vertex_position, this.m_max_bound);
         }
-        console.log(vertices);
-        gb.gl.bufferData(gb.gl.ARRAY_BUFFER, new Float32Array(vertices), this.m_mode);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), this.m_mode);
     },
     
     bind : function(attributes)
     {
         if(this.m_used_size !== 0)
         {
-            gb.gl.bindBuffer(gb.gl.ARRAY_BUFFER, this.m_handler);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler);
             if(attributes[gb.shader_attribute_type.position] >= 0)
             {
-                gb.gl.vertexAttribPointer(attributes[gb.shader_attribute_type.position], 2, gb.gl.FLOAT, false, 4 * 8, 0);
-                gb.gl.enableVertexAttribArray(attributes[gb.shader_attribute_type.position]);
+                gl.vertexAttribPointer(attributes[gb.shader_attribute_type.position], 2, gl.FLOAT, false, 4 * 8, 0);
+                gl.enableVertexAttribArray(attributes[gb.shader_attribute_type.position]);
             }
             if(attributes[gb.shader_attribute_type.texcoord] >= 0)
             {
-                gb.gl.vertexAttribPointer(attributes[gb.shader_attribute_type.texcoord], 2, gb.gl.FLOAT, false, 4 * 8, 4 * 2);
-                gb.gl.enableVertexAttribArray(attributes[gb.shader_attribute_type.texcoord]);
+                gl.vertexAttribPointer(attributes[gb.shader_attribute_type.texcoord], 2, gl.FLOAT, false, 4 * 8, 4 * 2);
+                gl.enableVertexAttribArray(attributes[gb.shader_attribute_type.texcoord]);
             }
             if(attributes[gb.shader_attribute_type.color] >= 0)
             {
-                gb.gl.vertexAttribPointer(attributes[gb.shader_attribute_type.color], 4, gb.gl.FLOAT, false, 4 * 8, 4 * 4);
-                gb.gl.enableVertexAttribArray(attributes[gb.shader_attribute_type.color]);
+                gl.vertexAttribPointer(attributes[gb.shader_attribute_type.color], 4, gl.FLOAT, false, 4 * 8, 4 * 4);
+                gl.enableVertexAttribArray(attributes[gb.shader_attribute_type.color]);
             }
         }
     },
@@ -153,20 +151,20 @@ gb.vbo.prototype =
     {
         if(this.m_used_size !== 0)
         {
-            gb.gl.bindBuffer(gb.gl.ARRAY_BUFFER, this.m_handler);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler);
             if(attributes[gb.shader_attribute_type.position] >= 0)
             {
-                gb.gl.disableVertexAttribArray(attributes[gb.shader_attribute_type.position]);
+                gl.disableVertexAttribArray(attributes[gb.shader_attribute_type.position]);
             }
             if(attributes[gb.shader_attribute_type.texcoord] >= 0)
             {
-                gb.gl.disableVertexAttribArray(attributes[gb.shader_attribute_type.texcoord]);
+                gl.disableVertexAttribArray(attributes[gb.shader_attribute_type.texcoord]);
             }
             if(attributes[gb.shader_attribute_type.color] >= 0)
             {
-                gb.gl.disableVertexAttribArray(attributes[gb.shader_attribute_type.color]);
+                gl.disableVertexAttribArray(attributes[gb.shader_attribute_type.color]);
             }
-            gb.gl.bindBuffer(gb.gl.ARRAY_BUFFER, null);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
         }
     }
 };

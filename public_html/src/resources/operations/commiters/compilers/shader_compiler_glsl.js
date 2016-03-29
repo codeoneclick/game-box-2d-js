@@ -1,4 +1,4 @@
-/* global gb */
+/* global gb, gl */
 
 gb.shader_compiler_glsl = function()
 {
@@ -27,20 +27,20 @@ gb.shader_compiler_glsl.prototype =
    
     compile: function(source_code, shader_type)
     {
-        var handler = gb.gl.createShader(shader_type);
+        var handler = gl.createShader(shader_type);
         if(!handler)
         {
             console.error("can't create shader");
             return -1;
         }
         
-        gb.gl.shaderSource(handler, shader_type === gb.gl.VERTEX_SHADER ? 
+        gl.shaderSource(handler, shader_type === gl.VERTEX_SHADER ? 
         (this.m_vs_shader_header + source_code).trim() :
         (this.m_fs_shader_header + source_code).trim());
-        gb.gl.compileShader(handler);
+        gl.compileShader(handler);
         
-        var compile_message = gb.gl.getShaderInfoLog(handler) || "";
-        if(!gb.gl.getShaderParameter(handler, gb.gl.COMPILE_STATUS))
+        var compile_message = gl.getShaderInfoLog(handler) || "";
+        if(!gl.getShaderParameter(handler, gl.COMPILE_STATUS))
         {
             console.error(compile_message);
         }
@@ -49,22 +49,22 @@ gb.shader_compiler_glsl.prototype =
     
     link: function(vs_handler, fs_handler)
     {
-        var shader_handler = gb.gl.createProgram();
-        gb.gl.attachShader(shader_handler, vs_handler);
-        gb.gl.attachShader(shader_handler, fs_handler);
+        var shader_handler = gl.createProgram();
+        gl.attachShader(shader_handler, vs_handler);
+        gl.attachShader(shader_handler, fs_handler);
         
-        gb.gl.linkProgram(shader_handler);
+        gl.linkProgram(shader_handler);
         
-        var link_message = gb.gl.getProgramInfoLog(shader_handler) || "";
+        var link_message = gl.getProgramInfoLog(shader_handler) || "";
         
-        if(!gb.gl.getProgramParameter(shader_handler, gb.gl.LINK_STATUS))
+        if(!gl.getProgramParameter(shader_handler, gl.LINK_STATUS))
         {
             console.error(link_message);
             
-            gb.gl.detachShader(shader_handler, vs_handler);
-            gb.gl.detachShader(shader_handler, fs_handler);
-            gb.gl.deleteShader(vs_handler);
-            gb.gl.deleteShader(fs_handler);
+            gl.detachShader(shader_handler, vs_handler);
+            gl.detachShader(shader_handler, fs_handler);
+            gl.deleteShader(vs_handler);
+            gl.deleteShader(fs_handler);
             
             shader_handler = -1;
         }

@@ -6,6 +6,48 @@ gb.texture_configuration = function()
 {
     gb.configuration_base.call(this);
     this.json = null;
+    
+    Object.defineProperty(this, 'filename', {
+        get: function()
+        {
+            return this.json.filename;
+        }
+    });
+    
+    Object.defineProperty(this, 'technique_name', {
+        get: function()
+        {
+            return this.json.technique_name;
+        }
+    });
+    
+    Object.defineProperty(this, 'sampler_index', {
+        get: function()
+        {
+            return this.json.sampler_index;
+        }
+    });
+    
+    Object.defineProperty(this, 'wrap_mode', {
+        get: function()
+        {
+            return gb.configuration_base.string_to_glenum()[this.json.wrap_mode];
+        }
+    });
+    
+    Object.defineProperty(this, 'mag_filter', {
+        get: function()
+        {
+            return gb.configuration_base.string_to_glenum()[this.json.mag_filter];
+        }
+    });
+    
+    Object.defineProperty(this, 'min_filter', {
+        get: function()
+        {
+            return gb.configuration_base.string_to_glenum()[this.json.min_filter];
+        }
+    });
 };
 
 gb.texture_configuration.prototype = Object.create(gb.configuration_base.prototype);
@@ -15,34 +57,3 @@ gb.texture_configuration.prototype.serialize = function(value)
 {
     this.json = value;
 };
-
-gb.texture_configuration.prototype.get_filename = function() 
-{
-    return this.json.filename;
-};
-
-gb.texture_configuration.prototype.get_render_technique_name = function() 
-{
-    return this.json.render_technique_name;
-};
-
-gb.texture_configuration.prototype.get_sampler_index = function() 
-{
-    return this.json.sampler_index;
-};
-
-gb.texture_configuration.prototype.get_wrap_mode = function() 
-{
-    return this.json.wrap_mode;
-};
-
-gb.texture_configuration.prototype.get_mag_filter = function() 
-{
-    return this.json.mag_filter;
-};
-
-gb.texture_configuration.prototype.get_min_filter = function() 
-{
-    return this.json.min_filter;
-};
-
