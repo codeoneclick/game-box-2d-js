@@ -63,6 +63,16 @@ gb.texture = function(guid)
 gb.texture.prototype = Object.create(gb.resource_base.prototype);
 gb.texture.prototype.constructor = gb.texture;
 
+gb.texture.construct = function(guid, texture_id, width, height)
+{
+    var texture = new gb.texture(guid);
+    texture.m_texture_id = texture_id;
+    texture.m_width = width;
+    texture.m_height = height;
+    texture.m_status = gb.resource_status.commited;
+    return texture;
+};
+
 gb.texture.prototype.on_transfering_data_serialized = function(transfering_data)
 {
     switch(transfering_data.type)

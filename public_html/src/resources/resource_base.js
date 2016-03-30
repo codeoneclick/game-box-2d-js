@@ -22,6 +22,7 @@ gb.resource_base = function (guid)
     
     this.m_listeners = new Array();
     this.m_callbacks = new Array();
+    this.m_userdata_container = new Array();
 };
 
 gb.resource_base.prototype = 
@@ -64,11 +65,12 @@ gb.resource_base.prototype =
         for(var i = 0; i < this.m_callbacks.length; ++i)
         {
             var callback = this.m_callbacks[i];
-            callback(success ? this : null);
+            callback(success ? this : null, this.m_userdata_container[i]);
         }
         
         this.m_listeners = new Array();
         this.m_callbacks = new Array();
+        this.m_userdata_container = new Array();
     },
     
     add_resource_loading_listener: function(listener)
@@ -103,13 +105,14 @@ gb.resource_base.prototype =
         }
     },
     
-    add_resource_loading_callback: function(callback)
+    add_resource_loading_callback: function(callback, userdata)
     {
         if(_.isFunction(callback))
         {
             if(!_.contains(this.m_callbacks, callback))
             {
                 this.m_callbacks.push(callback);
+                this.m_userdata_container.push(userdata);
             }
             else
             {
@@ -128,6 +131,7 @@ gb.resource_base.prototype =
         if(index !== -1)
         {
             this.m_callbacks.splice(index, 1);
+            this.m_userdatas.splice(index, 1);
         }
         else 
         {

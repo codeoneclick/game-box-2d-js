@@ -386,11 +386,11 @@ gb.material = function()
     Object.defineProperty(this, 'shader', {
         get: function()
         {
-            return this.m_shader;
+            return this.m_parameters.shader;
         },
         set: function(value)
         {
-            this.m_shader = value;
+            this.m_parameters.shader = value;
         }
     });
     
@@ -442,12 +442,13 @@ gb.material.set_textures = function(material, configuration, resource_accessor)
     for(var i = 0; i < configuration.textures_configurations.length; ++i)
     {
         var texture_configuration = configuration.textures_configurations[i];
-        resource_accessor.get_texture(texture_configuration.filename.length !== 0 ? texture_configuration.filename : texture_configuration.technique_name, function(texture) {
-            texture.wrap_mode = texture_configuration.wrap_mode;
-            texture.mag_filter = texture_configuration.mag_filter;
-            texture.min_filter = texture_configuration.min_filter;
-            material.set_texture(texture, texture_configuration.sampler_index);
-        });
+        var texture = resource_accessor.get_texture(texture_configuration.filename.length !== 0 ? texture_configuration.filename : texture_configuration.technique_name);
+        texture.add_resource_loading_callback(function(resource, userdata) {
+            resource.wrap_mode = userdata.wrap_mode;
+            resource.mag_filter = userdata.mag_filter;
+            resource.min_filter = userdata.min_filter;
+            material.set_texture(resource, userdata.sampler_index);
+        }, texture_configuration);
     }
 };
 
