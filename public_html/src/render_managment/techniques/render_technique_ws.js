@@ -14,18 +14,16 @@ gb.render_technique_ws = function(width, height, name, index, num_passes)
     this.m_color_attachment_texture.bind();
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.m_frame_width, this.m_frame_height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     
-    var depth_attachment_id = gl.createTexture();
-    this.m_depth_attachment_texture = gb.texture.construct(name + ".depth", depth_attachment_id, this.m_frame_width, this.m_frame_height);
-    this.m_depth_attachment_texture.wrap_mode = gl.CLAMP_TO_EDGE;
-    this.m_depth_attachment_texture.mag_filter = gl.NEAREST;
-    this.m_depth_attachment_texture.min_filter = gl.NEAREST;
-    this.m_depth_attachment_texture.bind();
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_STENCIL, this.m_frame_width, this.m_frame_height, 0, gl.DEPTH_STENCIL, gl.UNSIGNED_INT_24_8_WEBGL, null);
+    this.m_depth_attachment_texture = null;
+    
+    var depth_attachment_id = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, depth_attachment_id);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, this.m_frame_width, this.m_frame_height);
     
     this.m_frame_buffer = gl.createFramebuffer();
-    gl.bindFramebuffer(this.m_frame_buffer);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.m_frame_buffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, color_attachment_id, 0);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.TEXTURE_2D, depth_attachment_id, 0);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, depth_attachment_id);
     
     var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
     if(status !== gl.FRAMEBUFFER_COMPLETE)

@@ -1,4 +1,4 @@
-/* global gb*/
+/* global gb, gl*/
 
 gb.render_pipeline = function ()
 {
@@ -22,7 +22,7 @@ gb.render_pipeline.prototype =
     
     create_main_render_technique: function(material) 
     {
-        this.m_main_render_technique = new gb.render_technique_main(gb.viewport_width, gb.viewport_height, material);
+        this.m_main_render_technique = new gb.render_technique_main(gl.viewport_width, gl.viewport_height, material);
     },
     
     add_ws_render_technique: function(technique_name, technique_index, technique)

@@ -10,6 +10,11 @@ gb.resource_accessor.prototype =
 {
     constructor: gb.resource_accessor,
 
+    add_custom_resource: function(guid, resource)
+    {
+       this.m_resources[guid] = resource;
+    },
+
     get_shader: function (filename)
     {
         var resource = this.m_resources[filename];

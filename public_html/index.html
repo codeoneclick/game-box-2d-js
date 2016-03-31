@@ -5,82 +5,25 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+        <script src="lib/underscore/underscore-min.js"></script>
         <script type="text/javascript">
             
-            function resource_loading_listener ()
-            {
-
-            }
-
-            resource_loading_listener.prototype = 
-            { 
-                constructor: gb.resource_base,
-    
-                on_resource_loaded: function(success)
-                {
-    
-                }
-            };
+            var g_game_transition = null;
             
             function app_start() 
             {
-                console.log(gl);
-                
-                var vector_01 = new gb.vec2(1, 1);
-                var vector_02 = new gb.vec2(2);
-                vector_01.add(vector_02);
-                var vector_03 = gb.vec2.add(vector_01, vector_02);
-                console.log(vector_03);
-                
-                var vector_04 = gb.vec2.lerp(new gb.vec2(1), new gb.vec2(2), 0.5);
-                console.log(vector_04);
-                
-                var array = new Array();
-                array["aaa"] = 0;
-                array["bbb"] = 1;
-                console.log(array);
-                console.log(typeof array["bbb"] === 'undefined');
-                console.log(typeof array["ccc"] === 'undefined');
-                
-                var mesh_01 = gb.mesh_constructor.create_screen_quad();
-                console.log(mesh_01);
-                
-                var configuration_01 = new gb.game_object_configuration();
-                var configuration_02 = new gb.game_object_configuration();
-                configuration_02.set_attribute("a", "a");
-                configuration_02.set_attribute("b", 2);
-                configuration_01.set_configuration("materials", configuration_02);
-                console.log(configuration_01.materials_configurations);
-                
-                var configuration_03 = new gb.material_configuration();
-                configuration_03.serialize("data/resources/configurations/material.sprite_01.base.json");
-                console.log(configuration_03);
-                
-                var material_01 = gb.material.construct(configuration_03);
-                console.log(material_01);
-                
                 var resource_accessor = new gb.resource_accessor();
-                gb.material.set_shader(material_01, configuration_03, resource_accessor);
-                gb.material.set_textures(material_01, configuration_03, resource_accessor);
+                var configuration_accessor = new gb.configuration_accessor();
                 
-                /*var shader_resource = new gb.shader("shader_tex2d_a_color");
-                var shader_loading_operation_01 = new gb.shader_loading_operation("data/resources/shaders/shader_tex2d_a_color", shader_resource);
-                shader_loading_operation_01.start(function() {
-                    console.log(shader_resource);
-                });
-                
-                var texture_resource = new gb.texture("box_01");
-                var texture_loading_operation_01 = new gb.texture_loading_operation("data/resources/textures/box_01.png", texture_resource);
-                texture_loading_operation_01.start(function() {
-                    console.log(texture_resource);
-                });*/
-                
-                game_loop.get_instance();
+                g_game_transition = new gb.game_transition("data/resources/configurations/transitions/transition.main.json");
+                g_game_transition.on_activated(configuration_accessor, resource_accessor);
             }
         </script>
     </head>
     <body onload="app_start();">
-        <canvas id="gl_canvas" style="border: none;" width="640" height="480"></canvas>
+        <canvas id="gl_canvas" style="border: none; position: absolute; left: 50%; top: 50%; margin-right: -50%; transform: translate(-50%, -50%) " width="640" height="480"></canvas>
         <script src="src/game_box-min.js"></script>
     </body>
 </html>

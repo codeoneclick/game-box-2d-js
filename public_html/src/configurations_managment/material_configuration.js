@@ -149,10 +149,10 @@ gb.material_configuration = function()
 gb.material_configuration.prototype = Object.create(gb.configuration_base.prototype);
 gb.material_configuration.prototype.constructor = gb.material_configuration;
 
-gb.material_configuration.prototype.serialize = function(filename) 
+gb.material_configuration.prototype.serialize = function(filename, callback) 
 {
     var self = this;
-    $.ajax({ dataType: "json", url: filename, data: {}, async: false, success: function(value) {
+    $.ajax({ dataType: "json", url: filename, data: {}, async: true, success: function(value) {
         self.json = value;
         
         var configuration = new gb.shader_configuration();
@@ -165,5 +165,6 @@ gb.material_configuration.prototype.serialize = function(filename)
             configuration.serialize(self.json.textures[i]);
             self.set_configuration("textures", configuration);
         }
+        callback(self);
     }});
 };

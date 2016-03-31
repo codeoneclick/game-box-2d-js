@@ -23,14 +23,14 @@ var graphics_context = (function()
         {
             alert("could not initialise gl context");
         }
-        else
-        {
-            g_graphics_context.clearColor(0.0, 0.0, 0.0, 1.0);
-            g_graphics_context.enable(g_graphics_context.DEPTH_TEST);
+        //else
+        //{
+            //g_graphics_context.clearColor(0.0, 0.0, 0.0, 1.0);
+            //g_graphics_context.enable(g_graphics_context.DEPTH_TEST);
                     
-            g_graphics_context.viewport(0, 0, g_graphics_context.viewport_width, g_graphics_context.viewport_height);
-            g_graphics_context.clear(g_graphics_context.COLOR_BUFFER_BIT | g_graphics_context.DEPTH_BUFFER_BIT);
-        }
+            //g_graphics_context.viewport(0, 0, g_graphics_context.viewport_width, g_graphics_context.viewport_height);
+            //g_graphics_context.clear(g_graphics_context.COLOR_BUFFER_BIT | g_graphics_context.DEPTH_BUFFER_BIT);
+       // }
         return g_graphics_context;
     }
  

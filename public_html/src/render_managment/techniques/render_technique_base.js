@@ -6,7 +6,7 @@ gb.render_technique_base = function (width, height, name, index)
     this.m_frame_width = width;
     this.m_frame_height = height;
     this.m_index = index;
-    this.m_clear_color = gb.vec4(0.0, 0.0, 0.0, 1.0);
+    this.m_clear_color = new gb.vec4(0.5, 0.5, 0.5, 1.0);
     this.m_frame_buffer = null;
     
     Object.defineProperty(this, 'name', {

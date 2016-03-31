@@ -35,14 +35,23 @@ gb.main_technique_configuration = function()
 gb.main_technique_configuration.prototype = Object.create(gb.configuration_base.prototype);
 gb.main_technique_configuration.prototype.constructor = gb.main_technique_configuration;
 
-gb.main_technique_configuration.prototype.serialize = function(filename) 
+gb.main_technique_configuration.prototype.serialize_material_configuration = function(callback)
 {
     var self = this;
-    $.ajax({ dataType: "json", url: filename, data: {}, async: false, success: function(value) {
-        self.json = value;
-        
-        var configuration = new gb.material_configuration();
-        configuration.serialize(self.json.material_filename);
+    var material_configuration = new gb.material_configuration();
+    material_configuration.serialize(self.json.material_filename, function(configuration) {
         self.set_configuration("material_configuration", configuration);
+        callback();
+    });
+};
+
+gb.main_technique_configuration.prototype.serialize = function(filename, callback) 
+{
+    var self = this;
+    $.ajax({ dataType: "json", url: filename, data: {}, async: true, success: function(value) {
+        self.json = value;
+        self.serialize_material_configuration(function() {
+           callback(self);
+        });
     }});
 };

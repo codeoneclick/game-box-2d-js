@@ -491,3 +491,12 @@ gb.shader.prototype.bind = function()
         gl.useProgram(this.m_shader_id);
     }
 };
+
+gb.shader.prototype.unbind = function()
+{
+    if(this.get_status() === gb.resource_status.commited)
+    {
+        gl.useProgram(null);
+    }
+};
+

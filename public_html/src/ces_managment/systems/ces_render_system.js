@@ -30,10 +30,14 @@ gb.ces_render_system.prototype.on_feed = function(root, deltatime)
     {
         var technique = ws_render_techniques[i];
         var technique_name = technique.name;
+        technique.bind();
+        
         for(var technique_pass = 0; technique_pass < ws_render_techniques.num_passes; ++technique_pass)
         {
             draw_recursively(root, technique_name, technique_pass);
         }
+        
+        technique.unbind();
     }
 };
 

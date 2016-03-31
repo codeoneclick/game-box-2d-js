@@ -1,8 +1,8 @@
 /* global gb */
 
 gb.ces_system_type = {
-    undefined : "undefined",
-    render : "render"
+    undefined : -1,
+    render : 0
 };
 
 gb.ces_base_system = function()
