@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>game-box-2d</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+        <script src="lib/underscore/underscore-min.js"></script>
+        <script type="text/javascript">
+            
+            var g_game_transition = null;
+
+            function app_start() 
+            {
+                var resource_accessor = new gb.resource_accessor();
+                var configuration_accessor = new gb.configuration_accessor();
+                
+                g_game_transition = new gb.game_transition("data/resources/configurations/transitions/transition.main.json");
+                g_game_transition.on_activated(configuration_accessor, resource_accessor);
+            }
+        </script>
+    </head>
+    <body onload="app_start();">
+        <canvas id="gl_canvas" style="border: none; position: absolute; left: 50%; top: 50%; margin-right: -50%; transform: translate(-50%, -50%) " width="640" height="480"></canvas>
+        <script src="src/game_box-min.js"></script>
+    </body>
+</html>
