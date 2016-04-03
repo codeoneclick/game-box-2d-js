@@ -1,7 +1,5 @@
 /* global gb */
 
-$.getScript("src/configurations/configuration_base.js");
-
 gb.game_object_configuration = function()
 {
     gb.configuration_base.call(this);

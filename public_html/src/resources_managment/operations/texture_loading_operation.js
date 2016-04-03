@@ -1,10 +1,5 @@
 /* global gb */
 
-$.getScript("src/resources/transfering_data/texture_transfering_data.js");
-$.getScript("src/resources/operations/serializers/texture_serializer_png.js");
-$.getScript("src/resources/operations/commiters/texture_commiter_png.js");
-$.getScript("src/resources/operations/resource_loading_operation.js");
-
 gb.texture_loading_operation = function(guid, resource)
 {
     gb.resource_loading_operation.call(this, guid, resource);

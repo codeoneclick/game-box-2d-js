@@ -1,7 +1,5 @@
 /* global gb, gl */
 
-$.getScript("src/resources/resource_base.js");
-
 gb.uniform_type = {
     mat4 : 0,
     mat4_array : 1,

@@ -1,8 +1,5 @@
 /* global gb */
 
-$.getScript("src/resources/operations/serializers/resource_serializer.js");
-$.getScript("src/resources/transfering_data/shader_transfering_data.js");
-
 gb.shader_serializer_glsl = function(vs_filename, fs_filename, resource)
 {
     gb.resource_serializer.call(this, vs_filename + fs_filename, resource);

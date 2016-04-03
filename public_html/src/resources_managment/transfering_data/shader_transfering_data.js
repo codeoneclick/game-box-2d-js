@@ -1,7 +1,5 @@
 /* global gb */
 
-$.getScript("src/resources/transfering_data/resource_transfering_data.js");
-
 gb.shader_transfering_data = function()
 {
     gb.resource_transfering_data.call(this);

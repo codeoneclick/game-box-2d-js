@@ -1,7 +1,5 @@
 /* global gb, _ */
 
-$.getScript("lib/underscore/underscore-min.js");
-
 gb.resource_type = {
     undefined : 0,
     shader : 1,

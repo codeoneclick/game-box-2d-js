@@ -1,9 +1,5 @@
 /* global gb, gl */
 
-$.getScript("src/resources/operations/commiters/resource_commiter.js");
-$.getScript("src/resources/operations/commiters/compilers/shader_compiler_glsl.js");
-$.getScript("src/resources/transfering_data/shader_transfering_data.js");
-
 gb.shader_commiter_glsl = function(guid, resource)
 {
     gb.resource_commiter.call(this, guid, resource);

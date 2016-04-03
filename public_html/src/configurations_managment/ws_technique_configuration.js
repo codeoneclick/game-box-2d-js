@@ -1,7 +1,5 @@
 /* global gb */
 
-$.getScript("src/configurations/configuration_base.js");
-
 gb.ws_technique_configuration = function()
 {
     gb.configuration_base.call(this);

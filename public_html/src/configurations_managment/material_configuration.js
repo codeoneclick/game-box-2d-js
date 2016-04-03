@@ -1,9 +1,5 @@
 /* global gb */
 
-$.getScript("src/configurations/configuration_base.js");
-$.getScript("src/configurations/shader_configuration.js");
-$.getScript("src/configurations/texture_configuration.js");
-
 gb.material_configuration = function()
 {
     gb.configuration_base.call(this);

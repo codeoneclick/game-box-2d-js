@@ -1,15 +1,25 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/* global gb */
 
-function ces_base_component () {
-    this.m_type = "undefined";
-}
- 
-ces_base_component.prototype.get_type = function() {
-    return this.m_type;
+gb.ces_component_type = {
+	undefined: -1,
+	transformation: 0,
+	material: 1,
+	geometry: 2,
+	scene: 3,
+	max: 4
 };
 
+gb.ces_base_component = function() {
 
+	this.m_type = gb.ces_component_type.undefined;
+
+	Object.defineProperty(this, 'type', {
+		get: function() {
+			return this.m_type;
+		}
+	});
+};
+
+gb.ces_base_component.prototype = {
+	constructor: gb.ces_base_component
+};
