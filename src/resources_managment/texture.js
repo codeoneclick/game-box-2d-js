@@ -1,7 +1,5 @@
 /* global gb, gl */
 
-$.getScript("src/resources/resource_base.js");
-
 gb.texture = function(guid)
 {
     gb.resource_base.call(this, guid);

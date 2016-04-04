@@ -1,0 +1,11 @@
+{
+	"technique_name": "ws.deferred.lighting",
+	"num_passes": "1",
+	"index": "2",
+	"screen_width": "640",
+	"screen_height": "480",
+	"clear_color_r": "0.0",
+	"clear_color_g": "0.0",
+	"clear_color_b": "0.0",
+	"clear_color_a": "1.0"
+}

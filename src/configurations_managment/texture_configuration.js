@@ -1,7 +1,5 @@
 /* global gb */
 
-$.getScript("src/configurations/configuration_base.js");
-
 gb.texture_configuration = function()
 {
     gb.configuration_base.call(this);

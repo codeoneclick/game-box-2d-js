@@ -1,8 +1,5 @@
 /* global gb */
 
-$.getScript("src/resources/operations/serializers/resource_serializer.js");
-$.getScript("src/resources/transfering_data/texture_transfering_data.js");
-
 gb.texture_serializer_png = function(filename, resource)
 {
     gb.resource_serializer.call(this, filename, resource);

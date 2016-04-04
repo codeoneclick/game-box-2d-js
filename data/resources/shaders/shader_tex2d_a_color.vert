@@ -1,13 +1,4 @@
-
-#if defined(__OPENGL_30__)
-
-out vec2 v_texcoord;
-
-#else
-
 varying vec2 v_texcoord;
-
-#endif
 
 uniform mat4 u_mat_m;
 uniform mat4 u_mat_p;

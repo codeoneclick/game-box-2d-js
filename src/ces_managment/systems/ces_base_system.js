@@ -1,31 +1,30 @@
 /* global gb */
 
+"use strict";
+
 gb.ces_system_type = {
-    undefined : -1,
-    render : 0
+    undefined: -1,
+    render: 0,
+    deffered_lighting: 1
 };
 
-gb.ces_base_system = function()
-{
+gb.ces_base_system = function() {
     this.m_type = gb.ces_system_type.undefined;
     this.m_priority = 0;
-    
+
     Object.defineProperty(this, 'type', {
-        get: function()
-        {
+        get: function() {
             return this.m_type;
         }
     });
-    
+
     Object.defineProperty(this, 'priority', {
-        get: function()
-        {
+        get: function() {
             return this.m_priority;
         }
     });
 };
 
-gb.ces_base_system.prototype =
-{
+gb.ces_base_system.prototype = {
     constructor: gb.ces_base_system
 };

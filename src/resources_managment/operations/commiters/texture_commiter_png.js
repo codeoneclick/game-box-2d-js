@@ -1,8 +1,5 @@
 /* global gb, gl */
 
-$.getScript("src/resources/operations/commiters/resource_commiter.js");
-$.getScript("src/resources/transfering_data/texture_transfering_data.js");
-
 gb.texture_commiter_png = function(guid, resource)
 {
     gb.resource_commiter.call(this, guid, resource);

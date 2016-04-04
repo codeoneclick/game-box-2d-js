@@ -12,7 +12,7 @@ gb.resource_accessor.prototype =
 
     add_custom_resource: function(guid, resource)
     {
-       this.m_resources[guid] = resource;
+        this.m_resources[guid] = resource;
     },
 
     get_shader: function (filename)

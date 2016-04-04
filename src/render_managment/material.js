@@ -442,7 +442,8 @@ gb.material.set_textures = function(material, configuration, resource_accessor)
     for(var i = 0; i < configuration.textures_configurations.length; ++i)
     {
         var texture_configuration = configuration.textures_configurations[i];
-        var texture = resource_accessor.get_texture(texture_configuration.filename.length !== 0 ? texture_configuration.filename : texture_configuration.technique_name);
+        var texture_name = texture_configuration.filename.length !== 0 ? texture_configuration.filename : texture_configuration.technique_name;
+        var texture = resource_accessor.get_texture(texture_name);
         texture.add_resource_loading_callback(function(resource, userdata) {
             resource.wrap_mode = userdata.wrap_mode;
             resource.mag_filter = userdata.mag_filter;

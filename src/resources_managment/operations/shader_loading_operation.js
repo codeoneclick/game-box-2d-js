@@ -1,10 +1,5 @@
 /* global gb */
 
-$.getScript("src/resources/transfering_data/shader_transfering_data.js");
-$.getScript("src/resources/operations/serializers/shader_serializer_glsl.js");
-$.getScript("src/resources/operations/commiters/shader_commiter_glsl.js");
-$.getScript("src/resources/operations/resource_loading_operation.js");
-
 var k_vs_extension = ".vert";
 var k_fs_extension = ".frag";
 

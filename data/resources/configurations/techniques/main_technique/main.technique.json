@@ -1,4 +1,4 @@
 {
-    "technique_name" : "main",
-    "material_filename" : "data/resources/configurations/techniques/materials/material.main.technique.json"
+	"technique_name": "main",
+	"material_filename": "data/resources/configurations/techniques/materials/material.main.technique.json"
 }
