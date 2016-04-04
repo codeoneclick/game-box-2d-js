@@ -36,6 +36,7 @@ gb.game_object = function() {
 	});
 
 	Object.defineProperty(this, 'size', {
+		configurable: true,
 		set: function(value) {
 			this.get_component(gb.ces_component_type.transformation).scale = value;
 		},

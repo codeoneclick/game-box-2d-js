@@ -25,12 +25,5 @@
         "wrap_mode": "GL_REPEAT",
         "mag_filter": "GL_LINEAR",
         "min_filter": "GL_MIPMAP"
-    }, {
-        "filename": "sprite_02.png",
-        "technique_name": "",
-        "sampler_index": "1",
-        "wrap_mode": "GL_REPEAT",
-        "mag_filter": "GL_LINEAR",
-        "min_filter": "GL_MIPMAP"
     }]
 }

@@ -3,10 +3,66 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/package.json</file>
-            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/math/mat4.js</file>
-            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/index.html</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/operations/serializers/shader_serializer_glsl.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/configurations_managment/shader_configuration.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/configurations_managment/material_configuration.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/configurations_managment/configuration_accessor.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/configurations_managment/configuration_base.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/game_states_managment/game_loop.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/game_states_managment/game_transition.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/render_managment/techniques/render_technique_main.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/resource_base.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/scene_graph_managment/scene_graph.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/operations/resource_loading_operation.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/ces_managment/systems/ces_base_system.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/scene_graph_managment/game_object.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/render_managment/render_pipeline.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/game_box-map</file>
             <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/math/vec2.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/operations/shader_loading_operation.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/configurations_managment/transition_configuration.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/configurations_managment/main_technique_configuration.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/configurations_managment/ws_technique_configuration.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/render_managment/techniques/render_technique_ws.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/mesh.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/operations/commiters/texture_commiter_png.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/game_box-min.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/render_managment/techniques/render_technique_base.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/math/mat4.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/shader.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/data/resources/shaders/shader_screen_quad.vert</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/operations/serializers/texture_serializer_png.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/math/math.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/index.html</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/ces_managment/systems/ces_render_system.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/operations/commiters/compilers/shader_compiler_glsl.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/package.json</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/vbo.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/operations/texture_loading_operation.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/ibo.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/data/resources/configurations/techniques/main_technique/main.technique.json</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/operations/commiters/shader_commiter_glsl.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/ces_managment/ces_systems_feeder.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/math/vec4.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/configurations_managment/ss_technique_configuration.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/render_managment/techniques/render_technique_ss.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/configurations_managment/game_object_configuration.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/data/resources/configurations/techniques/ws_techniques/ws.technique.base.json</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/render_managment/material.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/game_states_managment/game_controller.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/configurations_managment/texture_configuration.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/texture.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/resource_accessor.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/transfering_data/resource_transfering_data.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/operations/commiters/resource_commiter.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/transfering_data/shader_transfering_data.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/operations/serializers/resource_serializer.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/math/vec3.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/ces_managment/ces_entity.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/data/resources/shaders/shader_screen_quad.frag</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/ces_managment/components/ces_base_component.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/render_managment/graphics_context.js</file>
+            <file>file:/Users/codeoneclick/Documents/hobby/game-box-2d-js/public_html/src/resources_managment/transfering_data/texture_transfering_data.js</file>
         </group>
     </open-files>
 </project-private>

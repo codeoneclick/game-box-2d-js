@@ -9,9 +9,9 @@ gb.game_object_configuration = function()
         {
             if(this.m_configurations instanceof Object)
             {
-                if(this.m_configurations["materials"] instanceof Object)
+                if(this.m_configurations["materials_configurations"] instanceof Object)
                 {
-                    return this.m_configurations["materials"];
+                    return this.m_configurations["materials_configurations"];
                 }
             }
             return null;

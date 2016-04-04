@@ -36,19 +36,18 @@ gb.scene_fabricator.prototype = {
             var material_configuration = configurations[i];
             var material = gb.material.construct(material_configuration);
 
-            gb.material.set_shader(material, material_configuration, this.m_resource_accessor);
-            gb.material.set_textures(material, material_configuration, this.m_resource_accessor);
-            gb.ces_material_component.add_material(game_object, material_configuration.technique_name,
-                material_configuration.technique_pass, material);
+            gb.material.set_shader(material, material_configuration, this.m_resources_accessor);
+            gb.material.set_textures(material, material_configuration, this.m_resources_accessor);
+            gb.ces_material_component.add_material(game_object, material_configuration.technique_name, material_configuration.technique_pass, material);
         }
     },
 
     create_sprite: function(filename) {
         var sprite = new gb.sprite();
-        this.m_game_objects_container.insert(sprite);
+        this.m_game_objects.push(sprite);
 
         var self = this;
-        this.m_configuration_accessor.get_sprite_configuration(filename, function(configuration) {
+        this.m_configurations_accessor.get_sprite_configuration(filename, function(configuration) {
             self.add_materials(sprite, configuration.materials_configurations);
         });
         return sprite;

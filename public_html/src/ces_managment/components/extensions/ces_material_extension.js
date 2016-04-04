@@ -16,7 +16,7 @@ gb.ces_material_component.remove_material = function(entity, technique_name, tec
 	}
 };
 
-gb.ces_material_component.add_material = function(entity, technique_name, technique_pass) {
+gb.ces_material_component.get_material = function(entity, technique_name, technique_pass) {
 	var material = null;
 	var material_component = entity.get_component(gb.ces_component_type.material);
 	if (material_component) {

@@ -12,13 +12,20 @@
             
             var g_game_controller = null;
 
-            function app_start() 
+            function app_start()
             {
                 g_game_controller = new gb.game_controller();
                 var game_transition = new gb.game_transition("data/resources/configurations/transitions/transition.main.json");
                 g_game_controller.add_transition(game_transition);
                 g_game_controller.goto_transition("data/resources/configurations/transitions/transition.main.json", function(scene) {
-                    console.log(scene);
+                    
+                    var camera = new gb.camera(gl.viewport_width, gl.viewport_height);
+                    scene.camera = camera;
+
+                    var sprite_01 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json");
+                    scene.add_child(sprite_01);
+                    sprite_01.position = new gb.vec2(70, 70);
+                    sprite_01.size = new gb.vec2(128, 128);
                 });
             }
         </script>

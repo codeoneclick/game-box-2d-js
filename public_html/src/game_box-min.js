@@ -129,15 +129,28 @@ gb.ces_geometry_quad_component = function() {
   this.m_mesh = gb.mesh_constructor.create_shape_quad();
   this.m_frame = new gb.vec4(0, 0, 1, 1);
   this.m_pivot = new gb.vec2(0);
+  Object.defineProperty(this, "pivot", {get:function() {
+    return this.m_pivot;
+  }, set:function(a) {
+    this.m_pivot = a;
+    this.update_mesh_position_attributes();
+  }});
+  Object.defineProperty(this, "size", {get:function() {
+    return new gb.vec2(m_frame.z, m_frame.w);
+  }, set:function(a) {
+    this.m_frame.z = a.x;
+    this.m_frame.w = a.y;
+    this.update_mesh_position_attributes();
+  }});
 };
 gb.ces_geometry_quad_component.prototype = Object.create(gb.ces_geometry_component.prototype);
 gb.ces_geometry_quad_component.prototype.constructor = gb.ces_geometry_quad_component;
 gb.ces_geometry_quad_component.prototype.update_mesh_position_attributes = function() {
-  var a = new gb.vec2(this.m_frame.z - this.m_pivot.x, this.m_frame.w - this.m_pivot.y), b = gb.vec2(a.x - this.m_frame.z, a.y - this.m_frame.w), a = gb.vec4(b.x, a.y, a.x, b.y), b = this.m_mesh.vbo.lock();
-  b[0].m_position = gb.vec2(a.x, a.z);
-  b[1].m_position = gb.vec2(a.x, a.w);
-  b[2].m_position = gb.vec2(a.y, a.z);
-  b[3].m_position = gb.vec2(a.y, a.w);
+  var a = new gb.vec2(this.m_frame.z - this.m_pivot.x, this.m_frame.w - this.m_pivot.y), b = new gb.vec2(a.x - this.m_frame.z, a.y - this.m_frame.w), a = new gb.vec4(b.x, a.y, a.x, b.y), b = this.m_mesh.vbo.lock();
+  b[0].m_position = new gb.vec2(a.x, a.z);
+  b[1].m_position = new gb.vec2(a.x, a.w);
+  b[2].m_position = new gb.vec2(a.y, a.z);
+  b[3].m_position = new gb.vec2(a.y, a.w);
   this.m_mesh.vbo.unlock();
 };
 gb.ces_material_component = function() {
@@ -232,7 +245,7 @@ gb.ces_material_component.add_material = function(a, b, c, d) {
 gb.ces_material_component.remove_material = function(a, b, c) {
   (a = a.get_component(gb.ces_component_type.material)) && a.remove_material(b, c);
 };
-gb.ces_material_component.add_material = function(a, b, c) {
+gb.ces_material_component.get_material = function(a, b, c) {
   var d = null;
   (a = a.get_component(gb.ces_component_type.material)) && (d = a.get_material(b, c));
   return d;
@@ -266,7 +279,7 @@ gb.ces_render_system.prototype.on_feed = function(a) {
   for (var b = this.m_render_pipeline.ws_render_techniques, c = 0;c < b.length;++c) {
     var d = b[c], e = d.name;
     d.bind();
-    for (var f = 0;f < b.num_passes;++f) {
+    for (var f = 0;f < d.num_passes;++f) {
       this.draw_recursively(a, e, f);
     }
     d.unbind();
@@ -278,22 +291,22 @@ gb.ces_render_system.prototype.on_feed_end = function() {
 gb.ces_render_system.prototype.draw_recursively = function(a, b, c) {
   var d = a.get_component(gb.ces_component_type.scene);
   if (d) {
-    var e = a.get_component(gb.ces_component_type.transformation), f = a.get_component(gb.ces_component_type.material), l = a.get_component(gb.ces_component_type.geometry);
-    if (f && l && e) {
-      var k = f.get_material(b, c), l = l.mesh;
-      if (k && k.shader.get_status() === gb.resource_status.commited && l && a.visible) {
-        f.bind(b, c, k);
-        k.shader.set_mat4(d.camera.mat_p, gb.shader_uniform_type.mat_p);
-        k.shader.set_mat4(d.camera.mat_v, gb.shader_uniform_type.mat_v);
+    var e = a.get_component(gb.ces_component_type.transformation), f = a.get_component(gb.ces_component_type.material), k = a.get_component(gb.ces_component_type.geometry);
+    if (f && k && e) {
+      var l = f.get_material(b, c), k = k.mesh;
+      if (l && l.shader && l.shader.get_status() === gb.resource_status.commited && k && a.visible) {
+        f.bind(b, c, l);
+        l.shader.set_mat4(d.camera.matrix_p, gb.shader_uniform_type.mat_p);
+        l.shader.set_mat4(d.camera.matrix_v, gb.shader_uniform_type.mat_v);
         for (var d = (new gb.mat4).identity(), g = a.parent;g;) {
           g.get_component(gb.ces_component_type.transformation), g = g.parent;
         }
         d = gb.mat4.multiply(d, e.matrix_m);
-        k.shader.set_mat4(d, gb.shader_uniform_type.mat_m);
-        l.bind(k.shader.get_attributes());
-        l.draw();
-        l.unbind(k.shader.get_attributes());
-        f.unbind(b, c, k);
+        l.shader.set_mat4(d, gb.shader_uniform_type.mat_m);
+        k.bind(l.shader.get_attributes());
+        k.draw();
+        k.unbind(l.shader.get_attributes());
+        f.unbind(b, c, l);
       }
     }
     a = a.children;
@@ -330,7 +343,7 @@ gb.configuration_base.prototype = {constructor:gb.configuration_base, set_config
 gb.game_object_configuration = function() {
   gb.configuration_base.call(this);
   Object.defineProperty(this, "materials_configurations", {get:function() {
-    return this.m_configurations instanceof Object && this.m_configurations.materials instanceof Object ? this.m_configurations.materials : null;
+    return this.m_configurations instanceof Object && this.m_configurations.materials_configurations instanceof Object ? this.m_configurations.materials_configurations : null;
   }});
 };
 gb.game_object_configuration.prototype = Object.create(gb.configuration_base.prototype);
@@ -450,6 +463,24 @@ gb.sprite_configuration = function() {
 };
 gb.sprite_configuration.prototype = Object.create(gb.game_object_configuration.prototype);
 gb.sprite_configuration.prototype.constructor = gb.sprite_configuration;
+gb.sprite_configuration.prototype.serialize = function(a, b) {
+  var c = this;
+  $.ajax({dataType:"json", url:a, data:{}, async:!0, success:function(a) {
+    c.json = a;
+    a = c.json.materials.length;
+    if (0 < a) {
+      for (var e = a, f = 0;f < a;++f) {
+        (new gb.material_configuration).serialize(c.json.materials[f].filename, function(a) {
+          c.set_configuration("materials_configurations", a);
+          e--;
+          0 === e && b(c);
+        });
+      }
+    } else {
+      b(c);
+    }
+  }});
+};
 gb.ss_technique_configuration = function() {
   gb.configuration_base.call(this);
   this.json = null;
@@ -782,11 +813,11 @@ gb.mat4 = function() {
   this.m_elements = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]];
 };
 gb.mat4.multiply = function(a, b) {
-  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, f = c[0], l = c[4], k = c[8], g = c[12], h = c[1], n = c[5], m = c[9], p = c[13], q = c[2], r = c[6], t = c[10], u = c[14], v = c[3], w = c[7], x = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
-  e.m_elements[0] = f * y + l * C + k * G + g * K;
-  e.m_elements[4] = f * z + l * D + k * H + g * L;
-  e.m_elements[8] = f * A + l * E + k * I + g * M;
-  e.m_elements[12] = f * B + l * F + k * J + g * d;
+  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, f = c[0], k = c[4], l = c[8], g = c[12], h = c[1], n = c[5], m = c[9], p = c[13], q = c[2], r = c[6], t = c[10], u = c[14], v = c[3], w = c[7], x = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
+  e.m_elements[0] = f * y + k * C + l * G + g * K;
+  e.m_elements[4] = f * z + k * D + l * H + g * L;
+  e.m_elements[8] = f * A + k * E + l * I + g * M;
+  e.m_elements[12] = f * B + k * F + l * J + g * d;
   e.m_elements[1] = h * y + n * C + m * G + p * K;
   e.m_elements[5] = h * z + n * D + m * H + p * L;
   e.m_elements[9] = h * A + n * E + m * I + p * M;
@@ -822,15 +853,15 @@ gb.mat4.prototype = {constructor:gb.mat4, identity:function() {
 }, rotate:function(a) {
   var b = a.x, c = a.y, d = a.z;
   a = Math.cos(b);
-  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), f = Math.cos(d), d = Math.sin(d), l = a * f, k = a * d, g = b * f, h = b * d;
+  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), f = Math.cos(d), d = Math.sin(d), k = a * f, l = a * d, g = b * f, h = b * d;
   this.m_elements[0] = e * f;
   this.m_elements[4] = -e * d;
   this.m_elements[8] = c;
-  this.m_elements[1] = k + g * c;
-  this.m_elements[5] = l - h * c;
+  this.m_elements[1] = l + g * c;
+  this.m_elements[5] = k - h * c;
   this.m_elements[9] = -b * e;
-  this.m_elements[2] = h - l * c;
-  this.m_elements[6] = g + k * c;
+  this.m_elements[2] = h - k * c;
+  this.m_elements[6] = g + l * c;
   this.m_elements[10] = a * e;
   this.m_elements[3] = 0;
   this.m_elements[7] = 0;
@@ -841,22 +872,10 @@ gb.mat4.prototype = {constructor:gb.mat4, identity:function() {
   this.m_elements[15] = 1;
   return this;
 }, translate:function(a, b, c) {
-  this.m_elements[0] = 1;
-  this.m_elements[4] = 0;
-  this.m_elements[8] = 0;
-  this.m_elements[12] = 0;
-  this.m_elements[1] = 0;
-  this.m_elements[5] = 1;
-  this.m_elements[9] = 0;
-  this.m_elements[13] = 0;
-  this.m_elements[2] = 0;
-  this.m_elements[6] = 0;
-  this.m_elements[10] = 1;
-  this.m_elements[14] = 0;
-  this.m_elements[3] = a;
-  this.m_elements[7] = b;
-  this.m_elements[11] = c;
-  this.m_elements[15] = 1;
+  this.identity();
+  this.m_elements[12] = a;
+  this.m_elements[13] = b;
+  this.m_elements[14] = c;
   return this;
 }, rotation_x:function(a) {
   var b = Math.cos(a);
@@ -959,23 +978,13 @@ gb.mat4.prototype = {constructor:gb.mat4, identity:function() {
   var e = -a;
   return this.frustum(e * b, a * b, e, a, c, d);
 }, ortho:function(a, b, c, d, e, f) {
-  var l = 1 / (b - a), k = 1 / (c - d), g = 1 / (f - e);
-  this.m_elements[0] = 2 * l;
-  this.m_elements[4] = 0;
-  this.m_elements[8] = 0;
-  this.m_elements[12] = -((b + a) * l);
-  this.m_elements[1] = 0;
-  this.m_elements[5] = 2 * k;
-  this.m_elements[9] = 0;
-  this.m_elements[13] = -((c + d) * k);
-  this.m_elements[2] = 0;
-  this.m_elements[6] = 0;
-  this.m_elements[10] = -2 * g;
-  this.m_elements[14] = -((f + e) * g);
-  this.m_elements[3] = 0;
-  this.m_elements[7] = 0;
-  this.m_elements[11] = 0;
-  this.m_elements[15] = 1;
+  this.identity();
+  this.m_elements[0] = 2 / (b - a);
+  this.m_elements[5] = 2 / (d - c);
+  this.m_elements[10] = -2 / (f - e);
+  this.m_elements[12] = -(b + a) / (b - a);
+  this.m_elements[13] = -(d + c) / (d - c);
+  this.m_elements[14] = -(f + e) / (f - e);
   return this;
 }, look_at:function(a, b, c) {
   var d = new gb.vec3, e = new gb.vec3, f = new gb.vec3, f = gb.vec3.sub(a, b).normalize();
@@ -1576,12 +1585,16 @@ gb.material.set_shader = function(a, b, c) {
 };
 gb.material.set_textures = function(a, b, c) {
   for (var d = 0;d < b.textures_configurations.length;++d) {
-    var e = b.textures_configurations[d];
-    c.get_texture(0 !== e.filename.length ? e.filename : e.technique_name).add_resource_loading_callback(function(b, c) {
+    var e = b.textures_configurations[d], f = 0 !== e.filename.length ? e.filename : e.technique_name;
+    console.log("set texture to material: " + f);
+    var k = c.get_texture(f);
+    console.log(k);
+    k.add_resource_loading_callback(function(b, c) {
       b.wrap_mode = c.wrap_mode;
       b.mag_filter = c.mag_filter;
       b.min_filter = c.min_filter;
       a.set_texture(b, c.sampler_index);
+      console.log("texture setted to material: " + f);
     }, e);
   }
 };
@@ -2036,6 +2049,8 @@ gb.resource_accessor = function() {
   this.m_operations_queue = [];
 };
 gb.resource_accessor.prototype = {constructor:gb.resource_accessor, add_custom_resource:function(a, b) {
+  console.log("added custom resource: " + a);
+  console.log(b);
   this.m_resources[a] = b;
 }, get_shader:function(a) {
   var b = this.m_resources[a];
@@ -2098,7 +2113,7 @@ gb.resource_base.prototype = {constructor:gb.resource_base, get_guid:function() 
   a = _.indexOf(this.m_listeners, a);
   -1 !== a ? this.m_listeners.splice(a, 1) : console.error("resource doesn't contain this listener");
 }, add_resource_loading_callback:function(a, b) {
-  _.isFunction(a) ? _.contains(this.m_callbacks, a) ? console.error("can't add same callback for resource loading") : (this.m_callbacks.push(a), this.m_userdata_container.push(b)) : console.error("resource loading callback isn't function");
+  _.isFunction(a) ? _.contains(this.m_callbacks, a) ? console.error("can't add same callback for resource loading") : this.get_status() === gb.resource_status.commited ? a(this, b) : (this.m_callbacks.push(a), this.m_userdata_container.push(b)) : console.error("resource loading callback isn't function");
 }, remove_resource_loading_callback:function(a) {
   a = _.indexOf(this.m_callbacks, a);
   -1 !== a ? (this.m_callbacks.splice(a, 1), this.m_userdatas.splice(a, 1)) : console.error("resource doesn't contain this callback");
@@ -2232,37 +2247,37 @@ gb.shader.prototype.get_custom_uniform = function(a) {
   return this;
 };
 gb.shader.prototype.set_mat4 = function(a, b) {
-  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = gb.shader_uniform(gb.uniform_type.mat4)), gl.uniformMatrix4fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a)), this.m_cached_uniforms[b].set_mat4(a));
+  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform(gb.uniform_type.mat4)), gl.uniformMatrix4fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a.to_array())), this.m_cached_uniforms[b].set_mat4(a));
 };
 gb.shader.prototype.set_custom_mat4 = function(a, b) {
-  this.get_status() === gb.resource_status.commited && gl.uniformMatrix4fv(this.get_custom_uniform(b), gl.FALSE, new Float32Array(a));
+  this.get_status() === gb.resource_status.commited && gl.uniformMatrix4fv(this.get_custom_uniform(b), gl.FALSE, new Float32Array(a.to_array()));
 };
 gb.shader.prototype.set_vec4 = function(a, b) {
-  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = gb.shader_uniform(gb.uniform_type.vec4)), gl.uniform4fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a)), this.m_cached_uniforms[b].set_vec4(a));
+  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform(gb.uniform_type.vec4)), gl.uniform4fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a)), this.m_cached_uniforms[b].set_vec4(a));
 };
 gb.shader.prototype.set_custom_vec4 = function(a, b) {
   this.get_status() === gb.resource_status.commited && gl.uniform4fv(this.get_custom_uniform(b), gl.FALSE, new Float32Array(a));
 };
 gb.shader.prototype.set_vec3 = function(a, b) {
-  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = gb.shader_uniform(gb.uniform_type.vec3)), gl.uniform3fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a)), this.m_cached_uniforms[b].set_vec3(a));
+  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform(gb.uniform_type.vec3)), gl.uniform3fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a)), this.m_cached_uniforms[b].set_vec3(a));
 };
 gb.shader.prototype.set_custom_vec3 = function(a, b) {
   this.get_status() === gb.resource_status.commited && gl.uniform3fv(this.get_custom_uniform(b), gl.FALSE, new Float32Array(a));
 };
 gb.shader.prototype.set_vec2 = function(a, b) {
-  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = gb.shader_uniform(gb.uniform_type.vec2)), gl.uniform2fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a)), this.m_cached_uniforms[b].set_vec2(a));
+  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform(gb.uniform_type.vec2)), gl.uniform2fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a)), this.m_cached_uniforms[b].set_vec2(a));
 };
 gb.shader.prototype.set_custom_vec2 = function(a, b) {
   this.get_status() === gb.resource_status.commited && gl.uniform2fv(this.get_custom_uniform(b), gl.FALSE, new Float32Array(a));
 };
 gb.shader.prototype.set_f32 = function(a, b) {
-  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = gb.shader_uniform(gb.uniform_type.f32)), gl.uniform1f(this.m_uniforms[b], gl.FALSE, a), this.m_cached_uniforms[b].set_f32(a));
+  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform(gb.uniform_type.f32)), gl.uniform1f(this.m_uniforms[b], gl.FALSE, a), this.m_cached_uniforms[b].set_f32(a));
 };
 gb.shader.prototype.set_custom_f32 = function(a, b) {
   this.get_status() === gb.resource_status.commited && gl.uniform1f(this.get_custom_uniform(b), a);
 };
 gb.shader.prototype.set_i32 = function(a, b) {
-  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = gb.shader_uniform(gb.uniform_type.i32)), gl.uniform1i(this.m_uniforms[b], gl.FALSE, a), this.m_cached_uniforms[b].set_i32(a));
+  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform(gb.uniform_type.i32)), gl.uniform1i(this.m_uniforms[b], gl.FALSE, a), this.m_cached_uniforms[b].set_i32(a));
 };
 gb.shader.prototype.set_custom_i32 = function(a, b) {
   this.get_status() === gb.resource_status.commited && gl.uniform1i(this.get_custom_uniform(b), a);
@@ -2525,7 +2540,7 @@ gb.game_object = function() {
   }, get:function() {
     return this.get_component(gb.ces_component_type.transformation).scale;
   }});
-  Object.defineProperty(this, "size", {set:function(a) {
+  Object.defineProperty(this, "size", {configurable:!0, set:function(a) {
     this.get_component(gb.ces_component_type.transformation).scale = a;
   }, get:function() {
     return this.get_component(gb.ces_component_type.transformation).scale;
@@ -2550,15 +2565,15 @@ gb.scene_fabricator = function() {
 gb.scene_fabricator.prototype = {constructor:gb.scene_fabricator, add_materials:function(a, b) {
   for (var c = 0;c < b.length;++c) {
     var d = b[c], e = gb.material.construct(d);
-    gb.material.set_shader(e, d, this.m_resource_accessor);
-    gb.material.set_textures(e, d, this.m_resource_accessor);
+    gb.material.set_shader(e, d, this.m_resources_accessor);
+    gb.material.set_textures(e, d, this.m_resources_accessor);
     gb.ces_material_component.add_material(a, d.technique_name, d.technique_pass, e);
   }
 }, create_sprite:function(a) {
   var b = new gb.sprite;
-  this.m_game_objects_container.insert(b);
+  this.m_game_objects.push(b);
   var c = this;
-  this.m_configuration_accessor.get_sprite_configuration(a, function(a) {
+  this.m_configurations_accessor.get_sprite_configuration(a, function(a) {
     c.add_materials(b, a.materials_configurations);
   });
   return b;
@@ -2592,8 +2607,18 @@ gb.sprite = function() {
   gb.game_object.call(this);
   var a = new gb.ces_material_component;
   this.add_component(a);
-  a = new gb.ces_geometry_component;
+  a = new gb.ces_geometry_quad_component;
   this.add_component(a);
+  Object.defineProperty(this, "size", {get:function() {
+    return this.get_component(gb.ces_component_type.geometry).size;
+  }, set:function(a) {
+    this.get_component(gb.ces_component_type.geometry).size = a;
+  }});
+  Object.defineProperty(this, "pivot", {get:function() {
+    return this.get_component(gb.ces_component_type.geometry).pivot;
+  }, set:function(a) {
+    this.get_component(gb.ces_component_type.geometry).pivot = a;
+  }});
 };
 gb.sprite.prototype = Object.create(gb.game_object.prototype);
 gb.sprite.prototype.constructor = gb.sprite;

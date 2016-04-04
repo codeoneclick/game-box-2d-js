@@ -234,17 +234,17 @@ gb.shader = function(guid)
     this.m_type = gb.resource_type.shader;
     
     this.m_shader_id = -1;
-    this.m_uniforms = new Array();
+    this.m_uniforms = [];
     this.m_uniforms[gb.shader_uniform_type.max - 1] = -1;
-    this.m_samplers = new Array();
+    this.m_samplers = [];
     this.m_samplers[gb.shader_sampler_type.max - 1] = -1;
-    this.m_attributes = new Array();
+    this.m_attributes = [];
     this.m_attributes[gb.shader_attribute_type.max -1] = -1;
     
-    this.m_custom_uniforms = new Array();
-    this.m_custom_attributes = new Array();
+    this.m_custom_uniforms = [];
+    this.m_custom_attributes = [];
     
-    this.m_cached_uniforms = new Array();
+    this.m_cached_uniforms = [];
 };
 
 gb.shader.prototype = Object.create(gb.resource_base.prototype);
@@ -326,10 +326,10 @@ gb.shader.prototype.set_mat4 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = gb.shader_uniform(gb.uniform_type.mat4);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.mat4);
         }
         var handler = this.m_uniforms[uniform];
-        gl.uniformMatrix4fv(handler, gl.FALSE, new Float32Array(value));
+        gl.uniformMatrix4fv(handler, gl.FALSE, new Float32Array(value.to_array()));
         this.m_cached_uniforms[uniform].set_mat4(value);
     }
 };
@@ -338,7 +338,7 @@ gb.shader.prototype.set_custom_mat4 = function(value, uniform)
 {
     if(this.get_status() === gb.resource_status.commited)
     {
-        gl.uniformMatrix4fv(this.get_custom_uniform(uniform), gl.FALSE, new Float32Array(value));
+        gl.uniformMatrix4fv(this.get_custom_uniform(uniform), gl.FALSE, new Float32Array(value.to_array()));
     }
 };
 
@@ -352,7 +352,7 @@ gb.shader.prototype.set_vec4 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = gb.shader_uniform(gb.uniform_type.vec4);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.vec4);
         }
         var handler = this.m_uniforms[uniform];
         gl.uniform4fv(handler, gl.FALSE, new Float32Array(value));
@@ -378,7 +378,7 @@ gb.shader.prototype.set_vec3 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = gb.shader_uniform(gb.uniform_type.vec3);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.vec3);
         }
         var handler = this.m_uniforms[uniform];
         gl.uniform3fv(handler, gl.FALSE, new Float32Array(value));
@@ -404,7 +404,7 @@ gb.shader.prototype.set_vec2 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = gb.shader_uniform(gb.uniform_type.vec2);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.vec2);
         }
         var handler = this.m_uniforms[uniform];
         gl.uniform2fv(handler, gl.FALSE, new Float32Array(value));
@@ -430,7 +430,7 @@ gb.shader.prototype.set_f32 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = gb.shader_uniform(gb.uniform_type.f32);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.f32);
         }
         var handler = this.m_uniforms[uniform];
         gl.uniform1f(handler, gl.FALSE, value);
@@ -456,7 +456,7 @@ gb.shader.prototype.set_i32 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = gb.shader_uniform(gb.uniform_type.i32);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.i32);
         }
         var handler = this.m_uniforms[uniform];
         gl.uniform1i(handler, gl.FALSE, value);

@@ -109,8 +109,15 @@ gb.resource_base.prototype =
         {
             if(!_.contains(this.m_callbacks, callback))
             {
-                this.m_callbacks.push(callback);
-                this.m_userdata_container.push(userdata);
+                if(this.get_status() === gb.resource_status.commited)
+                {
+                    callback(this, userdata);
+                }
+                else
+                {
+                    this.m_callbacks.push(callback);
+                    this.m_userdata_container.push(userdata);
+                }
             }
             else
             {

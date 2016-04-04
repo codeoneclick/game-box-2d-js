@@ -136,22 +136,11 @@ gb.mat4.prototype = {
     },
 
     translate: function(x, y, z) {
-        this.m_elements[0] = 1;
-        this.m_elements[4] = 0;
-        this.m_elements[8] = 0;
-        this.m_elements[12] = 0;
-        this.m_elements[1] = 0;
-        this.m_elements[5] = 1;
-        this.m_elements[9] = 0;
-        this.m_elements[13] = 0;
-        this.m_elements[2] = 0;
-        this.m_elements[6] = 0;
-        this.m_elements[10] = 1;
-        this.m_elements[14] = 0;
-        this.m_elements[3] = x;
-        this.m_elements[7] = y;
-        this.m_elements[11] = z;
-        this.m_elements[15] = 1;
+
+        this.identity();
+        this.m_elements[12] = x;
+        this.m_elements[13] = y;
+        this.m_elements[14] = z;
         return this;
 
     },
@@ -280,8 +269,8 @@ gb.mat4.prototype = {
         return this.frustum(xmin, xmax, ymin, ymax, near, far);
     },
 
-    ortho: function(left, right, top, bottom, near, far) {
-        var w = 1.0 / (right - left);
+    ortho: function(left, right, bottom, top, near, far) {
+        /*var w = 1.0 / (right - left);
         var h = 1.0 / (top - bottom);
         var p = 1.0 / (far - near);
 
@@ -294,9 +283,9 @@ gb.mat4.prototype = {
         this.m_elements[8] = 0;
         this.m_elements[12] = -x;
         this.m_elements[1] = 0;
-        this.m_elements[5] = 2 * h;
+        this.m_elements[5] = -2 * h;
         this.m_elements[9] = 0;
-        this.m_elements[13] = -y;
+        this.m_elements[13] = y;
         this.m_elements[2] = 0;
         this.m_elements[6] = 0;
         this.m_elements[10] = -2 * p;
@@ -305,6 +294,17 @@ gb.mat4.prototype = {
         this.m_elements[7] = 0;
         this.m_elements[11] = 0;
         this.m_elements[15] = 1;
+
+        return this; */
+
+        this.identity();
+
+        this.m_elements[0] = 2.0 / (right - left);
+        this.m_elements[5] = 2.0 / (top - bottom);
+        this.m_elements[10] = -2.0 / (far - near);
+        this.m_elements[12] = -(right + left) / (right - left);
+        this.m_elements[13] = -(top + bottom) / (top - bottom);
+        this.m_elements[14] = -(far + near) / (far - near);
 
         return this;
     },
