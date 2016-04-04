@@ -58,6 +58,37 @@ gb.mesh_constructor.create_shape_quad = function() {
     return new gb.mesh(vbo, ibo, gl.TRIANGLES);
 };
 
-gb.mesh_constructor.create_sprite_quad = function() {
-    return null;
-};
+gb.mesh_constructor.create_circle = function() {
+
+    var num_subdivisions = 32;
+    var radius = 1.0;
+
+    var num_vertices = num_subdivisions + 1;
+    var vbo = new gb.vbo(num_vertices, gl.STATIC_DRAW);
+    var vertices = vbo.lock();
+
+    vertices[0].m_position = new gb.vec2(0.0, 0.0);
+
+    var index = 1;
+    for (var angle = 0; angle <= Math.PI * 2.0; angle += ((Math.PI * 2.0) / num_subdivisions)) {
+        vertices[index++].m_position = new gb.vec2(radius * Math.cosf(angle), radius * Math.sinf(angle));
+    }
+    vbo.unlock();
+
+    index = 1;
+    var num_indices = (num_subdivisions + 1) * 3;
+    var ibo = new gb.ibo(num_indices, gl.STATIC_DRAW);
+    var indices = ibo.lock();
+    for (var i = 0; i < num_subdivisions * 3; i += 3) {
+        indices[i + 0] = 0;
+        indices[i + 1] = index++;
+        indices[i + 2] = index;
+    }
+
+    indices[num_indices - 3] = 0;
+    indices[num_indices - 2] = index - 1;
+    indices[num_indices - 1] = 1;
+    ibo.unlock();
+
+    return new gb.mesh(vbo, ibo, gl.gl.TRIANGLES);
+}

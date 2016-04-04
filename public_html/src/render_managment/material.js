@@ -443,15 +443,12 @@ gb.material.set_textures = function(material, configuration, resource_accessor)
     {
         var texture_configuration = configuration.textures_configurations[i];
         var texture_name = texture_configuration.filename.length !== 0 ? texture_configuration.filename : texture_configuration.technique_name;
-        console.log("set texture to material: " + texture_name);
         var texture = resource_accessor.get_texture(texture_name);
-        console.log(texture);
         texture.add_resource_loading_callback(function(resource, userdata) {
             resource.wrap_mode = userdata.wrap_mode;
             resource.mag_filter = userdata.mag_filter;
             resource.min_filter = userdata.min_filter;
             material.set_texture(resource, userdata.sampler_index);
-            console.log("texture setted to material: " + texture_name);
         }, texture_configuration);
     }
 };

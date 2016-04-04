@@ -4,7 +4,8 @@
 
 gb.ces_system_type = {
     undefined: -1,
-    render: 0
+    render: 0,
+    deffered_lighting: 1
 };
 
 gb.ces_base_system = function() {

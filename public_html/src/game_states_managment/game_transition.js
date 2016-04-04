@@ -84,6 +84,10 @@ gb.game_transition.prototype = {
             self.m_systems_feeder.root = self.m_scene;
 
             self.m_systems_feeder.add_system(render_system);
+
+            var deferred_lighting_system = new gb.ces_deferred_lighting_system();
+            self.m_systems_feeder.add_system(deferred_lighting_system);
+
             loop.add_listener(self.m_systems_feeder);
         });
     },

@@ -1,0 +1,11 @@
+{
+	"technique_name": "ws.forward.normal",
+	"num_passes": "1",
+	"index": "2",
+	"screen_width": "640",
+	"screen_height": "480",
+	"clear_color_r": "0.5",
+	"clear_color_g": "0.5",
+	"clear_color_b": "1.0",
+	"clear_color_a": "1.0"
+}

@@ -6,7 +6,11 @@ gb.ces_component_type = {
 	material: 1,
 	geometry: 2,
 	scene: 3,
-	max: 4
+	light: 4,
+	shadow: 5,
+	light_mask: 6,
+	convex_hull: 7,
+	max: 8
 };
 
 gb.ces_base_component = function() {

@@ -71,6 +71,18 @@ gb.mat4.multiply = function(matrix_01, matrix_02) {
 
     return matrix_03;
 };
+gb.mat4.multiply_vec4 = function(vector, matrix) {
+    var result = new gb.vec4();
+    result.x = matrix.m_elements[0] * vector.x + matrix.m_elements[4] * vector.y + matrix.m_elements[8] * vector.z + matrix.m_elements[12] * vector.w;
+    result.y = matrix.m_elements[1] * vector.x + matrix.m_elements[5] * vector.y + matrix.m_elements[9] * vector.z + matrix.m_elements[13] * vector.w;
+    result.z = matrix.m_elements[2] * vector.x + matrix.m_elements[6] * vector.y + matrix.m_elements[10] * vector.z + matrix.m_elements[14] * vector.w;
+    result.w = matrix.m_elements[3] * vector.x + matrix.m_elements[7] * vector.y + matrix.m_elements[11] * vector.z + matrix.m_elements[15] * vector.w;
+    return result;
+}
+gb.mat4.multiply_vec2 = function(vector, matrix) {
+    var result = gb.multiply_vec4(new gb.vec4(vector.x, vector.y, 0.0, 1.0), matrix);
+    return new gb.vec2(result.x, result.y);
+};
 
 gb.mat4.prototype = {
     constructor: gb.mat4,
@@ -270,32 +282,6 @@ gb.mat4.prototype = {
     },
 
     ortho: function(left, right, bottom, top, near, far) {
-        /*var w = 1.0 / (right - left);
-        var h = 1.0 / (top - bottom);
-        var p = 1.0 / (far - near);
-
-        var x = (right + left) * w;
-        var y = (top + bottom) * h;
-        var z = (far + near) * p;
-
-        this.m_elements[0] = 2 * w;
-        this.m_elements[4] = 0;
-        this.m_elements[8] = 0;
-        this.m_elements[12] = -x;
-        this.m_elements[1] = 0;
-        this.m_elements[5] = -2 * h;
-        this.m_elements[9] = 0;
-        this.m_elements[13] = y;
-        this.m_elements[2] = 0;
-        this.m_elements[6] = 0;
-        this.m_elements[10] = -2 * p;
-        this.m_elements[14] = -z;
-        this.m_elements[3] = 0;
-        this.m_elements[7] = 0;
-        this.m_elements[11] = 0;
-        this.m_elements[15] = 1;
-
-        return this; */
 
         this.identity();
 

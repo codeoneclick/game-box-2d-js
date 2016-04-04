@@ -12,8 +12,6 @@ gb.resource_accessor.prototype =
 
     add_custom_resource: function(guid, resource)
     {
-        console.log("added custom resource: " + guid);
-        console.log(resource);
         this.m_resources[guid] = resource;
     },
 
