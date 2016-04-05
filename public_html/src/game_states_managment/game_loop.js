@@ -16,7 +16,6 @@ gb.game_loop.prototype =
             var listener = this.m_listeners[i];
             listener.on_update(0.0);
         }
-        console.log("on_update");
     },
     
     add_listener: function(listener)

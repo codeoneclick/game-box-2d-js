@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
         <script src="lib/underscore/underscore-min.js"></script>
+        <script src="lib/fps_meter/fps_meter-min.js"></script>
         <script type="text/javascript">
             
             var g_game_controller = null;
@@ -22,10 +23,17 @@
                     var camera = new gb.camera(gl.viewport_width, gl.viewport_height);
                     scene.camera = camera;
 
-                    var sprite_01 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json");
-                    scene.add_child(sprite_01);
-                    sprite_01.position = new gb.vec2(70, 70);
-                    sprite_01.size = new gb.vec2(128, 128);
+                    for(var i = 0; i < 16; ++i)
+                    {
+                        for(var j = 0; j < 12; ++j)
+                        {
+                            var sprite = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json");
+                            scene.add_child(sprite);
+                            sprite.position = new gb.vec2(40 * i, 40 * j);
+                            sprite.size = new gb.vec2(32, 32);
+                        }
+                    }
+                    
                 });
             }
         </script>
