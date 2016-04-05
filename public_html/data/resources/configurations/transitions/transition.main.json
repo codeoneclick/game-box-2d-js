@@ -3,6 +3,8 @@
     "main_technique_filename": "data/resources/configurations/techniques/main_technique/main.technique.json",
     "ws_techniques": [{
         "filename": "data/resources/configurations/techniques/ws_techniques/ws.technique.base.json"
+    },{
+        "filename": "data/resources/configurations/techniques/ws_techniques/ws.technique.forward.normal.json"
     }],
     "ss_techniques": [
 

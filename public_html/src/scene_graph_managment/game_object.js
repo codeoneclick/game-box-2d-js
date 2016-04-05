@@ -9,6 +9,7 @@ gb.game_object = function() {
 	this.add_component(transformation_component);
 
 	Object.defineProperty(this, 'position', {
+		configurable: true,
 		set: function(value) {
 			this.get_component(gb.ces_component_type.transformation).position = value;
 		},

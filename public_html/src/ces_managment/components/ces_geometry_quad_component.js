@@ -21,7 +21,7 @@ gb.ces_geometry_quad_component = function() {
 
 	Object.defineProperty(this, 'size', {
 		get: function() {
-			return new gb.vec2(m_frame.z, m_frame.w);
+			return new gb.vec2(this.m_frame.z, this.m_frame.w);
 		},
 		set: function(value) {
 			this.m_frame.z = value.x;
