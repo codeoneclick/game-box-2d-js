@@ -26,6 +26,13 @@
                     scene.add_child(sprite_01);
                     sprite_01.position = new gb.vec2(70, 70);
                     sprite_01.size = new gb.vec2(128, 128);
+                    sprite_01.cast_shadow = true;
+
+                    var light_source_01 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json");
+                    scene.add_child(light_source_01);
+                    light_source_01.position = new gb.vec2(250, 250);
+                    light_source_01.radius = 24.0;
+                    light_source_01.color = new gb.vec4(1.0, 0.0, 0.0, 1.0);
                 });
             }
         </script>

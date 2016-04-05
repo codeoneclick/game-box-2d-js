@@ -393,7 +393,7 @@ gb.material.prototype = {
 
     set_custom_shader_uniform: function(value, uniform) {
         var current_uniform = null;
-        if (this.m_custom_shader_uniforms[uniform] instanceof undefined) {
+        if (typeof this.m_custom_shader_uniforms[uniform] !== 'undefined') {
             current_uniform = this.m_custom_shader_uniforms[uniform];
         } else {
             current_uniform = new gb.shader_uniform();
@@ -403,29 +403,21 @@ gb.material.prototype = {
         if (value instanceof gb.mat4) {
             current_uniform.set_mat4(value);
             current_uniform.type = gb.uniform_type.mat4;
-        }
-
-        if (value instanceof gb.vec4) {
+        } else if (value instanceof gb.vec4) {
             current_uniform.set_vec4(value);
             current_uniform.type = gb.uniform_type.vec4;
-        }
-
-        if (value instanceof gb.vec3) {
+        } else if (value instanceof gb.vec3) {
             current_uniform.set_vec3(value);
             current_uniform.type = gb.uniform_type.vec3;
-        }
-
-        if (value instanceof gb.vec2) {
+        } else if (value instanceof gb.vec2) {
             current_uniform.set_vec2(value);
             current_uniform.type = gb.uniform_type.vec2;
-        }
-
-        if (value instanceof gb.f32) {
+        } else if (value instanceof Number) {
             current_uniform.set_f32(value);
             current_uniform.type = gb.uniform_type.f32;
         }
     },
-    
+
     bind_custom_shader_uniforms: function() {
         for (var key in this.m_custom_shader_uniforms) {
             var current_uniform = this.m_custom_shader_uniforms[key];

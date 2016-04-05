@@ -71,7 +71,7 @@ gb.mesh_constructor.create_circle = function() {
 
     var index = 1;
     for (var angle = 0; angle <= Math.PI * 2.0; angle += ((Math.PI * 2.0) / num_subdivisions)) {
-        vertices[index++].m_position = new gb.vec2(radius * Math.cosf(angle), radius * Math.sinf(angle));
+        vertices[index++].m_position = new gb.vec2(radius * Math.cos(angle), radius * Math.sin(angle));
     }
     vbo.unlock();
 
@@ -90,5 +90,5 @@ gb.mesh_constructor.create_circle = function() {
     indices[num_indices - 1] = 1;
     ibo.unlock();
 
-    return new gb.mesh(vbo, ibo, gl.gl.TRIANGLES);
-}
+    return new gb.mesh(vbo, ibo, gl.TRIANGLES);
+};

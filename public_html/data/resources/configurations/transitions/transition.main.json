@@ -5,6 +5,8 @@
         "filename": "data/resources/configurations/techniques/ws_techniques/ws.technique.base.json"
     },{
         "filename": "data/resources/configurations/techniques/ws_techniques/ws.technique.forward.normal.json"
+    },{
+        "filename": "data/resources/configurations/techniques/ws_techniques/ws.technique.deferred.lighting.json"
     }],
     "ss_techniques": [
 

@@ -7,7 +7,7 @@ gb.ibo = function(size, mode)
     this.m_used_size = 0;
     this.m_mode = mode;
     
-    this.m_data = new Array();
+    this.m_data = [];
     for(var i = 0; i < this.m_allocated_size; ++i)
     {
         this.m_data[i] = 0;
@@ -31,6 +31,11 @@ gb.ibo = function(size, mode)
 gb.ibo.prototype = 
 { 
     constructor: gb.ibo,
+
+    destroy : function()
+    {
+        gl.deleteBuffer(this.m_handler);
+    },
     
     lock : function()
     {

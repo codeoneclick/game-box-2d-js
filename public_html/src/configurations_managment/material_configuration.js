@@ -145,22 +145,28 @@ gb.material_configuration = function()
 gb.material_configuration.prototype = Object.create(gb.configuration_base.prototype);
 gb.material_configuration.prototype.constructor = gb.material_configuration;
 
-gb.material_configuration.prototype.serialize = function(filename, callback) 
-{
+gb.material_configuration.prototype.serialize = function(filename, callback) {
     var self = this;
-    $.ajax({ dataType: "json", url: filename, data: {}, async: true, success: function(value) {
+    $.ajax({
+        dataType: "json",
+        url: filename,
+        data: {},
+        async: true
+    }).done(function(value) {
         self.json = value;
-        
+        console.log("loaded: " + filename);
         var configuration = new gb.shader_configuration();
         configuration.serialize(self.json.shader);
         self.set_configuration("shader", configuration);
-        
-        for(var i = 0; i < self.json.textures.length; ++i)
-        {
+
+        for (var i = 0; i < self.json.textures.length; ++i) {
             var configuration = new gb.texture_configuration();
             configuration.serialize(self.json.textures[i]);
             self.set_configuration("textures", configuration);
         }
         callback(self);
-    }});
+    }).fail(function() {
+        console.log("can't load: " + filename);
+        callback(null);
+    });
 };

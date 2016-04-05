@@ -51,5 +51,16 @@ gb.scene_fabricator.prototype = {
             self.add_materials(sprite, configuration.materials_configurations);
         });
         return sprite;
+    },
+
+    create_light_source: function(filename) {
+        var light_source = new gb.light_source();
+        this.m_game_objects.push(light_source);
+
+        var self = this;
+        this.m_configurations_accessor.get_sprite_configuration(filename, function(configuration) {
+            self.add_materials(light_source, configuration.materials_configurations);
+        });
+        return light_source;
     }
 };

@@ -120,31 +120,21 @@ gb.ces_convex_hull_component.prototype = Object.create(gb.ces_base_component.pro
 gb.ces_convex_hull_component.prototype.constructor = gb.ces_convex_hull_component;
 gb.ces_convex_hull_component.prototype.update_convex_hull = function(a) {
   if (!(3 > a.length)) {
-    for (var b = 0, c = 0;c < a.length;++c) {
-      a[c].m_position.x < a[b].m_position.x && (b = c);
+    for (var b = 0;b < a.length;++b) {
+      this.m_oriented_vertices.push(a[b].m_position);
     }
-    var d = b, e;
-    do {
-      e = (d + 1) % a.length;
-      for (c = 0;c < a.length;++c) {
-        gb.math.orientation(a[d].m_position, a[c].m_position, a[e].m_position) === gb.vertices_orientation.counterclockwise && (e = c);
-      }
-      this.m_oriented_vertices.push(a[e].m_position);
-      d = e;
-    } while (d != b);
     a = new gb.vec2(INT16_MAX);
-    b = new gb.vec2(INT16_MIN);
-    for (c = 0;c < this.m_oriented_vertices.length;++c) {
-      a = gb.vec2.min(this.m_oriented_vertices[c], a), b = gb.vec2.max(this.m_oriented_vertices[c], b);
+    for (var c = new gb.vec2(INT16_MIN), b = 0;b < this.m_oriented_vertices.length;++b) {
+      a = gb.vec2.min(this.m_oriented_vertices[b], a), c = gb.vec2.max(this.m_oriented_vertices[b], c);
     }
-    this.m_center = gb.vec2.sub(b, a).divide_scalar(2);
+    this.m_center = gb.vec2.sub(c, a).divide_scalar(2);
   }
 };
 gb.ces_geometry_component = function() {
   gb.ces_base_component.call(this);
   this.m_type = gb.ces_component_type.geometry;
   this.m_mesh = null;
-  Object.defineProperty(this, "mesh", {get:function() {
+  Object.defineProperty(this, "mesh", {configurable:!0, get:function() {
     return this.m_mesh;
   }});
 };
@@ -214,7 +204,23 @@ gb.ces_light_mask_component = function() {
   this.m_vertices = [];
   this.m_indices = [];
   Object.defineProperty(this, "mesh", {get:function() {
+    if (0 === this.m_vertices.length || 0 === this.m_indices.length) {
+      this.mesh = null;
+    } else {
+      for (var a = new gb.vbo(this.m_vertices.length, gl.STATIC_DRAW), b = a.lock(), c = 0;c < this.m_vertices.length;++c) {
+        b[c] = this.m_vertices[c];
+      }
+      a.unlock();
+      for (var b = new gb.ibo(this.m_indices.length, gl.STATIC_DRAW), d = b.lock(), c = 0;c < this.m_indices.length;++c) {
+        d[c] = this.m_indices[c];
+      }
+      b.unlock();
+      this.m_mesh = new gb.mesh(a, b, gl.TRIANGLES);
+    }
     return this.m_mesh;
+  }, set:function(a) {
+    !a && this.m_mesh && this.m_mesh.destroy();
+    this.m_mesh = a;
   }});
 };
 gb.ces_light_mask_component.prototype = Object.create(gb.ces_base_component.prototype);
@@ -228,27 +234,28 @@ gb.ces_light_mask_component.prototype.update_mask_geometry = function(a, b) {
 };
 gb.ces_light_mask_component.prototype.generate_mask_mesh = function(a) {
   for (var b = [], c = 0;c < this.m_shadow_casters_vertices.length;++c) {
-    var d = this.m_shadow_casters_vertices[c], d = Math.atan2(d.y - a.y, d.x - a.x);
-    b.push(d - 1E-4);
-    b.push(d);
-    b.push(d + 1E-4);
+    var d = this.m_shadow_casters_vertices[c], e = Math.atan2(d.y - a.y, d.x - a.x);
+    b.push(e - 1E-4);
+    b.push(e);
+    b.push(e + 1E-4);
   }
+  d = [];
   for (c = 0;c < b.length;++c) {
-    for (var d = b[c], e = new gb.vec2(Math.cos(d), Math.sin(d)), f = a, k = gb.vec2.add(a, e), l = INT16_MAX, h = new gb.vec2(INT16_MIN), g = 0;g < this.m_shadow_casters_edges.length;++g) {
-      e = gb.math.intersect(f, k, m_shadow_casters_edges[g].point_01, m_shadow_casters_edges[g].point_02), e.intersected && e.distance < l && (l = e.distance, h = e.point);
+    for (var e = b[c], f = new gb.vec2(Math.cos(e), Math.sin(e)), l = a, k = gb.vec2.add(a, f), h = INT16_MAX, g = new gb.vec2(INT16_MIN), m = 0;m < this.m_shadow_casters_edges.length;++m) {
+      f = gb.math.intersect(l, k, this.m_shadow_casters_edges[m].point_01, this.m_shadow_casters_edges[m].point_02), f.intersected && f.distance < h && (h = f.distance, g = f.point);
     }
-    h.equal(new gb.vec2(INT16_MIN)) || (void 0).push({point:h, angle:d});
+    g.equals(new gb.vec2(INT16_MIN)) || d.push({point:g, angle:e});
   }
-  (void 0).sort(function(a, b) {
+  d.sort(function(a, b) {
     return a.angle - b.angle;
   });
-  for (c = 0;c < (void 0).length;++c) {
+  for (c = 0;c < d.length;++c) {
     this.m_vertices[c] = new gb.vertex_attribute;
   }
   this.m_vertices[0].m_position = a;
   a = 1;
-  for (c = 0;c < (void 0).length;++c) {
-    e = (void 0)[c], this.m_vertices[a++].m_position = e.point;
+  for (c = 0;c < d.length;++c) {
+    f = d[c], this.m_vertices[a++].m_position = f.point;
   }
   for (c = 1;c < this.m_vertices.length;++c) {
     a = Math.max((c + 1) % m_vertices.length, 1), this.m_indices.push(0), this.m_indices.push(c), this.m_indices.push(a);
@@ -316,61 +323,6 @@ gb.ces_scene_component = function() {
 };
 gb.ces_scene_component.prototype = Object.create(gb.ces_base_component.prototype);
 gb.ces_scene_component.prototype.constructor = gb.ces_scene_component;
-gb.ces_shadow_component = function() {
-  gb.ces_base_component.call(this);
-  this.m_type = gb.ces_component_type.shadow;
-  this.m_mesh = null;
-  this.m_vertices = [];
-  this.m_indices = [];
-  Object.defineProperty(this, "mesh", {get:function() {
-    return this.m_shadow_casters;
-  }});
-};
-gb.ces_shadow_component.prototype = Object.create(gb.ces_base_component.prototype);
-gb.ces_shadow_component.prototype.constructor = gb.ces_shadow_component;
-gb.ces_shadow_component.prototype.update_shadow_geometry = function(a, b, c) {
-  for (var d = [], e = [], f = 0;f < c.length;++f) {
-    var k = gb.mat4.multiply_vec2(c[f], b), l = (f + 1) % c.length, h = gb.mat4.multiply_vec2(c[l], b), g = new gb.vec2(-1 * (k.y - h.y), k.x - h.x), k = gb.vec2.sub(a, .5 * (k + h));
-    0 > k.dot(g) && (g = e.findIndex(function(a) {
-      return a === f;
-    }), -1 === g && e.push_back(f), g = e.findIndex(function(a) {
-      return a === l;
-    }), -1 === g && e.push_back(l), d[f] = !0);
-  }
-  for (f = k = 0;f < c.length;++f) {
-    g = (f + 1) % c.length, !d[f] && d[g] && (k = g);
-  }
-  for (f = g = 0;f < Math.max(e.length - 1, 0);++f) {
-    this.m_indices.push(g + this.m_vertices.length), g += 2, this.m_indices.push(g + this.m_vertices.length), --g, this.m_indices.push(g + this.m_vertices.length), g += 1, this.m_indices.push(g + this.m_vertices.length), g += 1, this.m_indices.push(g + this.m_vertices.length), g -= 2, this.m_indices.push(g + this.m_vertices.length), g += 1;
-  }
-  for (f = 0;f < e.length;++f) {
-    this.m_vertices[f] = new gb.vertex_attribute;
-  }
-  g = this.m_vertices.length;
-  d = k;
-  for (f = 0;f < e.length;++f) {
-    this.m_vertices[g++].position = gb.mat4.multiply_vec2(c[d], b), k = gb.vec2.sub(gb.mat4.multiply_vec2(c[d], b), a), k.normalize().multiply_scalar(1024), this.m_vertices[g++].position = gb.vec2.add(gb.mat4.multiply_vec2(c[d], b), k), d = (d + 1) % c.length;
-  }
-};
-gb.ces_light_component.prototype.generate_shadow_mesh = function() {
-  if (0 === this.m_vertices.length || 0 === this.m_indices.length) {
-    this.m_mesh = null;
-  } else {
-    for (var a = new gb.vbo(this.m_vertices.length, gl.STATIC_DRAW), b = a.lock(), c = 0;c < this.m_vertices.length;++c) {
-      b[c] = this.m_vertices[c];
-    }
-    a.unlock();
-    for (var b = new gb.ibo(this.m_indices.length, gl.STATIC_DRAW), d = b.lock(), c = 0;c < this.m_indices.length;++c) {
-      d[c] = this.m_indices[c];
-    }
-    b.unlock();
-    this.m_mesh = new gb.mesh(a, b, gl.gl.TRIANGLES);
-  }
-};
-gb.ces_light_component.prototype.cleanup = function() {
-  this.m_vertices = [];
-  this.m_indices = [];
-};
 gb.ces_transformation_component = function() {
   gb.ces_base_component.call(this);
   this.m_type = gb.ces_component_type.transformation;
@@ -452,29 +404,29 @@ gb.ces_deferred_lighting_system.prototype.on_feed = function(a) {
   this.update_recursively(a);
 };
 gb.ces_deferred_lighting_system.prototype.on_feed_end = function() {
-  for (var a = 0;a < this.m_light_casters;++a) {
+  for (var a = 0;a < this.m_light_casters.length;++a) {
     var b = this.m_light_casters[a].get_component(gb.ces_component_type.light);
     b.cleanup();
     var c = this.m_light_casters[a].get_component(gb.ces_component_type.light_mask);
     c.cleanup();
     for (var d = this.m_light_casters[a].get_component(gb.ces_component_type.transformation), e = (new gb.mat4).identity(), f = this.m_light_casters[a].parent;f;) {
-      var k = f.get_component(gb.ces_component_type.transformation), e = gb.mat4.multiply(e, k.matrix_m), f = f.parent
+      var l = f.get_component(gb.ces_component_type.transformation), e = gb.mat4.multiply(e, l.matrix_m), f = f.parent
     }
     d = gb.mat4.multiply_vec2(d.position, e);
     for (e = 0;e < this.m_shadow_casters.length;++e) {
-      for (var f = this.m_shadow_casters[a].get_component(gb.ces_component_type.convex_hull), k = this.m_shadow_casters[a].get_component(gb.ces_component_type.transformation), l = (new gb.mat4).identity(), h = this.m_shadow_casters[a].parent;h;) {
-        var g = h.get_component(gb.ces_component_type.convex_hull), l = gb.mat4.multiply(l, g.matrix_m), h = h.parent
+      for (var f = this.m_shadow_casters[e].get_component(gb.ces_component_type.convex_hull), l = this.m_shadow_casters[e].get_component(gb.ces_component_type.transformation), k = (new gb.mat4).identity(), h = this.m_shadow_casters[e].parent;h;) {
+        var g = h.get_component(gb.ces_component_type.transformation), k = gb.mat4.multiply(k, g.matrix_m), h = h.parent
       }
-      l *= k.matrix_m;
-      c.update_mask_geometry(l, f.oriented_vertices);
-      b.add_shadow_caster(this.m_shadow_casters[a]);
+      k = gb.mat4.multiply(k, l.matrix_m);
+      c.update_mask_geometry(k, f.oriented_vertices);
+      b.add_shadow_caster(this.m_shadow_casters[e]);
     }
     c.generate_mask_mesh(d);
   }
 };
 gb.ces_deferred_lighting_system.prototype.update_recursively = function(a) {
   a.get_component(gb.ces_component_type.light) && this.m_light_casters.push(a);
-  a.get_component(gb.ces_component_type.shadow) && this.m_shadow_casters.push(a);
+  a.get_component(gb.ces_component_type.convex_hull) && this.m_shadow_casters.push(a);
   a = a.children;
   for (var b = 0;b < a.length;++b) {
     this.update_recursively(a[b]);
@@ -487,6 +439,11 @@ gb.ces_render_system = function() {
   Object.defineProperty(this, "render_pipeline", {get:function() {
     return this.m_render_pipeline;
   }});
+  this.k_shadow_color_uniform = "u_shadow_color";
+  this.k_light_mask_vs_flag_uniform = "u_mask_flag_vs";
+  this.k_light_mask_fs_flag_uniform = "u_mask_flag_fs";
+  this.k_shadow_color_for_casters = new gb.vec4(1);
+  this.k_shadow_color_for_receivers = new gb.vec4(0, 0, 0, .75);
 };
 gb.ces_render_system.prototype = Object.create(gb.ces_base_system.prototype);
 gb.ces_render_system.prototype.constructor = gb.ces_render_system;
@@ -498,7 +455,7 @@ gb.ces_render_system.prototype.on_feed = function(a) {
     var d = b[c], e = d.name;
     d.bind();
     for (var f = 0;f < d.num_passes;++f) {
-      this.draw_recursively(a, e, f);
+      this.draw_recursively_lights(a, e, f), this.draw_recursively(a, e, f);
     }
     d.unbind();
   }
@@ -509,27 +466,108 @@ gb.ces_render_system.prototype.on_feed_end = function() {
 gb.ces_render_system.prototype.draw_recursively = function(a, b, c) {
   var d = a.get_component(gb.ces_component_type.scene);
   if (d) {
-    var e = a.get_component(gb.ces_component_type.transformation), f = a.get_component(gb.ces_component_type.material), k = a.get_component(gb.ces_component_type.geometry);
-    if (f && k && e) {
-      var l = f.get_material(b, c), k = k.mesh;
-      if (l && l.shader && l.shader.get_status() === gb.resource_status.commited && k && a.visible) {
-        f.bind(b, c, l);
-        l.shader.set_mat4(d.camera.matrix_p, gb.shader_uniform_type.mat_p);
-        l.shader.set_mat4(d.camera.matrix_v, gb.shader_uniform_type.mat_v);
-        for (var d = (new gb.mat4).identity(), h = a.parent;h;) {
-          h.get_component(gb.ces_component_type.transformation), h = h.parent;
-        }
-        d = gb.mat4.multiply(d, e.matrix_m);
-        l.shader.set_mat4(d, gb.shader_uniform_type.mat_m);
-        k.bind(l.shader.get_attributes());
-        k.draw();
-        k.unbind(l.shader.get_attributes());
-        f.unbind(b, c, l);
+    var e = a.get_component(gb.ces_component_type.light), f = a.get_component(gb.ces_component_type.transformation), l = a.get_component(gb.ces_component_type.material), k = a.get_component(gb.ces_component_type.geometry);
+    if (!e && l && k && f && (e = l.get_material(b, c), k = k.mesh, e && e.shader && e.shader.get_status() === gb.resource_status.commited && k && a.visible)) {
+      e.set_custom_shader_uniform(this.k_shadow_color_for_casters, this.k_shadow_color_uniform);
+      l.bind(b, c, e);
+      e.shader.set_mat4(d.camera.matrix_p, gb.shader_uniform_type.mat_p);
+      e.shader.set_mat4(d.camera.matrix_v, gb.shader_uniform_type.mat_v);
+      for (var d = (new gb.mat4).identity(), h = a.parent;h;) {
+        h.get_component(gb.ces_component_type.transformation), h = h.parent;
       }
+      d = gb.mat4.multiply(d, f.matrix_m);
+      e.shader.set_mat4(d, gb.shader_uniform_type.mat_m);
+      k.bind(e.shader.get_attributes());
+      k.draw();
+      k.unbind(e.shader.get_attributes());
+      l.unbind(b, c, e);
     }
     a = a.children;
-    for (e = 0;e < a.length;++e) {
-      this.draw_recursively(a[e], b, c);
+    for (f = 0;f < a.length;++f) {
+      this.draw_recursively(a[f], b, c);
+    }
+  }
+};
+gb.ces_render_system.prototype.draw_recursively_lights = function(a, b, c) {
+  var d = a.get_component(gb.ces_component_type.scene);
+  if (d) {
+    var e = a.get_component(gb.ces_component_type.light), f = a.get_component(gb.ces_component_type.light_mask), l = a.get_component(gb.ces_component_type.transformation), k = a.get_component(gb.ces_component_type.material), h = a.get_component(gb.ces_component_type.geometry);
+    if (e && k && h && l) {
+      var g = k.get_material(b, c), m = h.mesh, n = f.mesh, p = gb.mesh_constructor.create_screen_quad();
+      g && a.visible && g.shader && g.shader.get_status() === gb.resource_status.commited && m && n && (function() {
+        gl.colorMask(gl.FALSE, gl.FALSE, gl.FALSE, gl.FALSE);
+        gl.depthMask(gl.FALSE);
+        g.stencil_function = gl.ALWAYS;
+        g.stencil_function_parameter_1 = 1;
+        g.stencil_function_parameter_2 = 255;
+        g.stencil_mask_parameter = 1;
+        g.set_custom_shader_uniform(0, this.k_light_mask_vs_flag_uniform);
+        g.set_custom_shader_uniform(1, this.k_light_mask_fs_flag_uniform);
+        k.bind(b, c, g);
+        g.shader.set_mat4(d.camera.matrix_p, gb.shader_uniform_type.mat_p);
+        g.shader.set_mat4(d.camera.matrix_v, gb.shader_uniform_type.mat_v);
+        g.shader.set_mat4((new gb.mat4).identity(), gb.shader_uniform_type.mat_m);
+        n.bind(g.shader.get_attributes());
+        n.draw();
+        n.unbind(g.shader.get_attributes());
+        for (var a = e.shadow_casters, f = 0;f < a.length;++f) {
+          var h = a[f], l = h.get_component(gb.ces_component_type.transformation), m = h.get_component(gb.ces_component_type.geometry);
+          if (h.get_component(gb.ces_component_type.material).get_material(b, c)) {
+            for (var m = m.mesh, p = (new gb.mat4).identity(), h = h.parent;h;) {
+              h.get_component(gb.ces_component_type.transformation), h = h.parent;
+            }
+            p = gb.mat4.multiply(p, l.matrix_m);
+            g.shader.set_mat4(p, gb.shader_uniform_type.mat_m);
+            m.bind(g.shader.get_attributes());
+            m.draw();
+            m.unbind(g.shader.get_attributes());
+          }
+        }
+        gl.colorMask(gl.TRUE, gl.TRUE, gl.TRUE, gl.TRUE);
+        gl.depthMask(gl.TRUE);
+        k.unbind(b, c, g);
+      }(), function() {
+        for (var d = (new gb.mat4).identity(), e = a.parent;e;) {
+          e.get_component(gb.ces_component_type.transformation), e = e.parent;
+        }
+        d = gb.mat4.multiply(d, l.matrix_m);
+        g.stencil_function = gl.EQUAL;
+        g.stencil_function_parameter_1 = 1;
+        g.stencil_function_parameter_2 = 255;
+        g.stencil_mask_parameter = 0;
+        g.blending_function_source = gl.SRC_ALPHA;
+        g.blending_function_destination = gl.ONE;
+        g.custom_shader_uniform(0, this.k_light_mask_vs_flag_uniform);
+        g.custom_shader_uniform(0, this.k_light_mask_fs_flag_uniform);
+        k.bind(b, c, g);
+        g.shader.set_mat4(d, gb.shader_uniform_type.mat_m);
+        m.bind(g.shader.get_attributes());
+        m.draw();
+        m.unbind(g.shader.get_attributes());
+        k.unbind(b, c, g);
+      }(), function() {
+        gl.colorMask(gl.FALSE, gl.FALSE, gl.FALSE, gl.FALSE);
+        gl.depthMask(gl.FALSE);
+        g.stencil_function = gl.ALWAYS;
+        g.stencil_function_parameter_1 = 0;
+        g.stencil_function_parameter_2 = 255;
+        g.stencil_mask_parameter = 1;
+        g.set_custom_shader_uniform(1, this.k_light_mask_vs_flag_uniform);
+        g.set_custom_shader_uniform(1, this.k_light_mask_fs_flag_uniform);
+        k.bind(b, c, g);
+        g.shader.set_mat4((new gb.mat4).identity(), gb.shader_uniform_type.mat_m);
+        p.bind(g.shader.get_attributes());
+        p.draw();
+        p.unbind(g.shader.get_attributes());
+        gl.colorMask(gl.TRUE, gl.TRUE, gl.TRUE, gl.TRUE);
+        gl.depthMask(gl.TRUE);
+        k.unbind(b, c, g);
+      }());
+      p.destroy();
+    }
+    f = a.children;
+    for (h = 0;h < f.length;++h) {
+      this.draw_recursively_lights(f[h], b, c);
     }
   }
 };
@@ -587,12 +625,16 @@ gb.main_technique_configuration.prototype.serialize_material_configuration = fun
 };
 gb.main_technique_configuration.prototype.serialize = function(a, b) {
   var c = this;
-  $.ajax({dataType:"json", url:a, data:{}, async:!0, success:function(a) {
-    c.json = a;
+  $.ajax({dataType:"json", url:a, data:{}, async:!0}).done(function(d) {
+    c.json = d;
+    console.log("loaded: " + a);
     c.serialize_material_configuration(function() {
       b(c);
     });
-  }});
+  }).fail(function() {
+    console.log("can't load: " + a);
+    b(null);
+  });
 };
 gb.material_configuration = function() {
   gb.configuration_base.call(this);
@@ -653,16 +695,20 @@ gb.material_configuration.prototype = Object.create(gb.configuration_base.protot
 gb.material_configuration.prototype.constructor = gb.material_configuration;
 gb.material_configuration.prototype.serialize = function(a, b) {
   var c = this;
-  $.ajax({dataType:"json", url:a, data:{}, async:!0, success:function(a) {
-    c.json = a;
-    a = new gb.shader_configuration;
-    a.serialize(c.json.shader);
-    c.set_configuration("shader", a);
+  $.ajax({dataType:"json", url:a, data:{}, async:!0}).done(function(d) {
+    c.json = d;
+    console.log("loaded: " + a);
+    d = new gb.shader_configuration;
+    d.serialize(c.json.shader);
+    c.set_configuration("shader", d);
     for (var e = 0;e < c.json.textures.length;++e) {
-      a = new gb.texture_configuration, a.serialize(c.json.textures[e]), c.set_configuration("textures", a);
+      d = new gb.texture_configuration, d.serialize(c.json.textures[e]), c.set_configuration("textures", d);
     }
     b(c);
-  }});
+  }).fail(function() {
+    console.log("can't load: " + a);
+    b(null);
+  });
 };
 gb.shader_configuration = function() {
   gb.configuration_base.call(this);
@@ -683,11 +729,12 @@ gb.sprite_configuration.prototype = Object.create(gb.game_object_configuration.p
 gb.sprite_configuration.prototype.constructor = gb.sprite_configuration;
 gb.sprite_configuration.prototype.serialize = function(a, b) {
   var c = this;
-  $.ajax({dataType:"json", url:a, data:{}, async:!0, success:function(a) {
-    c.json = a;
-    a = c.json.materials.length;
-    if (0 < a) {
-      for (var e = a, f = 0;f < a;++f) {
+  $.ajax({dataType:"json", url:a, data:{}, async:!0}).done(function(d) {
+    c.json = d;
+    console.log("loaded: " + a);
+    d = c.json.materials.length;
+    if (0 < d) {
+      for (var e = d, f = 0;f < d;++f) {
         (new gb.material_configuration).serialize(c.json.materials[f].filename, function(a) {
           c.set_configuration("materials_configurations", a);
           e--;
@@ -697,7 +744,10 @@ gb.sprite_configuration.prototype.serialize = function(a, b) {
     } else {
       b(c);
     }
-  }});
+  }).fail(function() {
+    console.log("can't load: " + a);
+    b(null);
+  });
 };
 gb.ss_technique_configuration = function() {
   gb.configuration_base.call(this);
@@ -726,12 +776,16 @@ gb.ss_technique_configuration.prototype.serialize_material_configuration = funct
 };
 gb.ss_technique_configuration.prototype.serialize = function(a, b) {
   var c = this;
-  $.ajax({dataType:"json", url:a, data:{}, async:!0, success:function(a) {
-    c.json = a;
+  $.ajax({dataType:"json", url:a, data:{}, async:!0}).done(function(d) {
+    c.json = d;
+    console.log("loaded: " + a);
     c.serialize_material_configuration(function() {
       b(c);
     });
-  }});
+  }).fail(function() {
+    console.log("can't load: " + a);
+    b(null);
+  });
 };
 gb.texture_configuration = function() {
   gb.configuration_base.call(this);
@@ -815,8 +869,9 @@ gb.transition_configuration.prototype.serialize_ss_techniques_configurations = f
 };
 gb.transition_configuration.prototype.serialize = function(a, b) {
   var c = this;
-  $.ajax({dataType:"json", url:a, data:{}, async:!0, success:function(a) {
-    c.json = a;
+  $.ajax({dataType:"json", url:a, data:{}, async:!0}).done(function(d) {
+    c.json = d;
+    console.log("loaded: " + a);
     c.serialize_main_technique_configuration(function() {
       c.serialize_ws_techniques_configurations(function() {
         c.serialize_ss_techniques_configurations(function() {
@@ -824,7 +879,10 @@ gb.transition_configuration.prototype.serialize = function(a, b) {
         });
       });
     });
-  }});
+  }).fail(function() {
+    console.log("can't load: " + a);
+    b(null);
+  });
 };
 gb.ws_technique_configuration = function() {
   gb.configuration_base.call(this);
@@ -861,10 +919,14 @@ gb.ws_technique_configuration.prototype = Object.create(gb.configuration_base.pr
 gb.ws_technique_configuration.prototype.constructor = gb.ws_technique_configuration;
 gb.ws_technique_configuration.prototype.serialize = function(a, b) {
   var c = this;
-  $.ajax({dataType:"json", url:a, data:{}, async:!0, success:function(a) {
-    c.json = a;
+  $.ajax({dataType:"json", url:a, data:{}, async:!0}).done(function(d) {
+    c.json = d;
+    console.log("loaded: " + a);
     b(c);
-  }});
+  }).fail(function() {
+    console.log("can't load: " + a);
+    b(null);
+  });
 };
 gb.game_controller = function() {
   this.m_current_transition = null;
@@ -900,7 +962,6 @@ gb.game_loop.prototype = {constructor:gb.game_loop, on_update:function() {
   for (var a = 0;a < this.m_listeners.length;++a) {
     this.m_listeners[a].on_update(0);
   }
-  console.log("on_update");
 }, add_listener:function(a) {
   _.isFunction(a.on_update) ? _.contains(this.m_listeners, a) ? console.error("can't add same listener for game loop") : this.m_listeners.push(a) : console.error("game loop listener doesn't contain on_update method");
 }, remove_listener:function(a) {
@@ -944,8 +1005,8 @@ gb.game_transition.prototype = {constructor:gb.game_transition, on_activated:fun
   this.m_configurations_accessor.get_transition_configuration(this.m_guid, function(a) {
     if (null !== a.ws_techniques_configurations) {
       for (var b = 0;b < a.ws_techniques_configurations.length;++b) {
-        var h = a.ws_techniques_configurations[b], g = Math.min(gl.viewport_width, h.screen_width), n = Math.min(gl.viewport_height, h.screen_height), g = new gb.render_technique_ws(g, n, h.technique_name, h.index, h.num_passes), n = new gb.vec4(h.clear_color_r, h.clear_color_g, h.clear_color_b, h.clear_color_a);
-        g.clear_color = n;
+        var h = a.ws_techniques_configurations[b], g = Math.min(gl.viewport_width, h.screen_width), m = Math.min(gl.viewport_height, h.screen_height), g = new gb.render_technique_ws(g, m, h.technique_name, h.index, h.num_passes), m = new gb.vec4(h.clear_color_r, h.clear_color_g, h.clear_color_b, h.clear_color_a);
+        g.clear_color = m;
         e.add_ws_render_technique(h.technique_name, h.index, g);
         f.m_resources_accessor.add_custom_resource(h.technique_name + ".color", g.color_attachment_texture);
         f.m_resources_accessor.add_custom_resource(h.technique_name + ".depth", g.depth_attachment_texture);
@@ -953,21 +1014,21 @@ gb.game_transition.prototype = {constructor:gb.game_transition, on_activated:fun
     }
     if (null !== a.ss_techniques_configurations) {
       for (b = 0;b < a.ss_techniques_configurations.length;++b) {
-        var h = a.ss_techniques_configurations[b], g = h.material_configuration, m = gb.material.construct(g);
-        gb.material.set_shader(m, g, f.m_resources_accessor);
-        gb.material.set_textures(m, g, f.m_resources_accessor);
+        var h = a.ss_techniques_configurations[b], g = h.material_configuration, n = gb.material.construct(g);
+        gb.material.set_shader(n, g, f.m_resources_accessor);
+        gb.material.set_textures(n, g, f.m_resources_accessor);
         g = Math.min(gl.viewport_width, h.screen_width);
-        n = Math.min(gl.viewport_height, h.screen_height);
-        g = new gb.render_technique_ss(g, n, h.technique_name, m);
+        m = Math.min(gl.viewport_height, h.screen_height);
+        g = new gb.render_technique_ss(g, m, h.technique_name, n);
         e.add_ss_render_technique(h.technique_name, g);
         f.m_resources_accessor.add_custom_resource(h.technique_name + ".color", g.color_attachment_texture);
       }
     }
     g = a.main_technique_configuration.material_configuration;
-    m = gb.material.construct(g);
-    gb.material.set_shader(m, g, f.m_resources_accessor);
-    gb.material.set_textures(m, g, f.m_resources_accessor);
-    e.create_main_render_technique(m);
+    n = gb.material.construct(g);
+    gb.material.set_shader(n, g, f.m_resources_accessor);
+    gb.material.set_textures(n, g, f.m_resources_accessor);
+    e.create_main_render_technique(n);
     a = new gb.scene_fabricator;
     a.configurations_accessor = f.m_configurations_accessor;
     a.resources_accessor = f.m_resources_accessor;
@@ -1030,7 +1091,7 @@ gb.mesh_constructor.create_circle = function() {
   var a = new gb.vbo(33, gl.STATIC_DRAW), b = a.lock();
   b[0].m_position = new gb.vec2(0, 0);
   for (var c = 1, d = 0;d <= 2 * Math.PI;d += 2 * Math.PI / 32) {
-    b[c++].m_position = new gb.vec2(1 * Math.cosf(d), 1 * Math.sinf(d));
+    b[c++].m_position = new gb.vec2(1 * Math.cos(d), 1 * Math.sin(d));
   }
   a.unlock();
   for (var c = 1, b = new gb.ibo(99, gl.STATIC_DRAW), d = b.lock(), e = 0;96 > e;e += 3) {
@@ -1040,21 +1101,21 @@ gb.mesh_constructor.create_circle = function() {
   d[97] = c - 1;
   d[98] = 1;
   b.unlock();
-  return new gb.mesh(a, b, gl.gl.TRIANGLES);
+  return new gb.mesh(a, b, gl.TRIANGLES);
 };
 gb.mat4 = function() {
   this.m_elements = [[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]];
 };
 gb.mat4.multiply = function(a, b) {
-  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, f = c[0], k = c[4], l = c[8], h = c[12], g = c[1], n = c[5], m = c[9], p = c[13], q = c[2], r = c[6], t = c[10], u = c[14], v = c[3], w = c[7], x = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
-  e.m_elements[0] = f * y + k * C + l * G + h * K;
-  e.m_elements[4] = f * z + k * D + l * H + h * L;
-  e.m_elements[8] = f * A + k * E + l * I + h * M;
-  e.m_elements[12] = f * B + k * F + l * J + h * d;
-  e.m_elements[1] = g * y + n * C + m * G + p * K;
-  e.m_elements[5] = g * z + n * D + m * H + p * L;
-  e.m_elements[9] = g * A + n * E + m * I + p * M;
-  e.m_elements[13] = g * B + n * F + m * J + p * d;
+  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, f = c[0], l = c[4], k = c[8], h = c[12], g = c[1], m = c[5], n = c[9], p = c[13], q = c[2], r = c[6], t = c[10], u = c[14], v = c[3], w = c[7], x = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
+  e.m_elements[0] = f * y + l * C + k * G + h * K;
+  e.m_elements[4] = f * z + l * D + k * H + h * L;
+  e.m_elements[8] = f * A + l * E + k * I + h * M;
+  e.m_elements[12] = f * B + l * F + k * J + h * d;
+  e.m_elements[1] = g * y + m * C + n * G + p * K;
+  e.m_elements[5] = g * z + m * D + n * H + p * L;
+  e.m_elements[9] = g * A + m * E + n * I + p * M;
+  e.m_elements[13] = g * B + m * F + n * J + p * d;
   e.m_elements[2] = q * y + r * C + t * G + u * K;
   e.m_elements[6] = q * z + r * D + t * H + u * L;
   e.m_elements[10] = q * A + r * E + t * I + u * M;
@@ -1074,7 +1135,7 @@ gb.mat4.multiply_vec4 = function(a, b) {
   return c;
 };
 gb.mat4.multiply_vec2 = function(a, b) {
-  var c = gb.multiply_vec4(new gb.vec4(a.x, a.y, 0, 1), b);
+  var c = gb.mat4.multiply_vec4(new gb.vec4(a.x, a.y, 0, 1), b);
   return new gb.vec2(c.x, c.y);
 };
 gb.mat4.prototype = {constructor:gb.mat4, identity:function() {
@@ -1098,15 +1159,15 @@ gb.mat4.prototype = {constructor:gb.mat4, identity:function() {
 }, rotate:function(a) {
   var b = a.x, c = a.y, d = a.z;
   a = Math.cos(b);
-  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), f = Math.cos(d), d = Math.sin(d), k = a * f, l = a * d, h = b * f, g = b * d;
+  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), f = Math.cos(d), d = Math.sin(d), l = a * f, k = a * d, h = b * f, g = b * d;
   this.m_elements[0] = e * f;
   this.m_elements[4] = -e * d;
   this.m_elements[8] = c;
-  this.m_elements[1] = l + h * c;
-  this.m_elements[5] = k - g * c;
+  this.m_elements[1] = k + h * c;
+  this.m_elements[5] = l - g * c;
   this.m_elements[9] = -b * e;
-  this.m_elements[2] = g - k * c;
-  this.m_elements[6] = h + l * c;
+  this.m_elements[2] = g - l * c;
+  this.m_elements[6] = h + k * c;
   this.m_elements[10] = a * e;
   this.m_elements[3] = 0;
   this.m_elements[7] = 0;
@@ -1267,18 +1328,18 @@ gb.math.degrees = function(a) {
   return 180 / Math.PI * a;
 };
 gb.math.intersect = function(a, b, c, d) {
-  var e = a.x, f = a.y, k = b.x - a.x;
+  var e = a.x, f = a.y, l = b.x - a.x;
   a = b.y - a.y;
   b = c.x;
-  var l = d.x - c.x;
+  var k = d.x - c.x;
   d = d.y - c.y;
-  var h = Math.sqrt(k * k + a * a), g = Math.sqrt(l * l + d * d);
-  if (k / h == l / g && a / h == d / g) {
+  var h = Math.sqrt(l * l + a * a), g = Math.sqrt(k * k + d * d);
+  if (l / h == k / g && a / h == d / g) {
     return {intersected:!1};
   }
-  c = (k * (c.y - f) + a * (e - b)) / (l * a - d * k);
-  b = (b + l * c - e) / k;
-  return 0 > b || 0 > c || 1 < c ? {intersected:!1} : {intersected:!1, point:new gb.vec2(e + k * b, f + a * b), distance:b};
+  c = (l * (c.y - f) + a * (e - b)) / (k * a - d * l);
+  b = (b + k * c - e) / l;
+  return 0 > b || 0 > c || 1 < c ? {intersected:!1} : {intersected:!1, point:new gb.vec2(e + l * b, f + a * b), distance:b};
 };
 gb.vertices_orientation = {colinear:0, clockwise:1, counterclockwise:1};
 gb.math.orientation = function(a, b, c) {
@@ -1862,12 +1923,8 @@ gb.material.prototype = {constructor:gb.material, set_texture:function(a, b) {
   this.m_parameters.textures[b] = a;
 }, set_custom_shader_uniform:function(a, b) {
   var c = null;
-  this.m_custom_shader_uniforms[b] instanceof void 0 ? c = this.m_custom_shader_uniforms[b] : (c = new gb.shader_uniform, this.m_custom_shader_uniforms[b] = c);
-  a instanceof gb.mat4 && (c.set_mat4(a), c.type = gb.uniform_type.mat4);
-  a instanceof gb.vec4 && (c.set_vec4(a), c.type = gb.uniform_type.vec4);
-  a instanceof gb.vec3 && (c.set_vec3(a), c.type = gb.uniform_type.vec3);
-  a instanceof gb.vec2 && (c.set_vec2(a), c.type = gb.uniform_type.vec2);
-  a instanceof gb.f32 && (c.set_f32(a), c.type = gb.uniform_type.f32);
+  "undefined" !== typeof this.m_custom_shader_uniforms[b] ? c = this.m_custom_shader_uniforms[b] : (c = new gb.shader_uniform, this.m_custom_shader_uniforms[b] = c);
+  a instanceof gb.mat4 ? (c.set_mat4(a), c.type = gb.uniform_type.mat4) : a instanceof gb.vec4 ? (c.set_vec4(a), c.type = gb.uniform_type.vec4) : a instanceof gb.vec3 ? (c.set_vec3(a), c.type = gb.uniform_type.vec3) : a instanceof gb.vec2 ? (c.set_vec2(a), c.type = gb.uniform_type.vec2) : a instanceof Number && (c.set_f32(a), c.type = gb.uniform_type.f32);
 }, bind_custom_shader_uniforms:function() {
   for (var a in this.m_custom_shader_uniforms) {
     var b = this.m_custom_shader_uniforms[a];
@@ -2101,7 +2158,9 @@ gb.ibo = function(a, b) {
     return this.m_used_size;
   }});
 };
-gb.ibo.prototype = {constructor:gb.ibo, lock:function() {
+gb.ibo.prototype = {constructor:gb.ibo, destroy:function() {
+  gl.deleteBuffer(this.m_handler);
+}, lock:function() {
   return this.m_data;
 }, unlock:function() {
   this.m_used_size = 0 !== arguments.length && 0 < arguments[0] && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
@@ -2123,7 +2182,10 @@ gb.mesh = function(a, b, c) {
     return this.m_ibo;
   }});
 };
-gb.mesh.prototype = {constructor:gb.mesh, bind:function(a) {
+gb.mesh.prototype = {constructor:gb.mesh, destroy:function() {
+  this.vbo.destroy();
+  this.ibo.destroy();
+}, bind:function(a) {
   this.m_vbo.bind(a);
   this.m_ibo.bind();
 }, unbind:function(a) {
@@ -2525,8 +2587,8 @@ gb.shader.prototype.get_attributes = function() {
 };
 gb.shader.prototype.get_custom_uniform = function(a) {
   var b = -1;
-  "undefined" === typeof this.m_custom_uniforms[a] && (b = gl.getUniformLocation(this.m_shader_id, a), this.m_custom_uniforms[a] = b);
-  return this;
+  "undefined" !== typeof this.m_custom_uniforms[a] ? b = this.m_custom_uniforms[a] : (b = gl.getUniformLocation(this.m_shader_id, a), this.m_custom_uniforms[a] = b);
+  return b;
 };
 gb.shader.prototype.set_mat4 = function(a, b) {
   this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform), gl.uniformMatrix4fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a.to_array())), this.m_cached_uniforms[b].set_mat4(a));
@@ -2535,31 +2597,31 @@ gb.shader.prototype.set_custom_mat4 = function(a, b) {
   this.get_status() === gb.resource_status.commited && gl.uniformMatrix4fv(this.get_custom_uniform(b), gl.FALSE, new Float32Array(a.to_array()));
 };
 gb.shader.prototype.set_vec4 = function(a, b) {
-  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform), gl.uniform4fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a)), this.m_cached_uniforms[b].set_vec4(a));
+  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform), gl.uniform4fv(this.m_uniforms[b], new Float32Array(a)), this.m_cached_uniforms[b].set_vec4(a));
 };
 gb.shader.prototype.set_custom_vec4 = function(a, b) {
-  this.get_status() === gb.resource_status.commited && gl.uniform4fv(this.get_custom_uniform(b), gl.FALSE, new Float32Array(a));
+  this.get_status() === gb.resource_status.commited && gl.uniform4fv(this.get_custom_uniform(b), new Float32Array(a));
 };
 gb.shader.prototype.set_vec3 = function(a, b) {
-  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform), gl.uniform3fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a)), this.m_cached_uniforms[b].set_vec3(a));
+  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform), gl.uniform3fv(this.m_uniforms[b], new Float32Array(a)), this.m_cached_uniforms[b].set_vec3(a));
 };
 gb.shader.prototype.set_custom_vec3 = function(a, b) {
-  this.get_status() === gb.resource_status.commited && gl.uniform3fv(this.get_custom_uniform(b), gl.FALSE, new Float32Array(a));
+  this.get_status() === gb.resource_status.commited && gl.uniform3fv(this.get_custom_uniform(b), new Float32Array(a));
 };
 gb.shader.prototype.set_vec2 = function(a, b) {
-  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform), gl.uniform2fv(this.m_uniforms[b], gl.FALSE, new Float32Array(a)), this.m_cached_uniforms[b].set_vec2(a));
+  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform), gl.uniform2fv(this.m_uniforms[b], new Float32Array(a)), this.m_cached_uniforms[b].set_vec2(a));
 };
 gb.shader.prototype.set_custom_vec2 = function(a, b) {
-  this.get_status() === gb.resource_status.commited && gl.uniform2fv(this.get_custom_uniform(b), gl.FALSE, new Float32Array(a));
+  this.get_status() === gb.resource_status.commited && gl.uniform2fv(this.get_custom_uniform(b), new Float32Array(a));
 };
 gb.shader.prototype.set_f32 = function(a, b) {
-  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform), gl.uniform1f(this.m_uniforms[b], gl.FALSE, a), this.m_cached_uniforms[b].set_f32(a));
+  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform), gl.uniform1f(this.m_uniforms[b], a), this.m_cached_uniforms[b].set_f32(a));
 };
 gb.shader.prototype.set_custom_f32 = function(a, b) {
   this.get_status() === gb.resource_status.commited && gl.uniform1f(this.get_custom_uniform(b), a);
 };
 gb.shader.prototype.set_i32 = function(a, b) {
-  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform), gl.uniform1i(this.m_uniforms[b], gl.FALSE, a), this.m_cached_uniforms[b].set_i32(a));
+  this.get_status() !== gb.resource_status.commited || "undefined" !== typeof this.m_cached_uniforms[b] && this.m_cached_uniforms[b] === a || ("undefined" === typeof this.m_cached_uniforms[b] && (this.m_cached_uniforms[b] = new gb.shader_uniform), gl.uniform1i(this.m_uniforms[b], a), this.m_cached_uniforms[b].set_i32(a));
 };
 gb.shader.prototype.set_custom_i32 = function(a, b) {
   this.get_status() === gb.resource_status.commited && gl.uniform1i(this.get_custom_uniform(b), a);
@@ -2611,6 +2673,9 @@ gb.texture.construct = function(a, b, c, d) {
   a.m_height = d;
   a.m_status = gb.resource_status.commited;
   return a;
+};
+gb.texture.prototype.destroy = function() {
+  gl.deleteTexture(this.m_texture_id);
 };
 gb.texture.prototype.on_transfering_data_serialized = function(a) {
   switch(a.type) {
@@ -2738,7 +2803,9 @@ gb.vbo = function(a, b) {
     return this.m_max_bound;
   }});
 };
-gb.vbo.prototype = {constructor:gb.vbo, lock:function() {
+gb.vbo.prototype = {constructor:gb.vbo, destroy:function() {
+  gl.deleteBuffer(this.m_handler);
+}, lock:function() {
   return this.m_data;
 }, unlock:function() {
   this.m_used_size = 0 !== arguments.length && 0 < arguments[0] && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
@@ -2859,13 +2926,10 @@ gb.light_source = function() {
   }});
   Object.defineProperty(this, "position", {configurable:!0, set:function(a) {
     this.get_component(gb.ces_component_type.transformation).position = a;
-    a = (new gb.mat4).identity();
-    for (var c = entity.parent;c;) {
-      var d = c.get_component(gb.ces_component_type.transformation);
-      a = gb.mat4.multiply(a, d.matrix_m);
-      c = c.parent;
+    for (var c = (new gb.mat4).identity(), d = this.parent;d;) {
+      var e = d.get_component(gb.ces_component_type.transformation), c = gb.mat4.multiply(c, e.matrix_m), d = d.parent
     }
-    a = gb.mat4.multiply_vec2(position, a);
+    a = gb.mat4.multiply_vec2(a, c);
     this.get_component(gb.ces_component_type.material).set_custom_shader_uniform(a, k_center_uniform);
   }, get:function() {
     return this.get_component(gb.ces_component_type.transformation).position;
@@ -2896,6 +2960,14 @@ gb.scene_fabricator.prototype = {constructor:gb.scene_fabricator, add_materials:
   }
 }, create_sprite:function(a) {
   var b = new gb.sprite;
+  this.m_game_objects.push(b);
+  var c = this;
+  this.m_configurations_accessor.get_sprite_configuration(a, function(a) {
+    c.add_materials(b, a.materials_configurations);
+  });
+  return b;
+}, create_light_source:function(a) {
+  var b = new gb.light_source;
   this.m_game_objects.push(b);
   var c = this;
   this.m_configurations_accessor.get_sprite_configuration(a, function(a) {
@@ -2943,6 +3015,18 @@ gb.sprite = function() {
     return this.get_component(gb.ces_component_type.geometry).pivot;
   }, set:function(a) {
     this.get_component(gb.ces_component_type.geometry).pivot = a;
+  }});
+  Object.defineProperty(this, "cast_shadow", {get:function() {
+    return this.is_component_exist(gb.ces_component_type.convex_hull);
+  }, set:function(a) {
+    if (a) {
+      a = this.get_component(gb.ces_component_type.geometry);
+      var c = new gb.ces_convex_hull_component;
+      c.update_convex_hull(a.mesh.vbo.lock());
+      this.add_component(c);
+    } else {
+      this.remove_component(gb.ces_component_type.convex_hull);
+    }
   }});
 };
 gb.sprite.prototype = Object.create(gb.game_object.prototype);
