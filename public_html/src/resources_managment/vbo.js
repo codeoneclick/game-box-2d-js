@@ -99,6 +99,11 @@ gb.vbo = function(size, mode)
 gb.vbo.prototype = 
 { 
     constructor: gb.vbo,
+
+    destroy : function()
+    {
+        gl.deleteBuffer(this.m_handler);
+    },
     
     lock : function()
     {

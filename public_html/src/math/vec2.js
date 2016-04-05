@@ -163,8 +163,8 @@ gb.vec2.prototype = {
 
     to_array: function() {
         var array = [];
-        array[0] = this.x;
-        array[1] = this.y;
+        array.push(this.x);
+        array.push(this.y);
         return array;
     }
 };

@@ -1,7 +1,6 @@
 /* global gb */
 
 "use strict";
-
 gb.ces_light_mask_component = function() {
     gb.ces_base_component.call(this);
 
@@ -14,10 +13,39 @@ gb.ces_light_mask_component = function() {
 
     Object.defineProperty(this, 'mesh', {
         get: function() {
+
+            if (this.m_vertices.length === 0 || this.m_indices.length === 0) {
+                this.mesh = null;
+            } else {
+                var vbo = new gb.vbo(this.m_vertices.length, gl.STATIC_DRAW);
+                var vertices = vbo.lock();
+                for(var i = 0; i < this.m_vertices.length; ++i)
+                {
+                    vertices[i] = this.m_vertices[i];
+                }
+                vbo.unlock();
+
+                var ibo = new gb.ibo(this.m_indices.length, gl.STATIC_DRAW);
+                var indices = ibo.lock();
+                for(var i = 0; i < this.m_indices.length; ++i)
+                {
+                    indices[i] = this.m_indices[i];
+                }
+                ibo.unlock();
+
+                this.m_mesh = new gb.mesh(vbo, ibo, gl.TRIANGLES);
+            }
             return this.m_mesh;
+        },
+        set: function(value) {
+            if (!value && this.m_mesh) {
+                this.m_mesh.destroy();
+            }
+            this.m_mesh = value;
         }
     });
 };
+
 gb.ces_light_mask_component.prototype = Object.create(gb.ces_base_component.prototype);
 gb.ces_light_mask_component.prototype.constructor = gb.ces_light_mask_component;
 
@@ -25,14 +53,15 @@ gb.ces_light_mask_component.prototype.update_mask_geometry = function(shadow_cas
     for (var i = 0; i < convex_hull_oriented_vertices.length; ++i) {
         var next_vertex_index = (i + 1) % convex_hull_oriented_vertices.length;
         this.m_shadow_casters_edges.push({
-            "point_01": gb.mat4.multiply_vec2(convex_hull_oriented_vertices[i], shadow_caster_matrix_m),
-            "point_02": gb.mat4.multiply_vec2(convex_hull_oriented_vertices[next_vertex_index], shadow_caster_matrix_m)
+            point_01: gb.mat4.multiply_vec2(convex_hull_oriented_vertices[i], shadow_caster_matrix_m),
+            point_02: gb.mat4.multiply_vec2(convex_hull_oriented_vertices[next_vertex_index], shadow_caster_matrix_m)
         });
         this.m_shadow_casters_vertices.push(gb.mat4.multiply_vec2(convex_hull_oriented_vertices[i], shadow_caster_matrix_m));
     }
 };
 
 gb.ces_light_mask_component.prototype.generate_mask_mesh = function(light_caster_position) {
+    
     var angles = [];
     for(var i = 0; i < this.m_shadow_casters_vertices.length; ++i) {
         var point = this.m_shadow_casters_vertices[i];
@@ -43,18 +72,18 @@ gb.ces_light_mask_component.prototype.generate_mask_mesh = function(light_caster
         angles.push(angle + 0.0001);
     }
 
-    var intersections;
+    var intersections = [];
     for (var i = 0; i < angles.length; ++i) {
         var angle = angles[i];
         var direction = new gb.vec2(Math.cos(angle), Math.sin(angle));
-        var ray = {"origin": light_caster_position, "direction": gb.vec2.add(light_caster_position, direction)};
+        var ray = {origin: light_caster_position, direction: gb.vec2.add(light_caster_position, direction)};
 
         var closest_distance = INT16_MAX;
         var closest_intersection = new gb.vec2(INT16_MIN);
 
         for (var j = 0; j < this.m_shadow_casters_edges.length; ++j) {
             var distance = INT16_MAX;
-            var intersection = gb.math.intersect(ray.origin, ray.direction, m_shadow_casters_edges[j].point_01, m_shadow_casters_edges[j].point_02);
+            var intersection = gb.math.intersect(ray.origin, ray.direction, this.m_shadow_casters_edges[j].point_01, this.m_shadow_casters_edges[j].point_02);
             if (!intersection.intersected) {
                 continue;
             }
@@ -64,17 +93,17 @@ gb.ces_light_mask_component.prototype.generate_mask_mesh = function(light_caster
             }
         }
 
-        if (closest_intersection.equal(new gb.vec2(INT16_MIN))) {
+        if (closest_intersection.equals(new gb.vec2(INT16_MIN))) {
             continue;
         }
-        intersections.push({"point": closest_intersection, "angle": angle});
+        intersections.push({point: closest_intersection, angle: angle});
     }
 
     intersections.sort(function(a, b) {
         return a.angle - b.angle;
     });
 
-    for (var i = 0; i < intersections.length; ++i) {
+    for (var i = 0; i < intersections.length + 1; ++i) {
         this.m_vertices[i] = new gb.vertex_attribute();
     }
     this.m_vertices[0].m_position = light_caster_position;
@@ -86,7 +115,7 @@ gb.ces_light_mask_component.prototype.generate_mask_mesh = function(light_caster
     }
 
     for (var i = 1; i < this.m_vertices.length; ++i) {
-        var next_vertex_index = Math.max((i + 1) % m_vertices.length, 1);
+        var next_vertex_index = Math.max((i + 1) % this.m_vertices.length, 1);
         this.m_indices.push(0);
         this.m_indices.push(i);
         this.m_indices.push(next_vertex_index);

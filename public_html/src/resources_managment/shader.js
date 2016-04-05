@@ -1,6 +1,7 @@
 /* global gb, gl */
 
 gb.uniform_type = {
+    undefined: -1,
     mat4 : 0,
     mat4_array : 1,
     vec4 : 2,
@@ -53,21 +54,30 @@ gb.uniform_names = {
     u_mat_p : "u_mat_p",
     u_mat_v : "u_mat_v"
 };
-    
+
 gb.sampler_names = {
-    sampler_01 : "sampler_01",
-    sampler_02 : "sampler_02",
-    sampler_03 : "sampler_03",
-    sampler_04 : "sampler_04",
-    sampler_05 : "sampler_05",
-    sampler_06 : "sampler_06",
-    sampler_07 : "sampler_07",
-    sampler_08 : "sampler_08"
+    sampler_01: "sampler_01",
+    sampler_02: "sampler_02",
+    sampler_03: "sampler_03",
+    sampler_04: "sampler_04",
+    sampler_05: "sampler_05",
+    sampler_06: "sampler_06",
+    sampler_07: "sampler_07",
+    sampler_08: "sampler_08"
 };
 
-gb.shader_uniform = function(type)
-{
-    this.m_type = type;
+gb.shader_uniform = function() {
+
+    this.m_type = gb.uniform_type.undefined;
+
+    Object.defineProperty(this, "type", {
+        get: function() {
+            return this.m_type;
+        },
+        set: function(value) {
+            this.m_type = value;
+        }
+    });
 };
 
 gb.shader_uniform.prototype = 
@@ -186,7 +196,7 @@ gb.shader_uniform.prototype =
         return this.m_vec2_array;
     },
     
-    get_f32 : function(value)
+    get_f32 : function()
     {
         return this.m_f32_value;
     },
@@ -311,9 +321,10 @@ gb.shader.prototype.get_custom_uniform = function(uniform)
     else
     {
         handler = gl.getUniformLocation(this.m_shader_id, uniform);
+        console.log("custom shader uniform location: " + uniform + " = " + handler);
         this.m_custom_uniforms[uniform] = handler;
     }
-    return this;
+    return handler;
 };
 
 gb.shader.prototype.set_mat4 = function(value, uniform)
@@ -326,10 +337,10 @@ gb.shader.prototype.set_mat4 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.mat4);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform();
         }
         var handler = this.m_uniforms[uniform];
-        gl.uniformMatrix4fv(handler, gl.FALSE, new Float32Array(value.to_array()));
+        gl.uniformMatrix4fv(handler, false, new Float32Array(value.to_array()));
         this.m_cached_uniforms[uniform].set_mat4(value);
     }
 };
@@ -338,7 +349,7 @@ gb.shader.prototype.set_custom_mat4 = function(value, uniform)
 {
     if(this.get_status() === gb.resource_status.commited)
     {
-        gl.uniformMatrix4fv(this.get_custom_uniform(uniform), gl.FALSE, new Float32Array(value.to_array()));
+        gl.uniformMatrix4fv(this.get_custom_uniform(uniform), false, new Float32Array(value.to_array()));
     }
 };
 
@@ -352,10 +363,10 @@ gb.shader.prototype.set_vec4 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.vec4);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform();
         }
         var handler = this.m_uniforms[uniform];
-        gl.uniform4fv(handler, gl.FALSE, new Float32Array(value));
+        gl.uniform4fv(handler, new Float32Array(value.to_array()));
         this.m_cached_uniforms[uniform].set_vec4(value);
     }
 };
@@ -364,7 +375,7 @@ gb.shader.prototype.set_custom_vec4 = function(value, uniform)
 {
     if(this.get_status() === gb.resource_status.commited)
     {
-        gl.uniform4fv(this.get_custom_uniform(uniform), gl.FALSE, new Float32Array(value));
+        gl.uniform4fv(this.get_custom_uniform(uniform), new Float32Array(value.to_array()));
     }
 };
 
@@ -378,10 +389,10 @@ gb.shader.prototype.set_vec3 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.vec3);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform();
         }
         var handler = this.m_uniforms[uniform];
-        gl.uniform3fv(handler, gl.FALSE, new Float32Array(value));
+        gl.uniform3fv(handler, new Float32Array(value.to_array()));
         this.m_cached_uniforms[uniform].set_vec3(value);
     }
 };
@@ -390,7 +401,7 @@ gb.shader.prototype.set_custom_vec3 = function(value, uniform)
 {
     if(this.get_status() === gb.resource_status.commited)
     {
-        gl.uniform3fv(this.get_custom_uniform(uniform), gl.FALSE, new Float32Array(value));
+        gl.uniform3fv(this.get_custom_uniform(uniform), new Float32Array(value.to_array()));
     }
 };
 
@@ -404,10 +415,10 @@ gb.shader.prototype.set_vec2 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.vec2);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform();
         }
         var handler = this.m_uniforms[uniform];
-        gl.uniform2fv(handler, gl.FALSE, new Float32Array(value));
+        gl.uniform2fv(handler, new Float32Array(value.to_array()));
         this.m_cached_uniforms[uniform].set_vec2(value);
     }
 };
@@ -416,7 +427,7 @@ gb.shader.prototype.set_custom_vec2 = function(value, uniform)
 {
     if(this.get_status() === gb.resource_status.commited)
     {
-        gl.uniform2fv(this.get_custom_uniform(uniform), gl.FALSE, new Float32Array(value));
+        gl.uniform2fv(this.get_custom_uniform(uniform), new Float32Array(value.to_array()));
     }
 };
 
@@ -430,10 +441,10 @@ gb.shader.prototype.set_f32 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.f32);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform();
         }
         var handler = this.m_uniforms[uniform];
-        gl.uniform1f(handler, gl.FALSE, value);
+        gl.uniform1f(handler, value);
         this.m_cached_uniforms[uniform].set_f32(value);
     }
 };
@@ -456,10 +467,10 @@ gb.shader.prototype.set_i32 = function(value, uniform)
         }
         else if(typeof this.m_cached_uniforms[uniform] === 'undefined')
         {
-            this.m_cached_uniforms[uniform] = new gb.shader_uniform(gb.uniform_type.i32);
+            this.m_cached_uniforms[uniform] = new gb.shader_uniform();
         }
         var handler = this.m_uniforms[uniform];
-        gl.uniform1i(handler, gl.FALSE, value);
+        gl.uniform1i(handler, value);
         this.m_cached_uniforms[uniform].set_i32(value);
     }
 };

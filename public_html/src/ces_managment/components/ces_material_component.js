@@ -48,3 +48,18 @@ gb.ces_material_component.prototype.unbind = function(technique_name, technique_
     }
     using_material.unbind();
 };
+
+gb.ces_material_component.prototype.set_custom_shader_uniform = function(value, uniform, technique_name, technique_pass) {
+    if (arguments.length == 4) {
+        var material = this.get_material(technique_name, technique_pass);
+        if (material) {
+            material.set_custom_shader_uniform(value, uniform);
+        }
+    } else {
+        for (var key in this.m_materials) {
+            for (var i = 0; i < this.m_materials[key].length; ++i) {
+                this.m_materials[key][i].set_custom_shader_uniform(value, uniform);
+            }
+        }
+    }
+};

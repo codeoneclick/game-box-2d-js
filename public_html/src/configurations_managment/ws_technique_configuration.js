@@ -72,11 +72,19 @@ gb.ws_technique_configuration = function()
 gb.ws_technique_configuration.prototype = Object.create(gb.configuration_base.prototype);
 gb.ws_technique_configuration.prototype.constructor = gb.ws_technique_configuration;
 
-gb.ws_technique_configuration.prototype.serialize = function(filename, callback) 
-{
+gb.ws_technique_configuration.prototype.serialize = function(filename, callback) {
     var self = this;
-    $.ajax({ dataType: "json", url: filename, data: {}, async: true, success: function(value) {
+    $.ajax({
+        dataType: "json",
+        url: filename,
+        data: {},
+        async: true
+    }).done(function(value) {
         self.json = value;
+        console.log("loaded: " + filename);
         callback(self);
-    }});
+    }).fail(function() {
+        console.log("can't load: " + filename);
+        callback(null);
+    });
 };

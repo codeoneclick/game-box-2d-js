@@ -50,7 +50,7 @@ gb.render_technique_ss.prototype.bind = function()
     
     gl.disable(gl.DEPTH_TEST);
     gb.material_cached_parameters.get_cached_parameters().is_depth_test = false;
-    gl.depthMask(gl.FALSE);
+    gl.depthMask(false);
     gb.material_cached_parameters.get_cached_parameters().is_depth_mask = false;
     gl.disable(gl.STENCIL_TEST);
     gb.material_cached_parameters.get_cached_parameters().is_stencil_test = false;

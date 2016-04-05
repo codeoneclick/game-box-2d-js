@@ -32,6 +32,25 @@ gb.sprite = function() {
 			geometry_component.pivot = value;
 		}
 	});
+
+	Object.defineProperty(this, 'cast_shadow', {
+		get: function() {
+			return this.is_component_exist(gb.ces_component_type.convex_hull);
+		},
+		set: function(value) {
+			if(value)
+			{
+				var geometry_component = this.get_component(gb.ces_component_type.geometry);
+				var convex_hull_component = new gb.ces_convex_hull_component();
+				convex_hull_component.update_convex_hull(geometry_component.mesh.vbo.lock());
+				this.add_component(convex_hull_component);
+			}
+			else
+			{
+				this.remove_component(gb.ces_component_type.convex_hull);
+			}
+		}
+	});
 };
 gb.sprite.prototype = Object.create(gb.game_object.prototype);
 gb.sprite.prototype.constructor = gb.sprite;

@@ -17,6 +17,14 @@ gb.math.degrees = function(radians) {
 	return 180 / Math.PI * radians;
 };
 
+gb.math.is_int = function(value) {
+    return Number(value) === value && value % 1 === 0;
+};
+
+gb.math.is_float = function(value) {
+    return Number(value) === value && value % 1 !== 0;
+};
+
 gb.math.intersect = function(ray_origin, ray_direction, edge_point_01, edge_point_02) {
 	var r_px = ray_origin.x;
 	var r_py = ray_origin.y;
@@ -31,9 +39,12 @@ gb.math.intersect = function(ray_origin, ray_direction, edge_point_01, edge_poin
 	var r_mag = Math.sqrt(r_dx * r_dx + r_dy * r_dy);
 	var s_mag = Math.sqrt(s_dx * s_dx + s_dy * s_dy);
 
-	if (r_dx / r_mag == s_dx / s_mag && r_dy / r_mag == s_dy / s_mag) {
+	if (r_dx / r_mag === s_dx / s_mag && r_dy / r_mag === s_dy / s_mag) {
+		//console.log("ray origin: " + ray_origin.x + ", " + ray_origin.y + "ray direction: " + ray_direction.x + ", " + ray_direction.y);
+		//console.log("not intersected");
+		//console.log("point_01: " + edge_point_01.x + ", " + edge_point_01.y + "point_02: " + edge_point_02.x + ", " + edge_point_02.y);
 		return {
-			"intersected": false
+			intersected: false
 		};
 	}
 
@@ -41,21 +52,30 @@ gb.math.intersect = function(ray_origin, ray_direction, edge_point_01, edge_poin
 	var t_1 = (s_px + s_dx * t_2 - r_px) / r_dx;
 
 	if (t_1 < 0.0) {
+		//console.log("ray origin: " + ray_origin.x + ", " + ray_origin.y + "ray direction: " + ray_direction.x + ", " + ray_direction.y);
+		//console.log("not intersected");
+		//console.log("point_01: " + edge_point_01.x + ", " + edge_point_01.y + "point_02: " + edge_point_02.x + ", " + edge_point_02.y);
 		return {
-			"intersected": false
+			intersected: false
 		};
 	}
 
 	if (t_2 < 0.0 || t_2 > 1.0) {
+		//console.log("ray origin: " + ray_origin.x + ", " + ray_origin.y + "ray direction: " + ray_direction.x + ", " + ray_direction.y);
+		//console.log("not intersected");
+		//console.log("point_01: " + edge_point_01.x + ", " + edge_point_01.y + "point_02: " + edge_point_02.x + ", " + edge_point_02.y);
 		return {
-			"intersected": false
+			intersected: false
 		};
 	}
 
+	//console.log("ray origin: " + ray_origin.x + ", " + ray_origin.y + " ray direction: " + ray_direction.x + ", " + ray_direction.y);
+	//console.log("intersected");
+	//console.log("point_01: " + edge_point_01.x + ", " + edge_point_01.y + " point_02: " + edge_point_02.x + ", " + edge_point_02.y);
 	return {
-		"intersected": false,
-		"point": new gb.vec2(r_px + r_dx * t_1, r_py + r_dy * t_1),
-		"distance": t_1
+		intersected: true,
+		point: new gb.vec2(r_px + r_dx * t_1, r_py + r_dy * t_1),
+		distance: t_1
 	};
 };
 
