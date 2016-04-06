@@ -30,19 +30,16 @@ gb.ces_convex_hull_component.prototype.update_convex_hull = function(vertices) {
 		return;
 	}
 
-	//var next = [];
 	var leftmost_point_index = 0;
 
 	for (var i = 0; i < vertices.length; ++i) {
-		//next[i] = -1;
-
-		//if (vertices[i].m_position.x < vertices[leftmost_point_index].m_position.x) {
-		//	leftmost_point_index = i;
-		//}
+		if (vertices[i].m_position.x < vertices[leftmost_point_index].m_position.x) {
+			leftmost_point_index = i;
+		}
 		this.m_oriented_vertices.push(vertices[i].m_position);
 	}
 
-	/*var start_point_index = leftmost_point_index, end_point_index;
+	var start_point_index = leftmost_point_index, end_point_index;
 	do {
 		end_point_index = (start_point_index + 1) % vertices.length;
 
@@ -52,11 +49,9 @@ gb.ces_convex_hull_component.prototype.update_convex_hull = function(vertices) {
 			}
 		}
 		this.m_oriented_vertices.push(vertices[end_point_index].m_position);
-		next[start_point_index] = end_point_index;
-
 		start_point_index = end_point_index;
 	}
-	while (start_point_index !== leftmost_point_index);*/
+	while (start_point_index !== leftmost_point_index);
 
 	var min_bound = new gb.vec2(INT16_MAX);
 	var max_bound = new gb.vec2(INT16_MIN);

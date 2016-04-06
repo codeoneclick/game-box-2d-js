@@ -14,6 +14,13 @@ gb.ces_render_system = function() {
         }
     });
 
+    this.m_screed_quad_mesh = gb.mesh_constructor.create_screen_quad();
+    Object.defineProperty(this, 'screed_quad_mesh', {
+        get: function() {
+            return this.m_screed_quad_mesh;
+        }
+    });
+
     this.k_shadow_color_uniform = "u_shadow_color";
     this.k_light_mask_vs_flag_uniform = "u_mask_flag_vs";
     this.k_light_mask_fs_flag_uniform = "u_mask_flag_fs";
@@ -117,7 +124,6 @@ gb.ces_render_system.prototype.draw_recursively_lights = function(entity, techni
         var material = material_component.get_material(technique_name, technique_pass);
         var light_main_mesh = geometry_component.mesh;
         var light_mask_mesh = light_mask_component.mesh;
-        var screed_quad_mesh = gb.mesh_constructor.create_screen_quad();
 
         if (material && entity.visible && material.shader && material.shader.get_status() === gb.resource_status.commited && light_main_mesh && light_mask_mesh) {
             var draw_light_mask = function() {
@@ -224,9 +230,9 @@ gb.ces_render_system.prototype.draw_recursively_lights = function(entity, techni
 
                 material.shader.set_mat4(new gb.mat4().identity(), gb.shader_uniform_type.mat_m);
 
-                screed_quad_mesh.bind(material.shader.get_attributes());
-                screed_quad_mesh.draw();
-                screed_quad_mesh.unbind(material.shader.get_attributes());
+                self.screed_quad_mesh.bind(material.shader.get_attributes());
+                self.screed_quad_mesh.draw();
+                self.screed_quad_mesh.unbind(material.shader.get_attributes());
 
                 gl.colorMask(true, true, true, true);
                 gl.depthMask(true);
@@ -238,7 +244,6 @@ gb.ces_render_system.prototype.draw_recursively_lights = function(entity, techni
             draw_light();
             clear_light_mask();
         }
-        screed_quad_mesh.destroy();
     }
 
     var children = entity.children;

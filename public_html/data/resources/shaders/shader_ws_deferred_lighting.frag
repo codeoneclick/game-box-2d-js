@@ -1,14 +1,5 @@
-#if defined(__OPENGL_30__)
-
-in vec2 v_position;
-in vec4 v_screen_position;
-
-#else
-
 varying vec2 v_position;
 varying vec4 v_screen_position;
-
-#endif
 
 uniform int u_mask_flag_fs;
 uniform vec4 u_color;

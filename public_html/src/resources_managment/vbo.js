@@ -114,7 +114,7 @@ gb.vbo.prototype =
     {
         this.m_used_size = arguments.length !== 0 && arguments[0] > 0 && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
         gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler);
-        var vertices = new Array();
+        var vertices = [];
         for(var i = 0; i < this.m_used_size; ++i)
         {
             var vertex_attribute_array = this.m_data[i].to_array();
@@ -127,6 +127,7 @@ gb.vbo.prototype =
             this.m_max_bound = gb.vec2.max(vertex_position, this.m_max_bound);
         }
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), this.m_mode);
+        console.log("vertices data submited, size: ", vertices.length);
     },
     
     bind : function(attributes)

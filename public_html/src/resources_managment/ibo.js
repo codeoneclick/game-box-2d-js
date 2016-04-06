@@ -46,7 +46,12 @@ gb.ibo.prototype =
     {
         this.m_used_size = arguments.length !== 0 && arguments[0] > 0 && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.m_data), this.m_mode);
+        var indices = [];
+        for(var i = 0; i < this.m_used_size; ++i)
+        {
+            indices.push(this.m_data[i]);
+        }
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.m_mode);
     },
     
     bind : function()

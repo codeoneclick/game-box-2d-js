@@ -5,43 +5,37 @@ gb.ces_light_mask_component = function() {
     gb.ces_base_component.call(this);
 
     this.m_type = gb.ces_component_type.light_mask;
-    this.m_mesh = null;
     this.m_shadow_casters_vertices = [];
     this.m_shadow_casters_edges = [];
     this.m_vertices = [];
     this.m_indices = [];
 
+    var vbo = new gb.vbo(1024, gl.STATIC_DRAW);
+    var ibo = new gb.ibo(4096, gl.STATIC_DRAW);
+    this.m_mesh = new gb.mesh(vbo, ibo, gl.TRIANGLES);
+
     Object.defineProperty(this, 'mesh', {
         get: function() {
 
             if (this.m_vertices.length === 0 || this.m_indices.length === 0) {
-                this.mesh = null;
+                this.m_mesh.vbo.unlock(1);
+                this.m_mesh.ibo.unlock(1);
             } else {
-                var vbo = new gb.vbo(this.m_vertices.length, gl.STATIC_DRAW);
-                var vertices = vbo.lock();
+                var vertices = this.m_mesh.vbo.lock();
                 for(var i = 0; i < this.m_vertices.length; ++i)
                 {
-                    vertices[i] = this.m_vertices[i];
+                    vertices[i].m_position = this.m_vertices[i].m_position;
                 }
-                vbo.unlock();
+                vbo.unlock(this.m_vertices.length);
 
-                var ibo = new gb.ibo(this.m_indices.length, gl.STATIC_DRAW);
-                var indices = ibo.lock();
+                var indices = this.m_mesh.ibo.lock();
                 for(var i = 0; i < this.m_indices.length; ++i)
                 {
                     indices[i] = this.m_indices[i];
                 }
-                ibo.unlock();
-
-                this.m_mesh = new gb.mesh(vbo, ibo, gl.TRIANGLES);
+                ibo.unlock(this.m_indices.length);
             }
             return this.m_mesh;
-        },
-        set: function(value) {
-            if (!value && this.m_mesh) {
-                this.m_mesh.destroy();
-            }
-            this.m_mesh = value;
         }
     });
 };
@@ -71,6 +65,8 @@ gb.ces_light_mask_component.prototype.generate_mask_mesh = function(light_caster
         angles.push(angle);
         angles.push(angle + 0.0001);
     }
+    console.log("angles: ");
+    console.log(angles);
 
     var intersections = [];
     for (var i = 0; i < angles.length; ++i) {
@@ -96,12 +92,23 @@ gb.ces_light_mask_component.prototype.generate_mask_mesh = function(light_caster
         if (closest_intersection.equals(new gb.vec2(INT16_MIN))) {
             continue;
         }
-        intersections.push({point: closest_intersection, angle: angle});
+        var is_contain = intersections.findIndex(function(value) {
+            return value.point.equals(closest_intersection);
+        });
+        if (is_contain === -1) {
+            intersections.push({point: closest_intersection, angle: angle});
+        }
     }
+
+    console.log("intersections before sort: ");
+    console.log(intersections);
 
     intersections.sort(function(a, b) {
         return a.angle - b.angle;
     });
+
+    console.log("intersections after sort: ");
+    console.log(intersections);
 
     for (var i = 0; i < intersections.length + 1; ++i) {
         this.m_vertices[i] = new gb.vertex_attribute();

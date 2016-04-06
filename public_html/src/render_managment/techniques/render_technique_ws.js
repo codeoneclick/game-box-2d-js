@@ -68,6 +68,7 @@ gb.render_technique_ws.prototype.bind = function()
     gl.enable(gl.STENCIL_TEST);
     gb.material_cached_parameters.get_cached_parameters().is_stencil_test = true;
     
+    gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
     gl.clearColor(this.m_clear_color.x, this.m_clear_color.y, this.m_clear_color.z, this.m_clear_color.w);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 };
