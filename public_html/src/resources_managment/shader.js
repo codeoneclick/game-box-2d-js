@@ -321,7 +321,6 @@ gb.shader.prototype.get_custom_uniform = function(uniform)
     else
     {
         handler = gl.getUniformLocation(this.m_shader_id, uniform);
-        console.log("custom shader uniform location: " + uniform + " = " + handler);
         this.m_custom_uniforms[uniform] = handler;
     }
     return handler;

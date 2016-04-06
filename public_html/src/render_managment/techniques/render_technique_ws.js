@@ -61,9 +61,9 @@ gb.render_technique_ws.prototype.bind = function()
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.m_frame_buffer);
     gl.viewport(0, 0, this.m_frame_width, this.m_frame_height);
     
-    gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.DEPTH_TEST);
     gb.material_cached_parameters.get_cached_parameters().is_depth_test = true;
-    gl.depthMask(true);
+    gl.depthMask(false);
     gb.material_cached_parameters.get_cached_parameters().is_depth_mask = true;
     gl.enable(gl.STENCIL_TEST);
     gb.material_cached_parameters.get_cached_parameters().is_stencil_test = true;

@@ -1,11 +1,7 @@
 /* global gb, gl  */
 
-var g_num_meshes = 0;
-
 gb.mesh = function(vbo, ibo, mode)
 {
-    g_num_meshes++;
-    console.log("created mesh, summ: ", g_num_meshes);
     this.m_vbo = vbo;
     this.m_ibo = ibo;
     this.m_mode = mode;

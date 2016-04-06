@@ -123,7 +123,7 @@ gb.ces_convex_hull_component.prototype.constructor = gb.ces_convex_hull_componen
 gb.ces_convex_hull_component.prototype.update_convex_hull = function(a) {
   if (!(3 > a.length)) {
     for (var b = 0, c = 0;c < a.length;++c) {
-      a[c].m_position.x < a[b].m_position.x && (b = c), this.m_oriented_vertices.push(a[c].m_position);
+      a[c].m_position.x < a[b].m_position.x && (b = c);
     }
     var d = b, e;
     do {
@@ -249,8 +249,6 @@ gb.ces_light_mask_component.prototype.generate_mask_mesh = function(a) {
     b.push(e);
     b.push(e + 1E-4);
   }
-  console.log("angles: ");
-  console.log(b);
   d = [];
   for (c = 0;c < b.length;++c) {
     for (var e = b[c], f = new gb.vec2(Math.cos(e), Math.sin(e)), l = a, m = gb.vec2.add(a, f), k = INT16_MAX, h = new gb.vec2(INT16_MIN), g = 0;g < this.m_shadow_casters_edges.length;++g) {
@@ -260,13 +258,9 @@ gb.ces_light_mask_component.prototype.generate_mask_mesh = function(a) {
       return a.point.equals(h);
     }) && d.push({point:h, angle:e});
   }
-  console.log("intersections before sort: ");
-  console.log(d);
   d.sort(function(a, b) {
     return a.angle - b.angle;
   });
-  console.log("intersections after sort: ");
-  console.log(d);
   for (c = 0;c < d.length + 1;++c) {
     this.m_vertices[c] = new gb.vertex_attribute;
   }
@@ -2142,9 +2136,9 @@ gb.render_technique_ws.prototype.constructor = gb.render_technique_main;
 gb.render_technique_ws.prototype.bind = function() {
   gl.bindFramebuffer(gl.FRAMEBUFFER, this.m_frame_buffer);
   gl.viewport(0, 0, this.m_frame_width, this.m_frame_height);
-  gl.enable(gl.DEPTH_TEST);
+  gl.disable(gl.DEPTH_TEST);
   gb.material_cached_parameters.get_cached_parameters().is_depth_test = !0;
-  gl.depthMask(!0);
+  gl.depthMask(!1);
   gb.material_cached_parameters.get_cached_parameters().is_depth_mask = !0;
   gl.enable(gl.STENCIL_TEST);
   gb.material_cached_parameters.get_cached_parameters().is_stencil_test = !0;
@@ -2189,10 +2183,7 @@ gb.ibo.prototype = {constructor:gb.ibo, destroy:function() {
 }, unbind:function() {
   0 !== this.m_used_size && gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 }};
-var g_num_meshes = 0;
 gb.mesh = function(a, b, c) {
-  g_num_meshes++;
-  console.log("created mesh, summ: ", g_num_meshes);
   this.m_vbo = a;
   this.m_ibo = b;
   this.m_mode = c;
@@ -2608,7 +2599,7 @@ gb.shader.prototype.get_attributes = function() {
 };
 gb.shader.prototype.get_custom_uniform = function(a) {
   var b = -1;
-  "undefined" !== typeof this.m_custom_uniforms[a] ? b = this.m_custom_uniforms[a] : (b = gl.getUniformLocation(this.m_shader_id, a), console.log("custom shader uniform location: " + a + " = " + b), this.m_custom_uniforms[a] = b);
+  "undefined" !== typeof this.m_custom_uniforms[a] ? b = this.m_custom_uniforms[a] : (b = gl.getUniformLocation(this.m_shader_id, a), this.m_custom_uniforms[a] = b);
   return b;
 };
 gb.shader.prototype.set_mat4 = function(a, b) {
@@ -2840,7 +2831,6 @@ gb.vbo.prototype = {constructor:gb.vbo, destroy:function() {
     this.m_max_bound = gb.vec2.max(c, this.m_max_bound);
   }
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(a), this.m_mode);
-  console.log("vertices data submited, size: ", a.length);
 }, bind:function(a) {
   0 !== this.m_used_size && (gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler), 0 <= a[gb.shader_attribute_type.position] && (gl.vertexAttribPointer(a[gb.shader_attribute_type.position], 2, gl.FLOAT, !1, 32, 0), gl.enableVertexAttribArray(a[gb.shader_attribute_type.position])), 0 <= a[gb.shader_attribute_type.texcoord] && (gl.vertexAttribPointer(a[gb.shader_attribute_type.texcoord], 2, gl.FLOAT, !1, 32, 8), gl.enableVertexAttribArray(a[gb.shader_attribute_type.texcoord])), 0 <= a[gb.shader_attribute_type.color] && 
   (gl.vertexAttribPointer(a[gb.shader_attribute_type.color], 4, gl.FLOAT, !1, 32, 16), gl.enableVertexAttribArray(a[gb.shader_attribute_type.color])));

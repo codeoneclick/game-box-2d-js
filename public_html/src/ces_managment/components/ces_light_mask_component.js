@@ -65,8 +65,6 @@ gb.ces_light_mask_component.prototype.generate_mask_mesh = function(light_caster
         angles.push(angle);
         angles.push(angle + 0.0001);
     }
-    console.log("angles: ");
-    console.log(angles);
 
     var intersections = [];
     for (var i = 0; i < angles.length; ++i) {
@@ -100,15 +98,9 @@ gb.ces_light_mask_component.prototype.generate_mask_mesh = function(light_caster
         }
     }
 
-    console.log("intersections before sort: ");
-    console.log(intersections);
-
     intersections.sort(function(a, b) {
         return a.angle - b.angle;
     });
-
-    console.log("intersections after sort: ");
-    console.log(intersections);
 
     for (var i = 0; i < intersections.length + 1; ++i) {
         this.m_vertices[i] = new gb.vertex_attribute();

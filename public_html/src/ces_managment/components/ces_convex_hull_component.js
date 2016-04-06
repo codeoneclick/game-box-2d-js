@@ -36,7 +36,6 @@ gb.ces_convex_hull_component.prototype.update_convex_hull = function(vertices) {
 		if (vertices[i].m_position.x < vertices[leftmost_point_index].m_position.x) {
 			leftmost_point_index = i;
 		}
-		this.m_oriented_vertices.push(vertices[i].m_position);
 	}
 
 	var start_point_index = leftmost_point_index, end_point_index;
