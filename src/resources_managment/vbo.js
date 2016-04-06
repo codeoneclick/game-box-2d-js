@@ -99,6 +99,11 @@ gb.vbo = function(size, mode)
 gb.vbo.prototype = 
 { 
     constructor: gb.vbo,
+
+    destroy : function()
+    {
+        gl.deleteBuffer(this.m_handler);
+    },
     
     lock : function()
     {
@@ -109,7 +114,7 @@ gb.vbo.prototype =
     {
         this.m_used_size = arguments.length !== 0 && arguments[0] > 0 && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
         gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler);
-        var vertices = new Array();
+        var vertices = [];
         for(var i = 0; i < this.m_used_size; ++i)
         {
             var vertex_attribute_array = this.m_data[i].to_array();

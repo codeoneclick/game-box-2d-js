@@ -126,8 +126,14 @@ gb.transition_configuration.prototype.serialize_ss_techniques_configurations = f
 gb.transition_configuration.prototype.serialize = function(filename, callback) 
 {
     var self = this;
-    $.ajax({ dataType: "json", url: filename, data: {}, async: true, success: function(value) {
+    $.ajax({
+        dataType: "json",
+        url: filename,
+        data: {},
+        async: true
+    }).done(function(value) {
         self.json = value;
+        console.log("loaded: " + filename);
         self.serialize_main_technique_configuration(function() {
            self.serialize_ws_techniques_configurations(function() {
               self.serialize_ss_techniques_configurations(function() {
@@ -135,5 +141,8 @@ gb.transition_configuration.prototype.serialize = function(filename, callback)
               });
            });
         });
-    }});
+    }).fail(function() {
+        console.log("can't load: " + filename);
+        callback(null);
+    });;
 };

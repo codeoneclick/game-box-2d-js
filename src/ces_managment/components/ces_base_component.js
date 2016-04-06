@@ -7,10 +7,9 @@ gb.ces_component_type = {
 	geometry: 2,
 	scene: 3,
 	light: 4,
-	shadow: 5,
-	light_mask: 6,
-	convex_hull: 7,
-	max: 8
+	light_mask: 5,
+	convex_hull: 6,
+	max: 7
 };
 
 gb.ces_base_component = function() {

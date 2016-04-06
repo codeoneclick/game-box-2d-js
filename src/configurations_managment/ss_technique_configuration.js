@@ -57,13 +57,21 @@ gb.ss_technique_configuration.prototype.serialize_material_configuration = funct
     });
 };
 
-gb.ss_technique_configuration.prototype.serialize = function(filename, callback) 
-{
+gb.ss_technique_configuration.prototype.serialize = function(filename, callback) {
     var self = this;
-    $.ajax({ dataType: "json", url: filename, data: {}, async: true, success: function(value) {
+    $.ajax({
+        dataType: "json",
+        url: filename,
+        data: {},
+        async: true
+    }).done(function(value) {
         self.json = value;
+        console.log("loaded: " + filename);
         self.serialize_material_configuration(function() {
-           callback(self);
+            callback(self);
         });
-    }});
+    }).fail(function() {
+        console.log("can't load: " + filename);
+        callback(null);
+    });
 };

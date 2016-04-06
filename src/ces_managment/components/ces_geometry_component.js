@@ -9,6 +9,7 @@ gb.ces_geometry_component = function() {
     this.m_mesh = null;
 
     Object.defineProperty(this, 'mesh', {
+    	configurable: true,
         get: function() {
             return this.m_mesh;
         }

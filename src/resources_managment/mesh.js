@@ -25,6 +25,12 @@ gb.mesh.prototype =
 { 
     constructor: gb.mesh,
     
+    destroy : function()
+    {
+        this.vbo.destroy();
+        this.ibo.destroy();
+    },
+
     bind : function(attributes)
     {
         this.m_vbo.bind(attributes);

@@ -248,11 +248,11 @@ gb.vec4.prototype =
     
     to_array: function()
     {
-        var array = new Array();
-        array[0] = this.x;
-        array[1] = this.y;
-        array[2] = this.z;
-        array[3] = this.w;
+        var array = [];
+        array.push(this.x);
+        array.push(this.y);
+        array.push(this.z);
+        array.push(this.w);
         return array;
     }
 };

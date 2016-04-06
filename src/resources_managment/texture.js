@@ -71,6 +71,11 @@ gb.texture.construct = function(guid, texture_id, width, height)
     return texture;
 };
 
+gb.texture.prototype.destroy = function()
+{
+    gl.deleteTexture(this.m_texture_id);
+};
+
 gb.texture.prototype.on_transfering_data_serialized = function(transfering_data)
 {
     switch(transfering_data.type)
