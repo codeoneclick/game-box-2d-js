@@ -12,9 +12,27 @@
         <script type="text/javascript">
             
             var g_game_controller = null;
-
+            
             function app_start()
             {
+                var shader_01 = new shader("shader_01");
+                console.log(shader_01);
+
+                var resource_01 = new resource_base("resource_01");
+                console.log(resource_01);
+                console.log(resource_01.guid);
+                //console.log(gb);
+                //console.log(gb.resource_base);
+                //var resource = new gb.resource_base();
+                //console.log(resource);
+                //console.log(gb.shader);
+                //var clazz = new custom_clazz("hello");
+                //console.log(custom_clazz);
+                //console.log(clazz);
+                //custom_clazz.static_custom_method_01();
+
+                /*console.log(oop);
+
                 g_game_controller = new gb.game_controller();
                 var game_transition = new gb.game_transition("data/resources/configurations/transitions/transition.main.json");
                 g_game_controller.add_transition(game_transition);
@@ -48,7 +66,7 @@
                         light_source_02.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
                     });
                     scene.add_child(light_source_02);
-                });
+                });*/
             }
         </script>
     </head>

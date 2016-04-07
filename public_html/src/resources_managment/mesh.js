@@ -1,5 +1,7 @@
 /* global gb, gl  */
 
+"use strict";
+
 gb.mesh = function(vbo, ibo, mode)
 {
     this.m_vbo = vbo;

@@ -1,13 +1,17 @@
-/* global gb */
+/* global oop, resource_transfering_data */
 
-gb.shader_transfering_data = function()
-{
-    gb.resource_transfering_data.call(this);
-    
-    this.m_type = gb.resource_transfering_data_type.shader;
-    this.m_vs_source_code = "";
-    this.m_fs_source_code = "";
-    this.m_shader_id = -1;
+"use strict";
+
+oop.define_class({
+    namespace: "gb",
+    name: "shader_transfering_data",
+    extend: resource_transfering_data,
+
+    init: function() {
+        this.m_type = resource_transfering_data.type.shader;
+        this.m_vs_source_code = "";
+        this.m_fs_source_code = "";
+    this.m_handler = -1;
     
     Object.defineProperty(this, 'vs_source_code', {
         get: function()
@@ -31,18 +35,19 @@ gb.shader_transfering_data = function()
         }
     });
     
-    Object.defineProperty(this, 'shader_id', {
+    Object.defineProperty(this, 'handler', {
         get: function()
         {
-            return this.m_shader_id;
+            return this.m_handler;
         },
         set: function(value)
         {
-            this.m_shader_id = value;
+            this.m_handler = value;
         }
     });
-};
+    },
 
-gb.shader_transfering_data.prototype = Object.create(gb.resource_transfering_data.prototype);
-gb.shader_transfering_data.prototype.constructor = gb.shader_transfering_data;
+    release: function() {
 
+    }
+});

@@ -2,8 +2,12 @@
 
 "use strict";
 
-gb.vec2 = function() {
-    if (arguments[0] instanceof gb.vec2) {
+oop.define_class({
+    namespace: "gb",
+    name: "vec2",
+
+    init: function() {
+        if (arguments[0] instanceof gb.vec2) {
         this.m_x = arguments[0].x;
         this.m_y = arguments[0].y;
     } else if (arguments.length === 1) {
@@ -34,6 +38,22 @@ gb.vec2 = function() {
             this.m_y = value;
         }
     });
+    },
+
+    release: function() {
+
+    },
+
+    methods: {
+    },
+
+    static_methods: {
+
+    }
+});
+
+gb.vec2 = function() {
+    
 };
 
 gb.vec2.add = function(vector_01, vector_02) {

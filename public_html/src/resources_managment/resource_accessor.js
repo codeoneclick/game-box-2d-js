@@ -1,9 +1,11 @@
 /* global gb */
 
+"use strict";
+
 gb.resource_accessor = function()
 {
-    this.m_resources = new Array();
-    this.m_operations_queue = new Array();
+    this.m_resources = [];
+    this.m_operations_queue = [];
 };
 
 gb.resource_accessor.prototype =
