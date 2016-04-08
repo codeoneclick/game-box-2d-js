@@ -1,4 +1,4 @@
-/* global oop, resource_transfering_data */
+/* global oop, gb */
 
 "use strict";
 
@@ -14,7 +14,7 @@ oop.define_class({
     },
 
     init: function() {
-        this.m_type = resource_transfering_data.type.undefined;
+        this.m_type = gb.resource_transfering_data.type.undefined;
 
         Object.defineProperty(this, 'type', {
             get: function() {

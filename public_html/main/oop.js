@@ -72,7 +72,6 @@ var oop = {
                     if ('function' !== typeof class_static_methods[method_name]) {
                         throw new Error('class method must be function');
                     }
-                    console.log("add static method");
                     class_constructor[method_name] = class_static_methods[method_name];
                 }
             }
@@ -87,7 +86,18 @@ var oop = {
                 }
             }
 
-            oop.global[class_name] = class_constructor;
+            var namespace = oop.global;
+            if(class_definition.namespace)
+            {
+                if(!namespace[class_definition.namespace])
+                {
+                    namespace[class_definition.namespace] = new Object;
+                    console.warn("created new namespace: ", class_definition.namespace);
+                }
+                namespace = namespace[class_definition.namespace];
+            }
+
+            namespace[class_name] = class_constructor;
         } catch (exception) {
             console.error("class_definition -->");
             console.error(class_definition);

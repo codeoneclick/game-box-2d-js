@@ -1,52 +1,43 @@
-/* global gb */
+/* global oop, console, alert */
 
-var g_graphics_context = null;
+"use strict";
 
-var graphics_context = (function() 
-{
-    function init()
-    {
+var gl = null;
+
+oop.define_class({
+    namespace: "gb",
+    name: "graphics_context",
+
+    init: function() {
         var canvas = document.getElementById("gl_canvas");
+        var gl_context = null;
         try 
         {
-            g_graphics_context = canvas.getContext("experimental-webgl");
-            g_graphics_context.viewport_width = canvas.width;
-            g_graphics_context.viewport_height = canvas.height;
+            gl_context = canvas.getContext("experimental-webgl");
+            gl_context.viewport_width = canvas.width;
+            gl_context.viewport_height = canvas.height;
             console.log("OpenGL context created");
-            console.log("viewport: [ " + g_graphics_context.viewport_width + ", " + g_graphics_context.viewport_height + " ]");
+            console.log("viewport: [ " + gl_context.viewport_width + ", " + gl_context.viewport_height + " ]");
         } 
         catch (exception) 
         {
                     
         }
-        if (!g_graphics_context) 
+        if (!gl_context) 
         {
             alert("could not initialise gl context");
         }
-        //else
-        //{
-            //g_graphics_context.clearColor(0.0, 0.0, 0.0, 1.0);
-            //g_graphics_context.enable(g_graphics_context.DEPTH_TEST);
-                    
-            //g_graphics_context.viewport(0, 0, g_graphics_context.viewport_width, g_graphics_context.viewport_height);
-            //g_graphics_context.clear(g_graphics_context.COLOR_BUFFER_BIT | g_graphics_context.DEPTH_BUFFER_BIT);
-       // }
-        return g_graphics_context;
-    }
- 
-    return {
-        get_instance: function() 
-        {
-            if (!g_graphics_context)
-            {
-                g_graphics_context = init();
-            }
-            return g_graphics_context;
-        }
-    };
-})();
+        gl = gl_context;
+    },
 
-var gl = (function() 
-{
-    return graphics_context.get_instance();
-})();
+    release: function() {
+
+    },
+
+    methods: {
+        
+    },
+    static_methods: {
+
+    }
+});

@@ -1,14 +1,14 @@
-/* global oop, gl, texture, resource_base, resource_transfering_data */
+/* global oop, gl, gb */
 
 "use strict";
 
 oop.define_class({
     namespace: "gb",
     name: "texture",
-    extend: resource_base,
+    extend: gb.resource_base,
 
     init: function() {
-        this.m_type = resource_base.type.texture;
+        this.m_type = gb.resource_base.type.texture;
         this.m_handler = -1;
         this.m_width = 0;
         this.m_height = 0;
@@ -64,9 +64,9 @@ oop.define_class({
 
         on_transfering_data_serialized: function(data) {
             switch (data.type) {
-                case resource_transfering_data.type.texture:
+                case gb.resource_transfering_data.type.texture:
                     {
-                        this.m_status = resource_base.status.loaded;
+                        this.m_status = gb.resource_base.status.loaded;
                     }
                     break;
             }
@@ -74,19 +74,19 @@ oop.define_class({
 
         on_transfering_data_commited: function(data) {
             switch (data.type) {
-                case resource_transfering_data.type.texture:
+                case gb.resource_transfering_data.type.texture:
                     {
                         this.m_handler = data.handler;
                         this.m_width = data.width;
                         this.m_height = data.height;
-                        this.m_status = resource_base.status.commited;
+                        this.m_status = gb.resource_base.status.commited;
                     }
                     break;
             }
         },
 
         bind: function() {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 gl.bindTexture(gl.TEXTURE_2D, this.m_handler);
                 if (this.m_presseted_wrap_mode !== this.m_setted_wrap_mode) {
                     this.m_setted_wrap_mode = this.m_presseted_wrap_mode;
@@ -111,12 +111,12 @@ oop.define_class({
 
     static_methods: {
         construct: function(guid, handler, width, height) {
-            var instance = new texture(guid);
-            instance.m_handler = handler;
-            instance.m_width = width;
-            instance.m_height = height;
-            instance.m_status = resource_base.status.commited;
-            return instance;
+            var texture = new gb.texture(guid);
+            texture.m_handler = handler;
+            texture.m_width = width;
+            texture.m_height = height;
+            texture.m_status = gb.resource_base.status.commited;
+            return texture;
         },
     }
 });

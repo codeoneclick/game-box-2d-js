@@ -1,20 +1,34 @@
-/* global gb */
+/* global oop, gb */
 
 "use strict";
 
-gb.ces_geometry_component = function() {
-    gb.ces_base_component.call(this);
+oop.define_class({
+	namespace: "gb",
+	name: "ces_geometry_component",
+	extend: gb.ces_base_component,
 
-    this.m_type = gb.ces_component_type.geometry;
-    this.m_mesh = null;
+	init: function() {
 
-    Object.defineProperty(this, 'mesh', {
-    	configurable: true,
-        get: function() {
-            return this.m_mesh;
-        }
-    });
-};
+		this.m_type = gb.ces_base_component.type.geometry;
+		this.m_mesh = null;
 
-gb.ces_geometry_component.prototype = Object.create(gb.ces_base_component.prototype);
-gb.ces_geometry_component.prototype.constructor = gb.ces_geometry_component;
+		Object.defineProperty(this, 'mesh', {
+			configurable: true,
+			get: function() {
+				return this.m_mesh;
+			}
+		});
+	},
+
+	release: function() {
+
+	},
+
+	methods: {
+
+	},
+
+	static_methods: {
+
+	}
+});

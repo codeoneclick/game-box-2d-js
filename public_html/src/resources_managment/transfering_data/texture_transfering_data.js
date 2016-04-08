@@ -1,14 +1,14 @@
-/* global oop, resource_transfering_data */
+/* global oop, gb */
 
 "use strict";
 
 oop.define_class({
     namespace: "gb",
     name: "texture_transfering_data",
-    extend: resource_transfering_data,
+    extend: gb.resource_transfering_data,
 
     init: function() {
-        this.m_type = resource_transfering_data.type.texture;
+        this.m_type = gb.resource_transfering_data.type.texture;
 
         this.m_width = 0;
         this.m_height = 0;

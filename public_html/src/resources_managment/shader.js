@@ -1,4 +1,4 @@
-/* global oop, gl, shader_uniform, shader, resource_base, resource_transfering_data */
+/* global oop, gl, gb */
 
 "use strict";
 
@@ -25,7 +25,7 @@ oop.define_class({
     },
 
     init: function() {
-        this.m_type = shader_uniform.type.undefined;
+        this.m_type = gb.shader_uniform.type.undefined;
 
         Object.defineProperty(this, "type", {
             get: function() {
@@ -118,7 +118,7 @@ oop.define_class({
 oop.define_class({
     namespace: "gb",
     name: "shader",
-    extend: resource_base,
+    extend: gb.resource_base,
     constants: {
         sampler_type: {
             sampler_01: 0,
@@ -172,15 +172,15 @@ oop.define_class({
 
     init: function() {
 
-        this.m_type = resource_base.type.shader;
+        this.m_type = gb.resource_base.type.shader;
 
         this.m_handler = -1;
         this.m_uniforms = [];
-        this.m_uniforms[shader.uniform_type.max - 1] = -1;
+        this.m_uniforms[gb.shader.uniform_type.max - 1] = -1;
         this.m_samplers = [];
-        this.m_samplers[shader.sampler_type.max - 1] = -1;
+        this.m_samplers[gb.shader.sampler_type.max - 1] = -1;
         this.m_attributes = [];
-        this.m_attributes[shader.attribute_type.max - 1] = -1;
+        this.m_attributes[gb.shader.attribute_type.max - 1] = -1;
 
         this.m_custom_uniforms = [];
         this.m_custom_attributes = [];
@@ -200,29 +200,29 @@ oop.define_class({
 
     methods: {
         setup: function() {
-            this.m_uniforms[shader.uniform_type.mat_m] = gl.getUniformLocation(this.m_handler, shader.uniform_names.u_mat_m);
-            this.m_uniforms[shader.uniform_type.mat_v] = gl.getUniformLocation(this.m_handler, shader.uniform_names.u_mat_v);
-            this.m_uniforms[shader.uniform_type.mat_p] = gl.getUniformLocation(this.m_handler, shader.uniform_names.u_mat_p);
+            this.m_uniforms[gb.shader.uniform_type.mat_m] = gl.getUniformLocation(this.m_handler, gb.shader.uniform_names.u_mat_m);
+            this.m_uniforms[gb.shader.uniform_type.mat_v] = gl.getUniformLocation(this.m_handler, gb.shader.uniform_names.u_mat_v);
+            this.m_uniforms[gb.shader.uniform_type.mat_p] = gl.getUniformLocation(this.m_handler, gb.shader.uniform_names.u_mat_p);
 
-            this.m_samplers[shader.sampler_type.sampler_01] = gl.getUniformLocation(this.m_handler, shader.sampler_names.sampler_01);
-            this.m_samplers[shader.sampler_type.sampler_02] = gl.getUniformLocation(this.m_handler, shader.sampler_names.sampler_02);
-            this.m_samplers[shader.sampler_type.sampler_03] = gl.getUniformLocation(this.m_handler, shader.sampler_names.sampler_03);
-            this.m_samplers[shader.sampler_type.sampler_04] = gl.getUniformLocation(this.m_handler, shader.sampler_names.sampler_04);
-            this.m_samplers[shader.sampler_type.sampler_05] = gl.getUniformLocation(this.m_handler, shader.sampler_names.sampler_05);
-            this.m_samplers[shader.sampler_type.sampler_06] = gl.getUniformLocation(this.m_handler, shader.sampler_names.sampler_06);
-            this.m_samplers[shader.sampler_type.sampler_07] = gl.getUniformLocation(this.m_handler, shader.sampler_names.sampler_07);
-            this.m_samplers[shader.sampler_type.sampler_08] = gl.getUniformLocation(this.m_handler, shader.sampler_names.sampler_08);
+            this.m_samplers[gb.shader.sampler_type.sampler_01] = gl.getUniformLocation(this.m_handler, gb.shader.sampler_names.sampler_01);
+            this.m_samplers[gb.shader.sampler_type.sampler_02] = gl.getUniformLocation(this.m_handler, gb.shader.sampler_names.sampler_02);
+            this.m_samplers[gb.shader.sampler_type.sampler_03] = gl.getUniformLocation(this.m_handler, gb.shader.sampler_names.sampler_03);
+            this.m_samplers[gb.shader.sampler_type.sampler_04] = gl.getUniformLocation(this.m_handler, gb.shader.sampler_names.sampler_04);
+            this.m_samplers[gb.shader.sampler_type.sampler_05] = gl.getUniformLocation(this.m_handler, gb.shader.sampler_names.sampler_05);
+            this.m_samplers[gb.shader.sampler_type.sampler_06] = gl.getUniformLocation(this.m_handler, gb.shader.sampler_names.sampler_06);
+            this.m_samplers[gb.shader.sampler_type.sampler_07] = gl.getUniformLocation(this.m_handler, gb.shader.sampler_names.sampler_07);
+            this.m_samplers[gb.shader.sampler_type.sampler_08] = gl.getUniformLocation(this.m_handler, gb.shader.sampler_names.sampler_08);
 
-            this.m_attributes[shader.attribute_type.position] = gl.getAttribLocation(this.m_handler, shader.attribute_names.a_position);
-            this.m_attributes[shader.attribute_type.texcoord] = gl.getAttribLocation(this.m_handler, shader.attribute_names.a_texcoord);
-            this.m_attributes[shader.attribute_type.color] = gl.getAttribLocation(this.m_handler, shader.attribute_names.a_color);
+            this.m_attributes[gb.shader.attribute_type.position] = gl.getAttribLocation(this.m_handler, gb.shader.attribute_names.a_position);
+            this.m_attributes[gb.shader.attribute_type.texcoord] = gl.getAttribLocation(this.m_handler, gb.shader.attribute_names.a_texcoord);
+            this.m_attributes[gb.shader.attribute_type.color] = gl.getAttribLocation(this.m_handler, gb.shader.attribute_names.a_color);
         },
 
         on_transfering_data_serialized: function(data) {
             switch (data.type) {
-                case resource_transfering_data.type.shader:
+                case gb.resource_transfering_data.type.shader:
                     {
-                        this.m_status = resource_base.status.loaded;
+                        this.m_status = gb.resource_base.status.loaded;
                     }
                     break;
             }
@@ -230,10 +230,10 @@ oop.define_class({
 
         on_transfering_data_commited: function(data) {
             switch (data.type) {
-                case resource_transfering_data.type.shader:
+                case gb.resource_transfering_data.type.shader:
                     {
                         this.m_handler = data.handler;
-                        this.m_status = resource_base.status.commited;
+                        this.m_status = gb.resource_base.status.commited;
                         this.setup();
                     }
                     break;
@@ -252,11 +252,11 @@ oop.define_class({
         },
 
         set_mat4: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 if (typeof this.m_cached_uniforms[uniform] !== 'undefined' && this.m_cached_uniforms[uniform] === value) {
                     return;
                 } else if (typeof this.m_cached_uniforms[uniform] === 'undefined') {
-                    this.m_cached_uniforms[uniform] = new shader_uniform();
+                    this.m_cached_uniforms[uniform] = new gb.shader_uniform();
                 }
                 var handler = this.m_uniforms[uniform];
                 gl.uniformMatrix4fv(handler, false, new Float32Array(value.to_array()));
@@ -265,17 +265,17 @@ oop.define_class({
         },
 
         set_custom_mat4: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 gl.uniformMatrix4fv(this.get_custom_uniform(uniform), false, new Float32Array(value.to_array()));
             }
         },
 
         set_vec4: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 if (typeof this.m_cached_uniforms[uniform] !== 'undefined' && this.m_cached_uniforms[uniform] === value) {
                     return;
                 } else if (typeof this.m_cached_uniforms[uniform] === 'undefined') {
-                    this.m_cached_uniforms[uniform] = new shader_uniform();
+                    this.m_cached_uniforms[uniform] = new gb.shader_uniform();
                 }
                 var handler = this.m_uniforms[uniform];
                 gl.uniform4fv(handler, new Float32Array(value.to_array()));
@@ -284,17 +284,17 @@ oop.define_class({
         },
 
         set_custom_vec4: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 gl.uniform4fv(this.get_custom_uniform(uniform), new Float32Array(value.to_array()));
             }
         },
 
         set_vec3: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 if (typeof this.m_cached_uniforms[uniform] !== 'undefined' && this.m_cached_uniforms[uniform] === value) {
                     return;
                 } else if (typeof this.m_cached_uniforms[uniform] === 'undefined') {
-                    this.m_cached_uniforms[uniform] = new shader_uniform();
+                    this.m_cached_uniforms[uniform] = new gb.shader_uniform();
                 }
                 var handler = this.m_uniforms[uniform];
                 gl.uniform3fv(handler, new Float32Array(value.to_array()));
@@ -303,17 +303,17 @@ oop.define_class({
         },
 
         set_custom_vec3: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 gl.uniform3fv(this.get_custom_uniform(uniform), new Float32Array(value.to_array()));
             }
         },
 
         set_vec2: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 if (typeof this.m_cached_uniforms[uniform] !== 'undefined' && this.m_cached_uniforms[uniform] === value) {
                     return;
                 } else if (typeof this.m_cached_uniforms[uniform] === 'undefined') {
-                    this.m_cached_uniforms[uniform] = new shader_uniform();
+                    this.m_cached_uniforms[uniform] = new gb.shader_uniform();
                 }
                 var handler = this.m_uniforms[uniform];
                 gl.uniform2fv(handler, new Float32Array(value.to_array()));
@@ -322,17 +322,17 @@ oop.define_class({
         },
 
         set_custom_vec2: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 gl.uniform2fv(this.get_custom_uniform(uniform), new Float32Array(value.to_array()));
             }
         },
 
         set_f32: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 if (typeof this.m_cached_uniforms[uniform] !== 'undefined' && this.m_cached_uniforms[uniform] === value) {
                     return;
                 } else if (typeof this.m_cached_uniforms[uniform] === 'undefined') {
-                    this.m_cached_uniforms[uniform] = new shader_uniform();
+                    this.m_cached_uniforms[uniform] = new gb.shader_uniform();
                 }
                 var handler = this.m_uniforms[uniform];
                 gl.uniform1f(handler, value);
@@ -341,17 +341,17 @@ oop.define_class({
         },
 
         set_custom_f32: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 gl.uniform1f(this.get_custom_uniform(uniform), value);
             }
         },
 
         set_i32: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 if (typeof this.m_cached_uniforms[uniform] !== 'undefined' && this.m_cached_uniforms[uniform] === value) {
                     return;
                 } else if (typeof this.m_cached_uniforms[uniform] === 'undefined') {
-                    this.m_cached_uniforms[uniform] = new shader_uniform();
+                    this.m_cached_uniforms[uniform] = new gb.shader_uniform();
                 }
                 var handler = this.m_uniforms[uniform];
                 gl.uniform1i(handler, value);
@@ -360,13 +360,13 @@ oop.define_class({
         },
 
         set_custom_i32: function(value, uniform) {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 gl.uniform1i(this.get_custom_uniform(uniform), value);
             }
         },
 
         set_texture: function(texture, sampler) {
-            if (this.status === resource_base.status.commited && sampler < shader.sampler_type.max) {
+            if (this.status === gb.resource_base.status.commited && sampler < gb.shader.sampler_type.max) {
                 gl.activeTexture(gl.TEXTURE0 + sampler);
                 texture.bind();
                 gl.uniform1i(this.m_samplers[sampler], sampler);
@@ -374,13 +374,13 @@ oop.define_class({
         },
 
         bind: function() {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 gl.useProgram(this.m_handler);
             }
         },
 
         unbind: function() {
-            if (this.status === resource_base.status.commited) {
+            if (this.status === gb.resource_base.status.commited) {
                 gl.useProgram(null);
             }
         },

@@ -1,27 +1,38 @@
-/* global gb */
+/* global oop, gb */
 
 "use strict";
 
-gb.ces_light_component = function() {
-    gb.ces_base_component.call(this);
+oop.define_class({
+	namespace: "gb",
+	name: "ces_light_component",
+	extend: gb.ces_base_component,
 
-    this.m_type = gb.ces_component_type.light;
-    this.m_shadow_casters = [];
+	init: function() {
 
-    Object.defineProperty(this, 'shadow_casters', {
-        get: function() {
-            return this.m_shadow_casters;
-        }
-    });
-};
+		this.m_type = gb.ces_base_component.type.light;
+		this.m_shadow_casters = [];
 
-gb.ces_light_component.prototype = Object.create(gb.ces_base_component.prototype);
-gb.ces_light_component.prototype.constructor = gb.ces_light_component;
+		Object.defineProperty(this, 'shadow_casters', {
+			get: function() {
+				return this.m_shadow_casters;
+			}
+		});
+	},
 
-gb.ces_light_component.prototype.add_shadow_caster = function(shadow_caster) {
-	this.m_shadow_casters.push(shadow_caster);
-};
+	release: function() {
 
-gb.ces_light_component.prototype.cleanup = function() {
-	this.m_shadow_casters = [];
-};
+	},
+
+	methods: {
+		add_shadow_caster: function(shadow_caster) {
+			this.m_shadow_casters.push(shadow_caster);
+		},
+		cleanup: function() {
+			this.m_shadow_casters = [];
+		}
+	},
+
+	static_methods: {
+
+	}
+});

@@ -1,19 +1,32 @@
-/* global gb */
-
+/* global oop, gb */
 "use strict";
 
-gb.ces_geometry_freeform_component = function() {
-	gb.ces_geometry_component.call(this);
+oop.define_class({
+	namespace: "gb",
+	name: "ces_geometry_freeform_component",
+	extend: gb.ces_geometry_component,
 
-	Object.defineProperty(this, 'mesh', {
-		get: function() {
-			return this.m_mesh;
-		},
-		set: function(value) {
-			this.m_mesh = value;
-		}
-	});
-};
+	init: function() {
 
-gb.ces_geometry_freeform_component.prototype = Object.create(gb.ces_geometry_component.prototype);
-gb.ces_geometry_freeform_component.prototype.constructor = gb.ces_geometry_freeform_component;
+		Object.defineProperty(this, 'mesh', {
+			get: function() {
+				return this.m_mesh;
+			},
+			set: function(value) {
+				this.m_mesh = value;
+			}
+		});
+	},
+
+	release: function() {
+
+	},
+
+	methods: {
+
+	},
+
+	static_methods: {
+
+	}
+});

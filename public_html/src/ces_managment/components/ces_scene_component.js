@@ -1,28 +1,42 @@
-/* global gb */
-
+/* global oop, gb */
 "use strict";
 
-gb.ces_scene_component = function() {
-    gb.ces_base_component.call(this);
+oop.define_class({
+    namespace: "gb",
+    name: "ces_scene_component",
+    extend: gb.ces_base_component,
 
-    this.m_type = gb.ces_component_type.scene;
-    this.m_scene = null;
+    init: function() {
 
-    Object.defineProperty(this, 'scene', {
-    	set: function(value) {
-            this.m_scene = value;
-        },
-        get: function() {
-            return this.m_scene;
-        }
-    });
+        this.m_type = gb.ces_base_component.type.scene;
+        this.m_scene = null;
 
-    Object.defineProperty(this, 'camera', {
-        get: function() {
-            return this.m_scene.camera;
-        }
-    });
-};
+        Object.defineProperty(this, 'scene', {
+            set: function(value) {
+                this.m_scene = value;
+            },
+            get: function() {
+                return this.m_scene;
+            }
+        });
 
-gb.ces_scene_component.prototype = Object.create(gb.ces_base_component.prototype);
-gb.ces_scene_component.prototype.constructor = gb.ces_scene_component;
+        Object.defineProperty(this, 'camera', {
+            get: function() {
+                return this.m_scene.camera;
+            }
+        });
+
+    },
+
+    release: function() {
+
+    },
+
+    methods: {
+
+    },
+
+    static_methods: {
+
+    }
+});

@@ -1,11 +1,13 @@
-/* global gb */
-
+/* global oop, gb */
 "use strict";
 
-gb.sprite = function() {
-	gb.game_object.call(this);
+oop.define_class({
+	namespace: "gb",
+	name: "sprite",
+	extend: gb.game_object,
 
-	var material_component = new gb.ces_material_component();
+	init: function() {
+		var material_component = new gb.ces_material_component();
 	this.add_component(material_component);
 
 	var geometry_component = new gb.ces_geometry_quad_component();
@@ -13,11 +15,11 @@ gb.sprite = function() {
 
 	Object.defineProperty(this, 'size', {
 		get: function() {
-			var geometry_component = this.get_component(gb.ces_component_type.geometry);
+			var geometry_component = this.get_component(gb.ces_base_component.type.geometry);
 			return geometry_component.size;
 		},
 		set: function(value) {
-			var geometry_component = this.get_component(gb.ces_component_type.geometry);
+			var geometry_component = this.get_component(gb.ces_base_component.type.geometry);
 			geometry_component.size = value;
 		}
 	});
@@ -51,6 +53,17 @@ gb.sprite = function() {
 			}
 		}
 	});
-};
-gb.sprite.prototype = Object.create(gb.game_object.prototype);
-gb.sprite.prototype.constructor = gb.sprite;
+	},
+
+	release: function() {
+
+	},
+
+	methods: {
+
+	},
+
+	static_methods: {
+
+	}
+});

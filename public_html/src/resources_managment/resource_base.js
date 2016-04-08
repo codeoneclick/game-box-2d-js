@@ -1,4 +1,4 @@
-/* global oop, _, resource_base, console */
+/* global oop, _, gb, console */
 
 "use strict";
 
@@ -11,7 +11,6 @@ oop.define_class({
             shader: 1,
             texture: 2
         },
-
         status: {
             unloaded: 0,
             loaded: 1,
@@ -21,8 +20,8 @@ oop.define_class({
 
     init: function(guid) {
         this.m_guid = guid;
-        this.m_type = resource_base.type.undefined;
-        this.m_status = resource_base.status.unloaded;
+        this.m_type = gb.resource_base.type.undefined;
+        this.m_status = gb.resource_base.status.unloaded;
 
         this.m_callbacks = [];
         this.m_userdata_container = [];
@@ -40,6 +39,11 @@ oop.define_class({
         Object.defineProperty(this, 'status', {
             get: function() {
                 return this.m_status;
+            }
+        });
+        Object.defineProperty(this, 'is_commited', {
+            get: function() {
+                return gb.resource_base.status.commited;
             }
         });
     },
@@ -62,7 +66,7 @@ oop.define_class({
         add_resource_loading_callback: function(callback, userdata) {
             if (_.isFunction(callback)) {
                 if (!_.contains(this.m_callbacks, callback)) {
-                    if (this.get_status() === resource_base.status.commited) {
+                    if (this.get_status() === gb.resource_base.status.commited) {
                         callback(this, userdata);
                     } else {
                         this.m_callbacks.push(callback);
