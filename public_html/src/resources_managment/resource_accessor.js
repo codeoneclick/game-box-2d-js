@@ -16,10 +16,6 @@ oop.define_class({
     },
 
     methods: {
-
-    },
-
-    static_methods: {
         add_custom_resource: function(guid, resource) {
             this.m_resources[guid] = resource;
         },
@@ -57,5 +53,8 @@ oop.define_class({
             }
             return resource;
         }
+    },
+
+    static_methods: {
     }
 });

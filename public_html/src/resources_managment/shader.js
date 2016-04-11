@@ -245,7 +245,7 @@ oop.define_class({
             if (typeof this.m_custom_uniforms[uniform] !== 'undefined') {
                 handler = this.m_custom_uniforms[uniform];
             } else {
-                handler = gl.getUniformLocation(this.m_shader_id, uniform);
+                handler = gl.getUniformLocation(this.m_handler, uniform);
                 this.m_custom_uniforms[uniform] = handler;
             }
             return handler;

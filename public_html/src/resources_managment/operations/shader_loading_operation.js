@@ -36,7 +36,7 @@ oop.define_class({
     serialize: function(callback) {
       this.m_status = gb.resource_loading_operation.status.in_progress;
       this.m_serializer = new gb.shader_serializer_glsl(this.m_guid, this.m_resource,
-        this.m_guid + gb.resource_loading_operation.vs_extension, this.m_guid + gb.resource_loading_operation.fs_extension);
+        this.m_guid + gb.shader_loading_operation.vs_extension, this.m_guid + gb.shader_loading_operation.fs_extension);
 
       var self = this;
       this.m_serializer.serialize(this.m_transfering_data, function() {

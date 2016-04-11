@@ -48,7 +48,7 @@ oop.define_class({
 				end_point_index = (start_point_index + 1) % vertices.length;
 
 				for (var i = 0; i < vertices.length; ++i) {
-					if (gb.math.orientation(vertices[start_point_index].m_position, vertices[i].m_position, vertices[end_point_index].m_position) === gb.vertices_orientation.counterclockwise) {
+					if (gb.math.point_orientation(vertices[start_point_index].m_position, vertices[i].m_position, vertices[end_point_index].m_position) === gb.math.orientation.counterclockwise) {
 						end_point_index = i;
 					}
 				}

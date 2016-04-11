@@ -87,7 +87,7 @@ oop.define_class({
 			};
 		},
 
-		orientation: function(point_01, point_02, point_03) {
+		point_orientation: function(point_01, point_02, point_03) {
 			var result = (point_02.y - point_01.y) * (point_03.x - point_02.x) - (point_02.x - point_01.x) * (point_03.y - point_02.y);
 			if (result === 0) {
 				return gb.math.orientation.colinear;

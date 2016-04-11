@@ -15,12 +15,11 @@
             
             function app_start()
             {
-                var gl_context = new gb.graphics_context();
-                console.log(gl); 
-                console.log(gl.FRONT);
-                console.log(gb);
 
-                /*g_game_controller = new gb.game_controller();
+                console.log(gb.ces_base_component);
+                var gl_context = new gb.graphics_context();
+
+                g_game_controller = new gb.game_controller();
                 var game_transition = new gb.game_transition("data/resources/configurations/transitions/transition.main.json");
                 g_game_controller.add_transition(game_transition);
                 g_game_controller.goto_transition("data/resources/configurations/transitions/transition.main.json", function(scene) {
@@ -53,7 +52,7 @@
                         light_source_02.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
                     });
                     scene.add_child(light_source_02);
-                });*/
+                });
             }
         </script>
     </head>

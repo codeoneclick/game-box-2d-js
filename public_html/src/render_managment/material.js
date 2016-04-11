@@ -376,24 +376,24 @@ oop.define_class({
             }
 
             if (value instanceof gb.mat4) {
-                current_uniform.set_mat4(value);
-                current_uniform.type = gb.uniform_type.mat4;
+                current_uniform.mat4_value = value;
+                current_uniform.type = gb.shader_uniform.type.mat4;
             } else if (value instanceof gb.vec4) {
-                current_uniform.set_vec4(value);
-                current_uniform.type = gb.uniform_type.vec4;
+                current_uniform.vec4_value = value;
+                current_uniform.type = gb.shader_uniform.type.vec4;
             } else if (value instanceof gb.vec3) {
-                current_uniform.set_vec3(value);
-                current_uniform.type = gb.uniform_type.vec3;
+                current_uniform.vec3_value = value;
+                current_uniform.type = gb.shader_uniform.type.vec3;
             } else if (value instanceof gb.vec2) {
-                current_uniform.set_vec2(value);
-                current_uniform.type = gb.uniform_type.vec2;
+                current_uniform.vec2_value = value;
+                current_uniform.type = gb.shader_uniform.type.vec2;
             } else if (typeof value === 'number') {
                 if (gb.math.is_int(value)) {
-                    current_uniform.set_i32(value);
-                    current_uniform.type = gb.uniform_type.i32;
+                    current_uniform.i32_value = value;
+                    current_uniform.type = gb.shader_uniform.type.i32;
                 } else {
-                    current_uniform.set_f32(value);
-                    current_uniform.type = gb.uniform_type.f32;
+                    current_uniform.f32_value = value;
+                    current_uniform.type = gb.shader_uniform.type.f32;
                 }
             } else {
                 console.log("unknown shader uniform type: ", typeof value);
@@ -404,23 +404,23 @@ oop.define_class({
             for (var key in this.m_custom_shader_uniforms) {
                 var current_uniform = this.m_custom_shader_uniforms[key];
                 switch (current_uniform.type) {
-                    case gb.uniform_type.mat4:
-                        this.m_parameters.shader.set_custom_mat4(current_uniform.get_mat4(), key);
+                    case gb.shader_uniform.type.mat4:
+                        this.m_parameters.shader.set_custom_mat4(current_uniform.mat4_value, key);
                         break;
-                    case gb.uniform_type.vec4:
-                        this.m_parameters.shader.set_custom_vec4(current_uniform.get_vec4(), key);
+                    case gb.shader_uniform.type.vec4:
+                        this.m_parameters.shader.set_custom_vec4(current_uniform.vec4_value, key);
                         break;
-                    case gb.uniform_type.vec3:
-                        this.m_parameters.shader.set_custom_vec3(current_uniform.get_vec3(), key);
+                    case gb.shader_uniform.type.vec3:
+                        this.m_parameters.shader.set_custom_vec3(current_uniform.vec3_value, key);
                         break;
-                    case gb.uniform_type.vec2:
-                        this.m_parameters.shader.set_custom_vec2(current_uniform.get_vec2(), key);
+                    case gb.shader_uniform.type.vec2:
+                        this.m_parameters.shader.set_custom_vec2(current_uniform.vec2_value, key);
                         break;
-                    case gb.uniform_type.f32:
-                        this.m_parameters.shader.set_custom_f32(current_uniform.get_f32(), key);
+                    case gb.shader_uniform.type.f32:
+                        this.m_parameters.shader.set_custom_f32(current_uniform.f32_value, key);
                         break;
-                    case gb.uniform_type.i32:
-                        this.m_parameters.shader.set_custom_i32(current_uniform.get_i32(), key);
+                    case gb.shader_uniform.type.i32:
+                        this.m_parameters.shader.set_custom_i32(current_uniform.i32_value, key);
                         break;
                 }
             }

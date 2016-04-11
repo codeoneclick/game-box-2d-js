@@ -66,7 +66,7 @@ oop.define_class({
         add_resource_loading_callback: function(callback, userdata) {
             if (_.isFunction(callback)) {
                 if (!_.contains(this.m_callbacks, callback)) {
-                    if (this.get_status() === gb.resource_base.status.commited) {
+                    if (this.status === gb.resource_base.status.commited) {
                         callback(this, userdata);
                     } else {
                         this.m_callbacks.push(callback);

@@ -11,7 +11,7 @@ oop.define_class({
         this.m_tag = "ces_entity" + g_tag++;
 
         this.m_components = [];
-        for (var i = 0; i < gb.ces_component_type.max; ++i) {
+        for (var i = 0; i < gb.ces_base_component.type.max; ++i) {
             this.m_components[i] = null;
         }
 
@@ -79,7 +79,7 @@ oop.define_class({
 
         remove_components: function() {
             this.m_components = [];
-            for (var i = 0; i < gb.ces_component_type.max; ++i) {
+            for (var i = 0; i < gb.ces_base_component.type.max; ++i) {
                 this.m_components[i] = null;
             }
         },
@@ -118,8 +118,8 @@ oop.define_class({
         },
 
         add_scene_component: function() {
-            var scene_component = this.parent ? this.parent.get_component(gb.ces_component_type.scene) : null;
-            if (!this.is_component_exist(gb.ces_component_type.scene) && scene_component) {
+            var scene_component = this.parent ? this.parent.get_component(gb.ces_base_component.type.scene) : null;
+            if (!this.is_component_exist(gb.ces_base_component.type.scene) && scene_component) {
                 this.add_component(scene_component);
             }
             for (var i = 0; i < this.m_children.length; ++i) {
@@ -131,7 +131,7 @@ oop.define_class({
             for (var i = 0; i < this.m_children.length; ++i) {
                 this.m_children[i].remove_scene_component();
             }
-            this.remove_component(gb.ces_component_type.scene);
+            this.remove_component(gb.ces_base_component.type.scene);
         }
     },
 

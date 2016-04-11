@@ -96,8 +96,14 @@ var oop = {
                 }
                 namespace = namespace[class_definition.namespace];
             }
-
-            namespace[class_name] = class_constructor;
+            if(!namespace[class_name])
+            {
+                namespace[class_name] = class_constructor;
+            }
+            else
+            {
+                throw new Error("can't create class with same definition name");
+            }
         } catch (exception) {
             console.error("class_definition -->");
             console.error(class_definition);

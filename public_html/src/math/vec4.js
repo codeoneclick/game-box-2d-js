@@ -61,7 +61,7 @@ oop.define_class({
                 return this.m_w;
             },
             set: function(value) {
-                this.m_z = value;
+                this.m_w = value;
             }
         });
     },

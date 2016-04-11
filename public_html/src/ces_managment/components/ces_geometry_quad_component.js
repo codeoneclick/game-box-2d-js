@@ -4,7 +4,7 @@
 
 oop.define_class({
 	namespace: "gb",
-	name: "ces_geometry_freeform_component",
+	name: "ces_geometry_quad_component",
 	extend: gb.ces_geometry_component,
 
 	init: function() {
