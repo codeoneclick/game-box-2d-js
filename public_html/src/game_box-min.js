@@ -30,9 +30,9 @@ var oop = {global:function() {
       if (e === f) {
         throw Error("class cannot extend himself");
       }
-      var l = new Function;
-      l.prototype = e.prototype;
-      f.prototype = new l;
+      var k = new Function;
+      k.prototype = e.prototype;
+      f.prototype = new k;
       f.prototype.constructor = f;
     } else {
       f = function() {
@@ -41,31 +41,31 @@ var oop = {global:function() {
     }
     f.prototype.init = c;
     f.prototype.release = d;
-    var k = a.methods;
-    if (k) {
-      for (var h in k) {
-        if ("function" !== typeof k[h]) {
+    var l = a.methods;
+    if (l) {
+      for (var h in l) {
+        if ("function" !== typeof l[h]) {
           throw Error("class method must be function");
         }
-        f.prototype[h] = k[h];
+        f.prototype[h] = l[h];
       }
     }
-    var m = a.static_methods;
-    if (m) {
-      for (h in m) {
-        if ("function" !== typeof m[h]) {
-          throw Error("class method must be function");
-        }
-        f[h] = m[h];
-      }
-    }
-    var g = a.constants;
+    var g = a.static_methods;
     if (g) {
-      for (var n in g) {
-        if ("function" === typeof g[n]) {
+      for (h in g) {
+        if ("function" !== typeof g[h]) {
+          throw Error("class method must be function");
+        }
+        f[h] = g[h];
+      }
+    }
+    var n = a.constants;
+    if (n) {
+      for (var m in n) {
+        if ("function" === typeof n[m]) {
           throw Error("class constant cannot be function");
         }
-        f[n] = g[n];
+        f[m] = n[m];
       }
     }
     var p = oop.global;
@@ -445,15 +445,15 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
 }, rotate:function(a) {
   var b = a.x, c = a.y, d = a.z;
   a = Math.cos(b);
-  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), f = Math.cos(d), d = Math.sin(d), l = a * f, k = a * d, h = b * f, m = b * d;
+  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), f = Math.cos(d), d = Math.sin(d), k = a * f, l = a * d, h = b * f, g = b * d;
   this.m_elements[0] = e * f;
   this.m_elements[4] = -e * d;
   this.m_elements[8] = c;
-  this.m_elements[1] = k + h * c;
-  this.m_elements[5] = l - m * c;
+  this.m_elements[1] = l + h * c;
+  this.m_elements[5] = k - g * c;
   this.m_elements[9] = -b * e;
-  this.m_elements[2] = m - l * c;
-  this.m_elements[6] = h + k * c;
+  this.m_elements[2] = g - k * c;
+  this.m_elements[6] = h + l * c;
   this.m_elements[10] = a * e;
   this.m_elements[3] = 0;
   this.m_elements[7] = 0;
@@ -604,15 +604,15 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
 }, to_array:function() {
   return this.m_elements;
 }}, static_methods:{multiply:function(a, b) {
-  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, f = c[0], l = c[4], k = c[8], h = c[12], m = c[1], g = c[5], n = c[9], p = c[13], q = c[2], r = c[6], t = c[10], u = c[14], v = c[3], w = c[7], x = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
-  e.m_elements[0] = f * y + l * C + k * G + h * K;
-  e.m_elements[4] = f * z + l * D + k * H + h * L;
-  e.m_elements[8] = f * A + l * E + k * I + h * M;
-  e.m_elements[12] = f * B + l * F + k * J + h * d;
-  e.m_elements[1] = m * y + g * C + n * G + p * K;
-  e.m_elements[5] = m * z + g * D + n * H + p * L;
-  e.m_elements[9] = m * A + g * E + n * I + p * M;
-  e.m_elements[13] = m * B + g * F + n * J + p * d;
+  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, f = c[0], k = c[4], l = c[8], h = c[12], g = c[1], n = c[5], m = c[9], p = c[13], q = c[2], r = c[6], t = c[10], u = c[14], v = c[3], w = c[7], x = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
+  e.m_elements[0] = f * y + k * C + l * G + h * K;
+  e.m_elements[4] = f * z + k * D + l * H + h * L;
+  e.m_elements[8] = f * A + k * E + l * I + h * M;
+  e.m_elements[12] = f * B + k * F + l * J + h * d;
+  e.m_elements[1] = g * y + n * C + m * G + p * K;
+  e.m_elements[5] = g * z + n * D + m * H + p * L;
+  e.m_elements[9] = g * A + n * E + m * I + p * M;
+  e.m_elements[13] = g * B + n * F + m * J + p * d;
   e.m_elements[2] = q * y + r * C + t * G + u * K;
   e.m_elements[6] = q * z + r * D + t * H + u * L;
   e.m_elements[10] = q * A + r * E + t * I + u * M;
@@ -646,18 +646,18 @@ oop.define_class({namespace:"gb", name:"math", constants:{INT16_MAX:32767, INT16
 }, is_float:function(a) {
   return Number(a) === a && 0 !== a % 1;
 }, intersect:function(a, b, c, d) {
-  var e = a.x, f = a.y, l = b.x - a.x;
+  var e = a.x, f = a.y, k = b.x - a.x;
   a = b.y - a.y;
   b = c.x;
-  var k = d.x - c.x;
+  var l = d.x - c.x;
   d = d.y - c.y;
-  var h = Math.sqrt(l * l + a * a), m = Math.sqrt(k * k + d * d);
-  if (l / h === k / m && a / h === d / m) {
+  var h = Math.sqrt(k * k + a * a), g = Math.sqrt(l * l + d * d);
+  if (k / h === l / g && a / h === d / g) {
     return {intersected:!1};
   }
-  c = (l * (c.y - f) + a * (e - b)) / (k * a - d * l);
-  b = (b + k * c - e) / l;
-  return 0 > b || 0 > c || 1 < c ? {intersected:!1} : {intersected:!0, point_x:e + l * b, point_y:f + a * b, distance:b};
+  c = (k * (c.y - f) + a * (e - b)) / (l * a - d * k);
+  b = (b + l * c - e) / k;
+  return 0 > b || 0 > c || 1 < c ? {intersected:!1} : {intersected:!0, point_x:e + k * b, point_y:f + a * b, distance:b};
 }, point_orientation:function(a, b, c) {
   a = (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
   return 0 === a ? gb.math.orientation.colinear : 0 < a ? gb.math.orientation.clockwise : gb.math.orientation.counterclockwise;
@@ -1389,8 +1389,8 @@ oop.define_class({namespace:"gb", name:"sprite_configuration", extend:gb.game_ob
         c.set_configuration("materials_configurations", a);
         e--;
         0 === e && b(c);
-      }, l = 0;l < d;++l) {
-        (new gb.material_configuration).serialize(c.json.materials[l].filename, f);
+      }, k = 0;k < d;++k) {
+        (new gb.material_configuration).serialize(c.json.materials[k].filename, f);
       }
     } else {
       b(c);
@@ -2307,20 +2307,20 @@ oop.define_class({namespace:"gb", name:"ces_light_mask_component", extend:gb.ces
     b.push(e);
     b.push(e + 1E-4);
   }
-  for (var d = [], f = new gb.vec2(0), l = new gb.vec2(gb.math.INT16_MIN), k = new gb.vec2(l), h = gb.math.INT16_MAX, c = 0;c < b.length;++c) {
+  for (var d = [], f = new gb.vec2(0), k = new gb.vec2(gb.math.INT16_MIN), l = new gb.vec2(k), h = gb.math.INT16_MAX, c = 0;c < b.length;++c) {
     e = b[c];
     f.x = Math.cos(e);
     f.y = Math.sin(e);
-    var m = a, g = f.add(a), h = gb.math.INT16_MAX;
-    k.x = l.x;
-    k.y = l.y;
-    for (var n = 0;n < this.m_shadow_casters_edges.length;++n) {
-      var p = gb.math.intersect(m, g, this.m_shadow_casters_edges[n].point_01, this.m_shadow_casters_edges[n].point_02);
-      p.intersected && p.distance < h && (h = p.distance, k.x = p.point_x, k.y = p.point_y);
+    var g = a, n = f.add(a), h = gb.math.INT16_MAX;
+    l.x = k.x;
+    l.y = k.y;
+    for (var m = 0;m < this.m_shadow_casters_edges.length;++m) {
+      var p = gb.math.intersect(g, n, this.m_shadow_casters_edges[m].point_01, this.m_shadow_casters_edges[m].point_02);
+      p.intersected && p.distance < h && (h = p.distance, l.x = p.point_x, l.y = p.point_y);
     }
-    k.equals(l) || -1 === d.findIndex(function(a) {
-      return a.point_x === k.x && a.point_y === k.y;
-    }) && d.push({point_x:k.x, point_y:k.y, angle:e});
+    l.equals(k) || -1 === d.findIndex(function(a) {
+      return a.point_x === l.x && a.point_y === l.y;
+    }) && d.push({point_x:l.x, point_y:l.y, angle:e});
   }
   d.sort(function(a, b) {
     return a.angle - b.angle;
@@ -2440,15 +2440,15 @@ oop.define_class({namespace:"gb", name:"ces_deferred_lighting_system", extend:gb
     var c = this.m_light_casters[a].get_component(gb.ces_base_component.type.light_mask);
     c.cleanup();
     for (var d = this.m_light_casters[a].get_component(gb.ces_base_component.type.transformation), e = (new gb.mat4).identity(), f = this.m_light_casters[a].parent;f;) {
-      var l = f.get_component(gb.ces_base_component.type.transformation), e = gb.mat4.multiply(e, l.matrix_m), f = f.parent
+      var k = f.get_component(gb.ces_base_component.type.transformation), e = gb.mat4.multiply(e, k.matrix_m), f = f.parent
     }
     d = gb.mat4.multiply_vec2(d.position, e);
     for (e = 0;e < this.m_shadow_casters.length;++e) {
-      for (var f = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.convex_hull), l = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.transformation), k = (new gb.mat4).identity(), h = this.m_shadow_casters[e].parent;h;) {
-        var m = h.get_component(gb.ces_base_component.type.transformation), k = gb.mat4.multiply(k, m.matrix_m), h = h.parent
+      for (var f = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.convex_hull), k = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.transformation), l = (new gb.mat4).identity(), h = this.m_shadow_casters[e].parent;h;) {
+        var g = h.get_component(gb.ces_base_component.type.transformation), l = gb.mat4.multiply(l, g.matrix_m), h = h.parent
       }
-      k = gb.mat4.multiply(k, l.matrix_m);
-      c.update_mask_geometry(k, f.oriented_vertices);
+      l = gb.mat4.multiply(l, k.matrix_m);
+      c.update_mask_geometry(l, f.oriented_vertices);
       b.add_shadow_caster(this.m_shadow_casters[e]);
     }
     c.generate_mask_mesh(d);
@@ -2461,7 +2461,7 @@ oop.define_class({namespace:"gb", name:"ces_deferred_lighting_system", extend:gb
     this.update_recursively(a[b]);
   }
 }}, static_methods:{}});
-oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_system, init:function() {
+oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_system, constants:{shadow_color_uniform:"u_shadow_color", light_mask_vs_flag_uniform:"u_mask_flag_vs", light_mask_fs_flag_uniform:"u_mask_flag_fs", shadow_color_for_casters:new gb.vec4(1), shadow_color_for_receivers:new gb.vec4(0, 0, 0, .75)}, init:function() {
   this.m_render_pipeline = new gb.render_pipeline;
   this.m_type = gb.ces_base_system.type.render;
   Object.defineProperty(this, "render_pipeline", {get:function() {
@@ -2471,11 +2471,6 @@ oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_s
   Object.defineProperty(this, "screed_quad_mesh", {get:function() {
     return this.m_screed_quad_mesh;
   }});
-  this.k_shadow_color_uniform = "u_shadow_color";
-  this.k_light_mask_vs_flag_uniform = "u_mask_flag_vs";
-  this.k_light_mask_fs_flag_uniform = "u_mask_flag_fs";
-  this.k_shadow_color_for_casters = new gb.vec4(1);
-  this.k_shadow_color_for_receivers = new gb.vec4(0, 0, 0, .75);
 }, release:function() {
 }, methods:{on_feed_start:function() {
   this.m_render_pipeline.on_draw_begin();
@@ -2493,43 +2488,43 @@ oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_s
 }, draw_recursively:function(a, b, c) {
   var d = a.get_component(gb.ces_base_component.type.scene);
   if (d) {
-    var e = a.get_component(gb.ces_base_component.type.light), f = a.get_component(gb.ces_base_component.type.transformation), l = a.get_component(gb.ces_base_component.type.material), k = a.get_component(gb.ces_base_component.type.geometry);
-    !e && l && k && f && (e = l.get_material(b, c), k = k.mesh, e && e.shader && e.shader.is_commited && k && a.visible && (e.set_custom_shader_uniform(this.k_shadow_color_for_casters, this.k_shadow_color_uniform), l.bind(b, c, e), e.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p), e.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v), d = gb.ces_transformation_component.get_absolute_transformation(a, !1), e.shader.set_mat4(d, gb.shader.uniform_type.mat_m), k.bind(e.shader.attributes), 
-    k.draw(), k.unbind(e.shader.attributes), l.unbind(b, c, e)));
+    var e = a.get_component(gb.ces_base_component.type.light), f = a.get_component(gb.ces_base_component.type.transformation), k = a.get_component(gb.ces_base_component.type.material), l = a.get_component(gb.ces_base_component.type.geometry);
+    !e && k && l && f && (e = k.get_material(b, c), l = l.mesh, e && e.shader && e.shader.is_commited && l && a.visible && (e.set_custom_shader_uniform(gb.ces_render_system.shadow_color_for_casters, gb.ces_render_system.shadow_color_uniform), k.bind(b, c, e), e.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p), e.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v), d = gb.ces_transformation_component.get_absolute_transformation(a, !1), e.shader.set_mat4(d, gb.shader.uniform_type.mat_m), 
+    l.bind(e.shader.attributes), l.draw(), l.unbind(e.shader.attributes), k.unbind(b, c, e)));
     a = a.children;
-    for (l = 0;l < a.length;++l) {
-      this.draw_recursively(a[l], b, c);
+    for (k = 0;k < a.length;++k) {
+      this.draw_recursively(a[k], b, c);
     }
   }
 }, draw_recursively_lights:function(a, b, c) {
   var d = a.get_component(gb.ces_base_component.type.scene);
   if (d) {
-    var e = this, f = a.get_component(gb.ces_base_component.type.light), l = a.get_component(gb.ces_base_component.type.light_mask), k = a.get_component(gb.ces_base_component.type.transformation), h = a.get_component(gb.ces_base_component.type.material), m = a.get_component(gb.ces_base_component.type.geometry);
-    if (f && h && m && k) {
-      var g = h.get_material(b, c), n = m.mesh, p = l.mesh;
-      g && a.visible && g.shader && g.shader.is_commited && n && p && (function() {
+    var e = a.get_component(gb.ces_base_component.type.light), f = a.get_component(gb.ces_base_component.type.light_mask), k = a.get_component(gb.ces_base_component.type.transformation), l = a.get_component(gb.ces_base_component.type.material), h = a.get_component(gb.ces_base_component.type.geometry);
+    if (e && l && h && k) {
+      var g = l.get_material(b, c), n = h.mesh, m = f.mesh;
+      g && a.visible && g.shader && g.shader.is_commited && n && m && (function() {
         gl.colorMask(!1, !1, !1, !1);
         gl.depthMask(!1);
         g.stencil_function = gl.ALWAYS;
         g.stencil_function_parameter_1 = 1;
         g.stencil_function_parameter_2 = 255;
         g.stencil_mask_parameter = 1;
-        g.set_custom_shader_uniform(0, e.k_light_mask_vs_flag_uniform);
-        g.set_custom_shader_uniform(1, e.k_light_mask_fs_flag_uniform);
-        h.bind(b, c, g);
+        g.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
+        g.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform);
+        l.bind(b, c, g);
         g.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p);
         g.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v);
         g.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m);
-        p.bind(g.shader.attributes);
-        p.draw();
-        p.unbind(g.shader.attributes);
-        for (var a = f.shadow_casters, l = 0;l < a.length;++l) {
-          var k = a[l], m = k.get_component(gb.ces_base_component.type.geometry);
-          k.get_component(gb.ces_base_component.type.material).get_material(b, c) && (m = m.mesh, k = gb.ces_transformation_component.get_absolute_transformation(k, !1), g.shader.set_mat4(k, gb.shader.uniform_type.mat_m), m.bind(g.shader.attributes), m.draw(), m.unbind(g.shader.attributes));
+        m.bind(g.shader.attributes);
+        m.draw();
+        m.unbind(g.shader.attributes);
+        for (var a = e.shadow_casters, f = 0;f < a.length;++f) {
+          var k = a[f], h = k.get_component(gb.ces_base_component.type.geometry);
+          k.get_component(gb.ces_base_component.type.material).get_material(b, c) && (h = h.mesh, k = gb.ces_transformation_component.get_absolute_transformation(k, !1), g.shader.set_mat4(k, gb.shader.uniform_type.mat_m), h.bind(g.shader.attributes), h.draw(), h.unbind(g.shader.attributes));
         }
         gl.colorMask(!0, !0, !0, !0);
         gl.depthMask(!0);
-        h.unbind(b, c, g);
+        l.unbind(b, c, g);
       }(), function() {
         var d = gb.ces_transformation_component.get_absolute_transformation(a, !0);
         g.stencil_function = gl.EQUAL;
@@ -2538,20 +2533,20 @@ oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_s
         g.stencil_mask_parameter = 0;
         g.blending_function_source = gl.SRC_ALPHA;
         g.blending_function_destination = gl.ONE;
-        g.set_custom_shader_uniform(0, e.k_light_mask_vs_flag_uniform);
-        g.set_custom_shader_uniform(0, e.k_light_mask_fs_flag_uniform);
-        h.bind(b, c, g);
+        g.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
+        g.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_fs_flag_uniform);
+        l.bind(b, c, g);
         g.shader.set_mat4(d, gb.shader.uniform_type.mat_m);
         n.bind(g.shader.attributes);
         n.draw();
         n.unbind(g.shader.attributes);
-        h.unbind(b, c, g);
-      }(), gl.colorMask(!1, !1, !1, !1), gl.depthMask(!1), g.stencil_function = gl.ALWAYS, g.stencil_function_parameter_1 = 0, g.stencil_function_parameter_2 = 255, g.stencil_mask_parameter = 1, g.set_custom_shader_uniform(1, e.k_light_mask_vs_flag_uniform), g.set_custom_shader_uniform(1, e.k_light_mask_fs_flag_uniform), h.bind(b, c, g), g.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m), e.screed_quad_mesh.bind(g.shader.attributes), e.screed_quad_mesh.draw(), e.screed_quad_mesh.unbind(g.shader.attributes), 
-      gl.colorMask(!0, !0, !0, !0), gl.depthMask(!0), h.unbind(b, c, g));
+        l.unbind(b, c, g);
+      }(), gl.colorMask(!1, !1, !1, !1), gl.depthMask(!1), g.stencil_function = gl.ALWAYS, g.stencil_function_parameter_1 = 0, g.stencil_function_parameter_2 = 255, g.stencil_mask_parameter = 1, g.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_vs_flag_uniform), g.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform), l.bind(b, c, g), g.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m), this.screed_quad_mesh.bind(g.shader.attributes), this.screed_quad_mesh.draw(), 
+      this.screed_quad_mesh.unbind(g.shader.attributes), gl.colorMask(!0, !0, !0, !0), gl.depthMask(!0), l.unbind(b, c, g));
     }
-    l = a.children;
-    for (k = 0;k < l.length;++k) {
-      this.draw_recursively_lights(l[k], b, c);
+    f = a.children;
+    for (k = 0;k < f.length;++k) {
+      this.draw_recursively_lights(f[k], b, c);
     }
   }
 }}, static_methods:{}});
@@ -2878,30 +2873,30 @@ oop.define_class({namespace:"gb", name:"game_transition", init:function(a) {
   this.m_configurations_accessor.get_transition_configuration(this.m_guid, function(a) {
     if (null !== a.ws_techniques_configurations) {
       for (var b = 0;b < a.ws_techniques_configurations.length;++b) {
-        var h = a.ws_techniques_configurations[b], m = Math.min(gl.viewport_width, h.screen_width), g = Math.min(gl.viewport_height, h.screen_height), m = new gb.render_technique_ws(m, g, h.technique_name, h.index, h.num_passes), g = new gb.vec4(h.clear_color_r, h.clear_color_g, h.clear_color_b, h.clear_color_a);
-        m.clear_color = g;
-        e.add_ws_render_technique(h.technique_name, h.index, m);
-        f.m_resources_accessor.add_custom_resource(h.technique_name + ".color", m.color_attachment_texture);
-        f.m_resources_accessor.add_custom_resource(h.technique_name + ".depth", m.depth_attachment_texture);
+        var h = a.ws_techniques_configurations[b], g = Math.min(gl.viewport_width, h.screen_width), n = Math.min(gl.viewport_height, h.screen_height), g = new gb.render_technique_ws(g, n, h.technique_name, h.index, h.num_passes), n = new gb.vec4(h.clear_color_r, h.clear_color_g, h.clear_color_b, h.clear_color_a);
+        g.clear_color = n;
+        e.add_ws_render_technique(h.technique_name, h.index, g);
+        f.m_resources_accessor.add_custom_resource(h.technique_name + ".color", g.color_attachment_texture);
+        f.m_resources_accessor.add_custom_resource(h.technique_name + ".depth", g.depth_attachment_texture);
       }
     }
     if (null !== a.ss_techniques_configurations) {
       for (b = 0;b < a.ss_techniques_configurations.length;++b) {
-        var h = a.ss_techniques_configurations[b], m = h.material_configuration, n = gb.material.construct(m);
-        gb.material.set_shader(n, m, f.m_resources_accessor);
-        gb.material.set_textures(n, m, f.m_resources_accessor);
-        m = Math.min(gl.viewport_width, h.screen_width);
-        g = Math.min(gl.viewport_height, h.screen_height);
-        m = new gb.render_technique_ss(m, g, h.technique_name, 0, n);
-        e.add_ss_render_technique(h.technique_name, m);
-        f.m_resources_accessor.add_custom_resource(h.technique_name + ".color", m.color_attachment_texture);
+        var h = a.ss_techniques_configurations[b], g = h.material_configuration, m = gb.material.construct(g);
+        gb.material.set_shader(m, g, f.m_resources_accessor);
+        gb.material.set_textures(m, g, f.m_resources_accessor);
+        g = Math.min(gl.viewport_width, h.screen_width);
+        n = Math.min(gl.viewport_height, h.screen_height);
+        g = new gb.render_technique_ss(g, n, h.technique_name, 0, m);
+        e.add_ss_render_technique(h.technique_name, g);
+        f.m_resources_accessor.add_custom_resource(h.technique_name + ".color", g.color_attachment_texture);
       }
     }
-    m = a.main_technique_configuration.material_configuration;
-    n = gb.material.construct(m);
-    gb.material.set_shader(n, m, f.m_resources_accessor);
-    gb.material.set_textures(n, m, f.m_resources_accessor);
-    e.create_main_render_technique(n);
+    g = a.main_technique_configuration.material_configuration;
+    m = gb.material.construct(g);
+    gb.material.set_shader(m, g, f.m_resources_accessor);
+    gb.material.set_textures(m, g, f.m_resources_accessor);
+    e.create_main_render_technique(m);
     a = new gb.scene_fabricator;
     a.configurations_accessor = f.m_configurations_accessor;
     a.resources_accessor = f.m_resources_accessor;

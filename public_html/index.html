@@ -16,6 +16,10 @@
             
             function app_start()
             {
+                var canvas = document.getElementById("gl_canvas");
+                canvas.width = $(document).width();
+                canvas.height = $(document).height();
+
                 var light_source_01 = null;
                 var light_source_02 = null;
                 var angle = 0.0;
@@ -78,7 +82,7 @@
         </script>
     </head>
     <body onload="app_start();">
-        <canvas id="gl_canvas" style="border: none; position: absolute; left: 50%; top: 50%; margin-right: -50%; transform: translate(-50%, -50%) " width="640" height="480"></canvas>
+        <canvas id="gl_canvas"></canvas>
         <script src="src/game_box-min.js"></script>
     </body>
 </html>

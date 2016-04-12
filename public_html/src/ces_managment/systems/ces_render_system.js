@@ -5,6 +5,13 @@ oop.define_class({
     namespace: "gb",
     name: "ces_render_system",
     extend: gb.ces_base_system,
+    constants: {
+        shadow_color_uniform: "u_shadow_color",
+        light_mask_vs_flag_uniform: "u_mask_flag_vs",
+        light_mask_fs_flag_uniform: "u_mask_flag_fs",
+        shadow_color_for_casters: new gb.vec4(1.0),
+        shadow_color_for_receivers: new gb.vec4(0.0, 0.0, 0.0, 0.75)
+    },
 
     init: function() {
 
@@ -23,12 +30,6 @@ oop.define_class({
                 return this.m_screed_quad_mesh;
             }
         });
-
-        this.k_shadow_color_uniform = "u_shadow_color";
-        this.k_light_mask_vs_flag_uniform = "u_mask_flag_vs";
-        this.k_light_mask_fs_flag_uniform = "u_mask_flag_fs";
-        this.k_shadow_color_for_casters = new gb.vec4(1.0);
-        this.k_shadow_color_for_receivers = new gb.vec4(0.0, 0.0, 0.0, 0.75);
     },
 
     release: function() {
@@ -76,7 +77,7 @@ oop.define_class({
                 var mesh = geometry_component.mesh;
                 if (material && material.shader && material.shader.is_commited && mesh && entity.visible) {
 
-                    material.set_custom_shader_uniform(self.k_shadow_color_for_casters, self.k_shadow_color_uniform);
+                    material.set_custom_shader_uniform(gb.ces_render_system.shadow_color_for_casters, gb.ces_render_system.shadow_color_uniform);
 
                     material_component.bind(technique_name, technique_pass, material);
                     material.shader.set_mat4(scene_component.camera.matrix_p, gb.shader.uniform_type.mat_p);
@@ -129,8 +130,8 @@ oop.define_class({
                         material.stencil_function_parameter_2 = 255;
                         material.stencil_mask_parameter = 1;
 
-                        material.set_custom_shader_uniform(0, self.k_light_mask_vs_flag_uniform);
-                        material.set_custom_shader_uniform(1, self.k_light_mask_fs_flag_uniform);
+                        material.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
+                        material.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform);
 
                         material_component.bind(technique_name, technique_pass, material);
 
@@ -168,7 +169,7 @@ oop.define_class({
                     var draw_light = function() {
 
                         var light_caster_matrix_m = gb.ces_transformation_component.get_absolute_transformation(entity, true);
-                        
+
                         material.stencil_function = gl.EQUAL;
                         material.stencil_function_parameter_1 = 1;
                         material.stencil_function_parameter_2 = 255;
@@ -177,8 +178,8 @@ oop.define_class({
                         material.blending_function_source = gl.SRC_ALPHA;
                         material.blending_function_destination = gl.ONE;
 
-                        material.set_custom_shader_uniform(0, self.k_light_mask_vs_flag_uniform);
-                        material.set_custom_shader_uniform(0, self.k_light_mask_fs_flag_uniform);
+                        material.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
+                        material.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_fs_flag_uniform);
 
                         material_component.bind(technique_name, technique_pass, material);
 
@@ -201,8 +202,8 @@ oop.define_class({
                         material.stencil_function_parameter_2 = 255;
                         material.stencil_mask_parameter = 1;
 
-                        material.set_custom_shader_uniform(1, self.k_light_mask_vs_flag_uniform);
-                        material.set_custom_shader_uniform(1, self.k_light_mask_fs_flag_uniform);
+                        material.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_vs_flag_uniform);
+                        material.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform);
 
                         material_component.bind(technique_name, technique_pass, material);
 
