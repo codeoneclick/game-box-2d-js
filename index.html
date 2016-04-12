@@ -10,11 +10,40 @@
         <script src="lib/underscore/underscore-min.js"></script>
         <script src="lib/fps_meter/fps_meter-min.js"></script>
         <script type="text/javascript">
-            
-            var g_game_controller = null;
 
+            var g_game_controller = null;
+            var game_logic = null;
+            
             function app_start()
             {
+                var canvas = document.getElementById("gl_canvas");
+                canvas.width = $(document).width();
+                canvas.height = $(document).height();
+
+                var light_source_01 = null;
+                var light_source_02 = null;
+                var angle = 0.0;
+
+                game_logic = new Object;
+                game_logic.on_update = function() {
+                    
+                    angle += 0.1;
+                    if(light_source_01)
+                    {
+                        light_source_01.position.x = 250.0 + Math.sin(angle) * 32.0;
+                        light_source_01.position.y = 250.0 + Math.cos(angle) * 32.0;
+                    }
+
+                    if(light_source_02)
+                    {
+                        light_source_02.position.x = 350.0 + Math.cos(angle) * 64.0;
+                        light_source_02.position.y = 450.0 + Math.sin(angle) * 64.0;
+                    }
+                };
+                loop.add_listener(game_logic);
+
+                var gl_context = new gb.graphics_context();
+
                 g_game_controller = new gb.game_controller();
                 var game_transition = new gb.game_transition("data/resources/configurations/transitions/transition.main.json");
                 g_game_controller.add_transition(game_transition);
@@ -22,24 +51,38 @@
                     
                     var camera = new gb.camera(gl.viewport_width, gl.viewport_height);
                     scene.camera = camera;
-
-                    for(var i = 0; i < 16; ++i)
-                    {
-                        for(var j = 0; j < 12; ++j)
-                        {
-                            var sprite = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json");
-                            scene.add_child(sprite);
-                            sprite.position = new gb.vec2(40 * i, 40 * j);
-                            sprite.size = new gb.vec2(32, 32);
-                        }
-                    }
                     
+                    var sprite_02 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_02.json");
+                    scene.add_child(sprite_02);
+                    sprite_02.position = new gb.vec2(0, 0);
+                    sprite_02.size = new gb.vec2(480, 640);
+                    sprite_02.cast_shadow = true;
+                    
+                    var sprite_01 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json");
+                    scene.add_child(sprite_01);
+                    sprite_01.position = new gb.vec2(70, 70);
+                    sprite_01.size = new gb.vec2(128, 128);
+                    sprite_01.cast_shadow = true;
+
+                    light_source_01 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
+                        light_source_01.position = new gb.vec2(250, 250);
+                        light_source_01.radius = 512.0;
+                        light_source_01.color = new gb.vec4(1.0, 0.0, 0.0, 1.0);
+                    });
+                    scene.add_child(light_source_01);
+
+                    light_source_02 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
+                        light_source_02.position = new gb.vec2(350, 450);
+                        light_source_02.radius = 256.0;
+                        light_source_02.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
+                    });
+                    scene.add_child(light_source_02);
                 });
             }
         </script>
     </head>
     <body onload="app_start();">
-        <canvas id="gl_canvas" style="border: none; position: absolute; left: 50%; top: 50%; margin-right: -50%; transform: translate(-50%, -50%) " width="640" height="480"></canvas>
+        <canvas id="gl_canvas"></canvas>
         <script src="src/game_box-min.js"></script>
     </body>
 </html>

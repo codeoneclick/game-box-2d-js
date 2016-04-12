@@ -1,43 +1,46 @@
-/* global gb */
+/* global oop, gb */
 
-gb.commiter_status = {
-    undefined : 0,
-    in_progress : 1,
-    failure : 2,
-    success : 3
-};
+"use strict";
 
-gb.resource_commiter = function(guid, resource)
-{
-    this.m_guid = guid;
-    this.m_resource = resource;
-    this.m_status = gb.commiter_status.undefined;
-};
-
-gb.resource_commiter.prototype = 
-{ 
-    constructor: gb.resource_commiter,
-    
-    clone: function() 
-    {
-        return new this.constructor();
+oop.define_class({
+    namespace: "gb",
+    name: "resource_commiter",
+    constants: {
+        status: {
+            undefined: 0,
+            in_progress: 1,
+            failure: 2,
+            success: 3
+        }
     },
 
-    copy: function(value)
-    {
-	this.m_guid = value.m_guid;
-	this.m_resource = value.m_resource;
-        this.m_status = value.m_status;
-	return this;
+    init: function(guid, resource) {
+        this.m_guid = guid;
+        this.m_resource = resource;
+        this.m_status = gb.resource_commiter.status.undefined;
+
+        Object.defineProperty(this, 'guid', {
+            get: function() {
+                return this.m_guid;
+            }
+        });
+
+        Object.defineProperty(this, 'status', {
+            get: function() {
+                return this.m_status;
+            }
+        });
     },
-    
-    get_guid: function()
-    {
-        return this.m_guid;
+
+    release: function() {
+
     },
-    
-    get_status: function()
-    {
-        return this.m_status;
+
+    methods: {
+
+    },
+
+    static_methods: {
+
     }
-};
+});

@@ -1,25 +1,36 @@
-/* global gb */
+/* global oop, gb */
 
 "use strict";
 
-gb.configuration_accessor = function() {
+oop.define_class({
+	namespace: "gb",
+	name: "configuration_accessor",
 
-};
+	init: function() {
 
-gb.configuration_accessor.prototype = {
-	constructor: gb.configuration_accessor,
-
-	get_transition_configuration: function(filename, callback) {
-		var transition_configuration = new gb.transition_configuration();
-		transition_configuration.serialize(filename, function(configuration) {
-			callback(configuration);
-		});
 	},
 
-	get_sprite_configuration: function(filename, callback) {
-		var sprite_configuration = new gb.sprite_configuration();
-		sprite_configuration.serialize(filename, function(configuration) {
-			callback(configuration);
-		});
+	release: function() {
+
+	},
+
+	methods: {
+		get_transition_configuration: function(filename, callback) {
+			var configuration = new gb.transition_configuration();
+			configuration.serialize(filename, function(configuration) {
+				callback(configuration);
+			});
+		},
+
+		get_sprite_configuration: function(filename, callback) {
+			var configuration = new gb.sprite_configuration();
+			configuration.serialize(filename, function(configuration) {
+				callback(configuration);
+			});
+		}
+	},
+
+	static_methods: {
+
 	}
-};
+});

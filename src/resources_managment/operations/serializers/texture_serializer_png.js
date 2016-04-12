@@ -1,27 +1,39 @@
-/* global gb */
+/* global oop, gb */
 
-gb.texture_serializer_png = function(filename, resource)
-{
-    gb.resource_serializer.call(this, filename, resource);
-    this.m_filename = filename;
-};
+"use strict";
 
-gb.texture_serializer_png.prototype = Object.create(gb.resource_serializer.prototype);
-gb.texture_serializer_png.prototype.constructor = gb.texture_serializer_png;
+oop.define_class({
+    namespace: "gb",
+    name: "texture_serializer_png",
+    extend: gb.resource_serializer,
 
-gb.texture_serializer_png.prototype.serialize = function(transfering_data, callback) 
-{
-    this.m_status = gb.serializer_status.in_progress;
-    
-    var self = this;
-    var image = new Image();
-    image.onload = function() {
-        transfering_data.data = image;
-        transfering_data.width = image.width;
-        transfering_data.height = image.height;
-        self.m_resource.on_transfering_data_serialized(transfering_data);
-        self.m_status =  gb.serializer_status.success;    
-        callback();
-    };
-    image.src = this.m_filename;
-};
+    init: function(filename) {
+        this.m_filename = filename;
+    },
+
+    release: function() {
+
+    },
+
+    methods: {
+        serialize: function(data, callback) {
+            this.m_status = gb.resource_serializer.status.in_progress;
+
+            var self = this;
+            var image = new Image();
+            image.onload = function() {
+                data.data = image;
+                data.width = image.width;
+                data.height = image.height;
+                self.m_resource.on_transfering_data_serialized(data);
+                self.m_status = gb.resource_serializer.status.success;
+                callback();
+            };
+            image.src = this.m_filename;
+        }
+    },
+
+    static_methods: {
+
+    }
+});

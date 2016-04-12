@@ -1,22 +1,29 @@
-/* global gb */
+/* global oop, gb */
 
-gb.shader_configuration = function()
-{
-    gb.configuration_base.call(this);
-    this.json = null;
-    
-    Object.defineProperty(this, 'filename', {
-        get: function()
-        {
-            return this.json.filename;
-        }
-    });
-};
+"use strict";
 
-gb.shader_configuration.prototype = Object.create(gb.configuration_base.prototype);
-gb.shader_configuration.prototype.constructor = gb.shader_configuration;
+oop.define_class({
+	namespace: "gb",
+	name: "shader_configuration",
+	extend: gb.configuration_base,
 
-gb.shader_configuration.prototype.serialize = function(value) 
-{
-    this.json = value;
-};
+	init: function() {
+		this.json = null;
+
+		Object.defineProperty(this, 'filename', {
+			get: function() {
+				return this.json.filename;
+			}
+		});
+	},
+
+	release: function() {
+
+	},
+
+	methods: {
+		serialize: function(value) {
+			this.json = value;
+		}
+	}
+});

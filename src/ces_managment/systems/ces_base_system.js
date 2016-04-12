@@ -1,30 +1,44 @@
-/* global gb */
-
+/* global oop, gb */
 "use strict";
 
-gb.ces_system_type = {
-    undefined: -1,
-    render: 0,
-    deffered_lighting: 1
-};
-
-gb.ces_base_system = function() {
-    this.m_type = gb.ces_system_type.undefined;
-    this.m_priority = 0;
-
-    Object.defineProperty(this, 'type', {
-        get: function() {
-            return this.m_type;
+oop.define_class({
+    namespace: "gb",
+    name: "ces_base_system",
+    constants: {
+        type: {
+            undefined: -1,
+            render: 0,
+            deferred_lighting: 1
         }
-    });
+    },
+    
+    init: function() {
 
-    Object.defineProperty(this, 'priority', {
-        get: function() {
-            return this.m_priority;
-        }
-    });
-};
+        this.m_type = gb.ces_base_system.type.undefined;
+        this.m_priority = 0;
 
-gb.ces_base_system.prototype = {
-    constructor: gb.ces_base_system
-};
+        Object.defineProperty(this, 'type', {
+            get: function() {
+                return this.m_type;
+            }
+        });
+
+        Object.defineProperty(this, 'priority', {
+            get: function() {
+                return this.m_priority;
+            }
+        });
+    },
+
+    release: function() {
+
+    },
+
+    methods: {
+
+    },
+
+    static_methods: {
+
+    }
+});

@@ -1,170 +1,193 @@
-/* global gb */
+/* global oop, gb */
 
 "use strict";
 
-gb.vec2 = function() {
-    if (arguments[0] instanceof gb.vec2) {
-        this.m_x = arguments[0].x;
-        this.m_y = arguments[0].y;
-    } else if (arguments.length === 1) {
-        this.m_x = arguments[0];
-        this.m_y = arguments[0];
-    } else if (arguments.length === 2) {
-        this.m_x = arguments[0];
-        this.m_y = arguments[1];
-    } else {
-        this.m_x = 0;
-        this.m_y = 0;
-    }
+oop.define_class({
+    namespace: "gb",
+    name: "vec2",
 
-    Object.defineProperty(this, 'x', {
-        get: function() {
-            return this.m_x;
+    init: function() {
+        if (arguments[0] instanceof gb.vec2) {
+            this.m_x = arguments[0].x;
+            this.m_y = arguments[0].y;
+        } else if (arguments.length === 1) {
+            this.m_x = arguments[0];
+            this.m_y = arguments[0];
+        } else if (arguments.length === 2) {
+            this.m_x = arguments[0];
+            this.m_y = arguments[1];
+        } else {
+            this.m_x = 0;
+            this.m_y = 0;
+        }
+
+        Object.defineProperty(this, 'x', {
+            configurable: true,
+            get: function() {
+                return this.m_x;
+            },
+            set: function(value) {
+                this.m_x = value;
+            }
+        });
+
+        Object.defineProperty(this, 'y', {
+            configurable: true,
+            get: function() {
+                return this.m_y;
+            },
+            set: function(value) {
+                this.m_y = value;
+            }
+        });
+    },
+
+    release: function() {
+
+    },
+
+    methods: {
+        add: function(vector) {
+            this.m_x += vector.m_x;
+            this.m_y += vector.m_y;
+            return this;
         },
-        set: function(value) {
-            this.m_x = value;
-        }
-    });
 
-    Object.defineProperty(this, 'y', {
-        get: function() {
-            return this.m_y;
+        add_scalar: function(scalar) {
+            this.m_x += scalar;
+            this.m_y += scalar;
+            return this;
         },
-        set: function(value) {
-            this.m_y = value;
+
+        sub: function(value) {
+            this.m_x -= value.m_x;
+            this.m_y -= value.m_y;
+            return this;
+        },
+
+        sub_scalar: function(value) {
+            this.m_x -= value;
+            this.m_y -= value;
+            return this;
+        },
+
+        multiply: function(value) {
+            this.m_x *= value.m_x;
+            this.m_y *= value.m_y;
+            return this;
+        },
+
+        multiply_scalar: function(value) {
+            this.m_x *= value;
+            this.m_y *= value;
+            return this;
+        },
+
+        divide: function(value) {
+            this.m_x /= value.m_x;
+            this.m_y /= value.m_y;
+            return this;
+        },
+
+        divide_scalar: function(value) {
+            this.m_x /= value;
+            this.m_y /= value;
+            return this;
+        },
+
+        clamp: function(min, max) {
+            this.m_x = Math.max(min.m_x, Math.min(max.m_x, this.m_x));
+            this.m_y = Math.max(min.m_y, Math.min(max.m_y, this.m_y));
+            return this;
+        },
+
+        dot: function(value) {
+            return this.m_x * value.m_x + this.m_y * value.m_y;
+        },
+
+        length: function() {
+            return Math.sqrt(this.m_x * this.m_x + this.m_y * this.m_y);
+        },
+
+        normalize: function() {
+            return this.divide_scalar(this.length());
+        },
+
+        angle: function() {
+            var angle = Math.atan2(this.m_y, this.m_x);
+            if (angle < 0) {
+                angle += 2 * Math.PI;
+            }
+            return angle;
+        },
+
+        distance_to: function(value) {
+            var dx = this.m_x - value.m_x,
+                dy = this.m_y - value.m_y;
+            return Math.sqrt(dx * dx + dy * dy);
+        },
+
+        lerp: function(value, alpha) {
+            this.m_x += (value.m_x - this.m_x) * alpha;
+            this.m_y += (value.m_y - this.m_y) * alpha;
+            return this;
+        },
+
+        equals: function(value) {
+            return ((value.m_x === this.m_x) && (value.m_y === this.m_y));
+        },
+
+        min: function(vector) {
+            this.m_x = Math.min(this.m_x, vector.m_x);
+            this.m_y = Math.min(this.m_y, vector.m_y);
+            return this;
+        },
+
+        max: function(vector) {
+            this.m_x = Math.max(this.m_x, vector.m_x);
+            this.m_y = Math.max(this.m_y, vector.m_y);
+            return this;
+        },
+
+        to_array: function() {
+            var array = [];
+            array.push(this.m_x);
+            array.push(this.m_y);
+            return array;
         }
-    });
-};
-
-gb.vec2.add = function(vector_01, vector_02) {
-    return new gb.vec2(vector_01.x + vector_02.x,
-        vector_01.y + vector_02.y);
-};
-
-gb.vec2.sub = function(vector_01, vector_02) {
-    return new gb.vec2(vector_01.x - vector_02.x,
-        vector_01.y - vector_02.y);
-};
-
-gb.vec2.lerp = function(vector_01, vector_02, alpha) {
-    return gb.vec2.sub(vector_02, vector_01).multiply_scalar(alpha).add(vector_01);
-};
-
-gb.vec2.equals = function(vector_01, vector_02) {
-    return ((vector_01.x === vector_02.x) && (vector_01.y === vector_02.y));
-};
-
-gb.vec2.min = function(vector_01, vector_02) {
-    var vector_03 = new gb.vec2(0);
-    vector_03.x = Math.min(vector_01.x, vector_02.x);
-    vector_03.y = Math.min(vector_01.y, vector_02.y);
-    return vector_03;
-};
-
-gb.vec2.max = function(vector_01, vector_02) {
-    var vector_03 = new gb.vec2(0);
-    vector_03.x = Math.max(vector_01.x, vector_02.x);
-    vector_03.y = Math.max(vector_01.y, vector_02.y);
-    return vector_03;
-};
-
-gb.vec2.prototype = {
-    constructor: gb.vec2,
-
-    add: function(vector) {
-        this.x += vector.x;
-        this.y += vector.y;
-        return this;
     },
 
-    add_scalar: function(scalar) {
-        this.x += scalar;
-        this.y += scalar;
-        return this;
-    },
+    static_methods: {
+        add: function(vector_01, vector_02) {
+            return new gb.vec2(vector_01.m_x + vector_02.m_x,
+                vector_01.m_y + vector_02.m_y);
+        },
 
-    sub: function(value) {
-        this.x -= value.x;
-        this.y -= value.y;
-        return this;
-    },
+        sub: function(vector_01, vector_02) {
+            return new gb.vec2(vector_01.m_x - vector_02.m_x,
+                vector_01.m_y - vector_02.m_y);
+        },
 
-    sub_scalar: function(value) {
-        this.x -= value;
-        this.y -= value;
-        return this;
-    },
+        lerp: function(vector_01, vector_02, alpha) {
+            return gb.vec2.sub(vector_02, vector_01).multiply_scalar(alpha).add(vector_01);
+        },
 
-    multiply: function(value) {
-        this.x *= value.x;
-        this.y *= value.y;
-        return this;
-    },
+        equals: function(vector_01, vector_02) {
+            return ((vector_01.m_x === vector_02.m_x) && (vector_01.m_y === vector_02.m_y));
+        },
 
-    multiply_scalar: function(value) {
-        this.x *= value;
-        this.y *= value;
-        return this;
-    },
+        min: function(vector_01, vector_02) {
+            var vector_03 = new gb.vec2(0);
+            vector_03.m_x = Math.min(vector_01.m_x, vector_02.m_x);
+            vector_03.m_y = Math.min(vector_01.m_y, vector_02.m_y);
+            return vector_03;
+        },
 
-    divide: function(value) {
-        this.x /= value.x;
-        this.y /= value.y;
-        return this;
-    },
-
-    divide_scalar: function(value) {
-        this.x /= value;
-        this.y /= value;
-        return this;
-    },
-
-    clamp: function(min, max) {
-        this.x = Math.max(min.x, Math.min(max.x, this.x));
-        this.y = Math.max(min.y, Math.min(max.y, this.y));
-        return this;
-    },
-
-    dot: function(value) {
-        return this.x * value.x + this.y * value.y;
-    },
-
-    length: function() {
-        return Math.sqrt(this.x * this.x + this.y * this.y);
-    },
-
-    normalize: function() {
-        return this.divide_scalar(this.length());
-    },
-
-    angle: function() {
-        var angle = Math.atan2(this.y, this.x);
-        if (angle < 0) {
-            angle += 2 * Math.PI;
+        max: function(vector_01, vector_02) {
+            var vector_03 = new gb.vec2(0);
+            vector_03.m_x = Math.max(vector_01.m_x, vector_02.m_x);
+            vector_03.m_y = Math.max(vector_01.m_y, vector_02.m_y);
+            return vector_03;
         }
-        return angle;
-    },
-
-    distance_to: function(value) {
-        var dx = this.x - value.x,
-            dy = this.y - value.y;
-        return Math.sqrt(dx * dx + dy * dy);
-    },
-
-    lerp: function(value, alpha) {
-        this.x += (value.x - this.x) * alpha;
-        this.y += (value.y - this.y) * alpha;
-        return this;
-    },
-
-    equals: function(value) {
-        return ((value.x === this.x) && (value.y === this.y));
-    },
-
-    to_array: function() {
-        var array = [];
-        array[0] = this.x;
-        array[1] = this.y;
-        return array;
     }
-};
+});
