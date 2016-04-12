@@ -345,8 +345,10 @@ oop.define_class({
         },
 
         multiply_vec2: function(vector, matrix) {
-            var result = gb.mat4.multiply_vec4(new gb.vec4(vector.x, vector.y, 0.0, 1.0), matrix);
-            return new gb.vec2(result.x, result.y);
+            var result = new gb.vec2();
+            result.x = matrix.m_elements[0] * vector.x + matrix.m_elements[4] * vector.y + matrix.m_elements[12];
+            result.y = matrix.m_elements[1] * vector.x + matrix.m_elements[5] * vector.y + matrix.m_elements[13];
+            return result;
         }
     }
 });

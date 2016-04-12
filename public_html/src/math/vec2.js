@@ -22,6 +22,7 @@ oop.define_class({
         }
 
         Object.defineProperty(this, 'x', {
+            configurable: true,
             get: function() {
                 return this.m_x;
             },
@@ -31,6 +32,7 @@ oop.define_class({
         });
 
         Object.defineProperty(this, 'y', {
+            configurable: true,
             get: function() {
                 return this.m_y;
             },
@@ -46,65 +48,65 @@ oop.define_class({
 
     methods: {
         add: function(vector) {
-            this.x += vector.x;
-            this.y += vector.y;
+            this.m_x += vector.m_x;
+            this.m_y += vector.m_y;
             return this;
         },
 
         add_scalar: function(scalar) {
-            this.x += scalar;
-            this.y += scalar;
+            this.m_x += scalar;
+            this.m_y += scalar;
             return this;
         },
 
         sub: function(value) {
-            this.x -= value.x;
-            this.y -= value.y;
+            this.m_x -= value.m_x;
+            this.m_y -= value.m_y;
             return this;
         },
 
         sub_scalar: function(value) {
-            this.x -= value;
-            this.y -= value;
+            this.m_x -= value;
+            this.m_y -= value;
             return this;
         },
 
         multiply: function(value) {
-            this.x *= value.x;
-            this.y *= value.y;
+            this.m_x *= value.m_x;
+            this.m_y *= value.m_y;
             return this;
         },
 
         multiply_scalar: function(value) {
-            this.x *= value;
-            this.y *= value;
+            this.m_x *= value;
+            this.m_y *= value;
             return this;
         },
 
         divide: function(value) {
-            this.x /= value.x;
-            this.y /= value.y;
+            this.m_x /= value.m_x;
+            this.m_y /= value.m_y;
             return this;
         },
 
         divide_scalar: function(value) {
-            this.x /= value;
-            this.y /= value;
+            this.m_x /= value;
+            this.m_y /= value;
             return this;
         },
 
         clamp: function(min, max) {
-            this.x = Math.max(min.x, Math.min(max.x, this.x));
-            this.y = Math.max(min.y, Math.min(max.y, this.y));
+            this.m_x = Math.max(min.m_x, Math.min(max.m_x, this.m_x));
+            this.m_y = Math.max(min.m_y, Math.min(max.m_y, this.m_y));
             return this;
         },
 
         dot: function(value) {
-            return this.x * value.x + this.y * value.y;
+            return this.m_x * value.m_x + this.m_y * value.m_y;
         },
 
         length: function() {
-            return Math.sqrt(this.x * this.x + this.y * this.y);
+            return Math.sqrt(this.m_x * this.m_x + this.m_y * this.m_y);
         },
 
         normalize: function() {
@@ -112,7 +114,7 @@ oop.define_class({
         },
 
         angle: function() {
-            var angle = Math.atan2(this.y, this.x);
+            var angle = Math.atan2(this.m_y, this.m_x);
             if (angle < 0) {
                 angle += 2 * Math.PI;
             }
@@ -120,37 +122,50 @@ oop.define_class({
         },
 
         distance_to: function(value) {
-            var dx = this.x - value.x,
-                dy = this.y - value.y;
+            var dx = this.m_x - value.m_x,
+                dy = this.m_y - value.m_y;
             return Math.sqrt(dx * dx + dy * dy);
         },
 
         lerp: function(value, alpha) {
-            this.x += (value.x - this.x) * alpha;
-            this.y += (value.y - this.y) * alpha;
+            this.m_x += (value.m_x - this.m_x) * alpha;
+            this.m_y += (value.m_y - this.m_y) * alpha;
             return this;
         },
 
         equals: function(value) {
-            return ((value.x === this.x) && (value.y === this.y));
+            return ((value.m_x === this.m_x) && (value.m_y === this.m_y));
+        },
+
+        min: function(vector) {
+            this.m_x = Math.min(this.m_x, vector.m_x);
+            this.m_y = Math.min(this.m_y, vector.m_y);
+            return this;
+        },
+
+        max: function(vector) {
+            this.m_x = Math.max(this.m_x, vector.m_x);
+            this.m_y = Math.max(this.m_y, vector.m_y);
+            return this;
         },
 
         to_array: function() {
             var array = [];
-            array.push(this.x);
-            array.push(this.y);
+            array.push(this.m_x);
+            array.push(this.m_y);
             return array;
         }
     },
+
     static_methods: {
         add: function(vector_01, vector_02) {
-            return new gb.vec2(vector_01.x + vector_02.x,
-                vector_01.y + vector_02.y);
+            return new gb.vec2(vector_01.m_x + vector_02.m_x,
+                vector_01.m_y + vector_02.m_y);
         },
 
         sub: function(vector_01, vector_02) {
-            return new gb.vec2(vector_01.x - vector_02.x,
-                vector_01.y - vector_02.y);
+            return new gb.vec2(vector_01.m_x - vector_02.m_x,
+                vector_01.m_y - vector_02.m_y);
         },
 
         lerp: function(vector_01, vector_02, alpha) {
@@ -158,20 +173,20 @@ oop.define_class({
         },
 
         equals: function(vector_01, vector_02) {
-            return ((vector_01.x === vector_02.x) && (vector_01.y === vector_02.y));
+            return ((vector_01.m_x === vector_02.m_x) && (vector_01.m_y === vector_02.m_y));
         },
 
         min: function(vector_01, vector_02) {
             var vector_03 = new gb.vec2(0);
-            vector_03.x = Math.min(vector_01.x, vector_02.x);
-            vector_03.y = Math.min(vector_01.y, vector_02.y);
+            vector_03.m_x = Math.min(vector_01.m_x, vector_02.m_x);
+            vector_03.m_y = Math.min(vector_01.m_y, vector_02.m_y);
             return vector_03;
         },
 
         max: function(vector_01, vector_02) {
             var vector_03 = new gb.vec2(0);
-            vector_03.x = Math.max(vector_01.x, vector_02.x);
-            vector_03.y = Math.max(vector_01.y, vector_02.y);
+            vector_03.m_x = Math.max(vector_01.m_x, vector_02.m_x);
+            vector_03.m_y = Math.max(vector_01.m_y, vector_02.m_y);
             return vector_03;
         }
     }

@@ -108,14 +108,15 @@ oop.define_class({
             this.m_used_size = arguments.length !== 0 && arguments[0] > 0 && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
             gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler);
             var vertices = [];
+            var vertex = null;
             for (var i = 0; i < this.m_used_size; ++i) {
-                var vertex_attribute_array = this.m_data[i].to_array();
+                vertex = this.m_data[i];
+                var vertex_attribute_array = vertex.to_array();
                 for (var j = 0; j < vertex_attribute_array.length; ++j) {
                     vertices.push(vertex_attribute_array[j]);
                 }
-                var vertex_position = new gb.vec2(vertex_attribute_array[0], vertex_attribute_array[1]);
-                this.m_min_bound = gb.vec2.min(vertex_position, this.m_min_bound);
-                this.m_max_bound = gb.vec2.max(vertex_position, this.m_max_bound);
+                this.m_min_bound.min(vertex.position); 
+                this.m_max_bound.max(vertex.position);
             }
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), this.m_mode);
         },

@@ -72,37 +72,47 @@ oop.define_class({
             }
 
             var intersections = [];
+            var direction = new gb.vec2(0.0);
+            var undefined_intersection = new gb.vec2(gb.math.INT16_MIN);
+            var closest_intersection = new gb.vec2(undefined_intersection);
+            var closest_distance = gb.math.INT16_MAX;
+
             for (var i = 0; i < angles.length; ++i) {
                 var angle = angles[i];
-                var direction = new gb.vec2(Math.cos(angle), Math.sin(angle));
+                direction.x = Math.cos(angle); 
+                direction.y = Math.sin(angle);
                 var ray = {
                     origin: light_caster_position,
-                    direction: gb.vec2.add(light_caster_position, direction)
+                    direction: direction.add(light_caster_position)
                 };
 
-                var closest_distance = gb.math.INT16_MAX;
-                var closest_intersection = new gb.vec2(gb.math.INT16_MIN);
+                closest_distance = gb.math.INT16_MAX;
+                closest_intersection.x = undefined_intersection.x;
+                closest_intersection.y = undefined_intersection.y;
 
                 for (var j = 0; j < this.m_shadow_casters_edges.length; ++j) {
+
                     var intersection = gb.math.intersect(ray.origin, ray.direction, this.m_shadow_casters_edges[j].point_01, this.m_shadow_casters_edges[j].point_02);
                     if (!intersection.intersected) {
                         continue;
                     }
                     if (intersection.distance < closest_distance) {
                         closest_distance = intersection.distance;
-                        closest_intersection = intersection.point;
+                        closest_intersection.x = intersection.point_x;
+                        closest_intersection.y = intersection.point_y;
                     }
                 }
 
-                if (closest_intersection.equals(new gb.vec2(gb.math.INT16_MIN))) {
+                if (closest_intersection.equals(undefined_intersection)) {
                     continue;
                 }
                 var is_contain = intersections.findIndex(function(value) {
-                    return value.point.equals(closest_intersection);
+                    return value.point_x === closest_intersection.x && value.point_y === closest_intersection.y;
                 });
                 if (is_contain === -1) {
                     intersections.push({
-                        point: closest_intersection,
+                        point_x: closest_intersection.x,
+                        point_y: closest_intersection.y,
                         angle: angle
                     });
                 }
@@ -112,15 +122,28 @@ oop.define_class({
                 return a.angle - b.angle;
             });
 
-            for (var i = 0; i < intersections.length + 1; ++i) {
-                this.m_vertices[i] = new gb.vertex_attribute();
+            var delta_size = (intersections.length + 1) - this.m_vertices.length;
+            if(delta_size > 0)
+            {
+                var old_size = this.m_vertices.length;
+                this.m_vertices.length = (intersections.length + 1);
+                for(var i = old_size; i < this.m_vertices.length; ++i)
+                {
+                    this.m_vertices[i] = new gb.vertex_attribute();
+                }
+            }
+            else if(delta_size < 0)
+            {
+                this.m_vertices.length = intersections.length + 1;
             }
             this.m_vertices[0].m_position = light_caster_position;
 
             var index = 1;
             for (var i = 0; i < intersections.length; ++i) {
                 var intersection = intersections[i];
-                this.m_vertices[index++].m_position = intersection.point;
+                this.m_vertices[index].m_position.x = intersection.point_x;
+                this.m_vertices[index].m_position.y = intersection.point_y;
+                index++;
             }
 
             for (var i = 1; i < this.m_vertices.length; ++i) {
@@ -134,7 +157,6 @@ oop.define_class({
         cleanup: function() {
             this.m_shadow_casters_vertices = [];
             this.m_shadow_casters_edges = [];
-            this.m_vertices = [];
             this.m_indices = [];
         }
     },

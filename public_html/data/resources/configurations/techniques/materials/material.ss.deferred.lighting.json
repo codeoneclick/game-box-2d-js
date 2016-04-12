@@ -32,12 +32,5 @@
         "wrap_mode": "GL_CLAMP_TO_EDGE",
         "mag_filter": "GL_LINEAR",
         "min_filter": "GL_LINEAR"
-    },{
-        "filename": "",
-        "technique_name": "ws.emissive.color",
-        "sampler_index": "2",
-        "wrap_mode": "GL_CLAMP_TO_EDGE",
-        "mag_filter": "GL_LINEAR",
-        "min_filter": "GL_LINEAR"
     }]
 }

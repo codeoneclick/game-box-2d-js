@@ -47,6 +47,14 @@ oop.define_class({
 				return this.get_component(gb.ces_base_component.type.transformation).scale;
 			}
 		});
+
+		this.m_bound = new gb.vec4(0.0);
+		Object.defineProperty(this, 'bound', {
+			configurable: true,
+			get: function() {
+				return this.m_bound;
+			}
+		});
 	},
 
 	release: function() {

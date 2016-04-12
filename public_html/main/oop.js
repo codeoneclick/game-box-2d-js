@@ -6,7 +6,6 @@ var oop = {
     })(),
 
     define_class: function(class_definition) {
-
         try {
             if (!class_definition) {
                 throw new Error('empty class definition');

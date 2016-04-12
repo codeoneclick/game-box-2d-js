@@ -60,21 +60,21 @@ oop.define_class({
             gl.clearColor(this.m_clear_color.x, this.m_clear_color.y, this.m_clear_color.z, this.m_clear_color.w);
             gl.clear(gl.COLOR_BUFFER_BIT);
 
-            if (this.m_material.shader.is_commited) {
+            if (this.m_material.shader && this.m_material.shader.is_commited) {
                 this.m_material.bind();
                 this.m_screen_quad.bind(this.m_material.shader.attributes);
             }
         },
 
         unbind: function() {
-            if (this.m_material.shader.is_commited) {
+            if (this.m_material.shader && this.m_material.shader.is_commited) {
                 this.m_material.unbind();
                 this.m_screen_quad.unbind(this.m_material.shader.attributes);
             }
         },
 
         draw: function() {
-            if (this.m_material.shader.is_commited) {
+            if (this.m_material.shader && this.m_material.shader.is_commited) {
                 this.m_screen_quad.draw();
             }
         }

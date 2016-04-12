@@ -50,7 +50,6 @@ oop.define_class({
                     this.draw_recursively_lights(root, technique_name, technique_pass);
                     this.draw_recursively(root, technique_name, technique_pass);
                 }
-
                 technique.unbind();
             }
         },
@@ -83,16 +82,7 @@ oop.define_class({
                     material.shader.set_mat4(scene_component.camera.matrix_p, gb.shader.uniform_type.mat_p);
                     material.shader.set_mat4(scene_component.camera.matrix_v, gb.shader.uniform_type.mat_v);
 
-                    var matrix_m = new gb.mat4().identity();
-                    var parent = entity.parent;
-
-                    while (parent) {
-                        var parent_transformation_component = parent.get_component(gb.ces_base_component.type.transformation);
-                        //mat_m = transformation_component - > add_parent_transformation(mat_m);
-                        parent = parent.parent;
-                    }
-
-                    matrix_m = gb.mat4.multiply(matrix_m, transformation_component.matrix_m);
+                    var matrix_m = gb.ces_transformation_component.get_absolute_transformation(entity, false);
                     material.shader.set_mat4(matrix_m, gb.shader.uniform_type.mat_m);
 
                     mesh.bind(material.shader.attributes);
@@ -155,21 +145,13 @@ oop.define_class({
                         var shadow_casters = light_component.shadow_casters;
                         for (var i = 0; i < shadow_casters.length; ++i) {
                             var shadow_caster = shadow_casters[i];
-                            var shadow_caster_transformation_component = shadow_caster.get_component(gb.ces_base_component.type.transformation);
                             var shadow_caster_geometry_component = shadow_caster.get_component(gb.ces_base_component.type.geometry);
                             var shadow_caster_material_component = shadow_caster.get_component(gb.ces_base_component.type.material);
 
                             if (shadow_caster_material_component.get_material(technique_name, technique_pass)) {
                                 var shadow_caster_mesh = shadow_caster_geometry_component.mesh;
 
-                                var shadow_caster_matrix_m = new gb.mat4().identity();
-                                var shadow_caster_parent = shadow_caster.parent;
-                                while (shadow_caster_parent) {
-                                    var shadow_caster_parent_transformation_component = shadow_caster_parent.get_component(gb.ces_base_component.type.transformation);
-                                    //mat_m = transformation_component - > add_parent_transformation(mat_m);
-                                    shadow_caster_parent = shadow_caster_parent.parent;
-                                }
-                                shadow_caster_matrix_m = gb.mat4.multiply(shadow_caster_matrix_m, shadow_caster_transformation_component.matrix_m);
+                                var shadow_caster_matrix_m = gb.ces_transformation_component.get_absolute_transformation(shadow_caster, false);
                                 material.shader.set_mat4(shadow_caster_matrix_m, gb.shader.uniform_type.mat_m);
 
                                 shadow_caster_mesh.bind(material.shader.attributes);
@@ -185,15 +167,8 @@ oop.define_class({
 
                     var draw_light = function() {
 
-                        var light_caster_matrix_m = new gb.mat4().identity();
-                        var light_caster_parent = entity.parent;
-                        while (light_caster_parent) {
-                            var light_caster_parent_transformation_component = light_caster_parent.get_component(gb.ces_base_component.type.transformation);
-                            //mat_m = transformation_component - > add_parent_transformation(mat_m);
-                            light_caster_parent = light_caster_parent.parent;
-                        }
-                        light_caster_matrix_m = gb.mat4.multiply(light_caster_matrix_m, transformation_component.matrix_m);
-
+                        var light_caster_matrix_m = gb.ces_transformation_component.get_absolute_transformation(entity, true);
+                        
                         material.stencil_function = gl.EQUAL;
                         material.stencil_function_parameter_1 = 1;
                         material.stencil_function_parameter_2 = 255;

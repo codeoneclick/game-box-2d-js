@@ -15,8 +15,11 @@ oop.define_class({
 
     methods: {
         on_update: function() {
-            for (var i = 0; i < this.m_listeners.length; ++i) {
-                var listener = this.m_listeners[i];
+
+            var listeners_count = this.m_listeners.length;
+            var listener = null;
+            for (var i = 0; i < listeners_count; ++i) {
+                listener = this.m_listeners[i];
                 listener.on_update(0.0);
             }
         },

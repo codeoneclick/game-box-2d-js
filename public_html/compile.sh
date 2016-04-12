@@ -67,6 +67,7 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/scene_graph_managment/scene_graph.js \
 --js=../public_html/src/scene_graph_managment/light_source.js \
 --js=../public_html/src/scene_graph_managment/sprite.js \
+--js=../public_html/src/scene_graph_managment/grid.js \
 --js=../public_html/src/scene_graph_managment/scene_fabricator.js \
 --js=../public_html/src/game_states_managment/game_loop.js \
 --js=../public_html/src/game_states_managment/game_transition.js \

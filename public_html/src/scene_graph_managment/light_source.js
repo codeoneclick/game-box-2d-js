@@ -49,27 +49,6 @@ oop.define_class({
 				this.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(this.m_color, gb.light_source.color_uniform);
 			}
 		});
-
-
-		Object.defineProperty(this, 'position', {
-			configurable: true,
-			set: function(value) {
-				this.get_component(gb.ces_base_component.type.transformation).position = value;
-				var matrix_m = new gb.mat4().identity();
-				var parent = this.parent;
-
-				while (parent) {
-					var parent_transformation_component = parent.get_component(gb.ces_base_component.type.transformation);
-					matrix_m = gb.mat4.multiply(matrix_m, parent_transformation_component.matrix_m);
-					parent = parent.parent;
-				}
-				var center = gb.mat4.multiply_vec2(value, matrix_m);
-				this.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(center, gb.light_source.center_uniform);
-			},
-			get: function() {
-				return this.get_component(gb.ces_base_component.type.transformation).position;
-			}
-		});
 	},
 
 	release: function() {

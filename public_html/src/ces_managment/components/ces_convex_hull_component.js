@@ -30,10 +30,11 @@ oop.define_class({
 	},
 
 	methods: {
-		update_convex_hull: function(vertices) {
+		generate_convex_hull: function(vertices) {
 			if (vertices.length < 3) {
 				return;
 			}
+			this.m_oriented_vertices = [];
 
 			var leftmost_point_index = 0;
 

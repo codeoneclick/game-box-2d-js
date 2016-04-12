@@ -1,5 +1,6 @@
 /* global oop, gb */
 "use strict";
+
 oop.define_class({
     namespace: "gb",
     name: "ces_transformation_component",
@@ -20,15 +21,39 @@ oop.define_class({
 
         this.m_is_matrix_m_computed = false;
 
+        var self = this;
         Object.defineProperty(this, 'position', {
             set: function(value) {
-                this.m_position = value;
-                this.m_matrix_t.translate(this.m_position.x, this.m_position.y, 0.0);
-                this.m_is_matrix_m_computed = false;
+                self.m_position = value;
+
+                Object.defineProperty(value, 'x', {
+                    set: function(value) {
+                        self.m_position.m_x = value;
+                        self.m_matrix_t.translate(self.m_position.x, self.m_position.y, 0.0);
+                        self.m_is_matrix_m_computed = false;
+                    },
+                    get: function() {
+                        return self.m_position.m_x;
+                    }
+                });
+
+                Object.defineProperty(value, 'y', {
+                    set: function(value) {
+                        self.m_position.m_y = value;
+                        self.m_matrix_t.translate(self.m_position.x, self.m_position.y, 0.0);
+                        self.m_is_matrix_m_computed = false;
+                    },
+                    get: function() {
+                        return self.m_position.m_y;
+                    }
+                });
+
+                self.m_matrix_t.translate(self.m_position.x, self.m_position.y, 0.0);
+                self.m_is_matrix_m_computed = false;
             },
 
             get: function() {
-                return this.m_position;
+                return self.m_position;
             }
         });
 
@@ -60,6 +85,7 @@ oop.define_class({
             get: function() {
                 if (!this.m_is_matrix_m_computed) {
                     this.m_matrix_m = gb.mat4.multiply(gb.mat4.multiply(this.m_matrix_t, this.m_matrix_r), this.m_matrix_s);
+                    this.m_is_matrix_m_computed = true;
                 }
                 return this.m_matrix_m;
             }
@@ -79,6 +105,40 @@ oop.define_class({
     },
 
     static_methods: {
+        get_parent_transformation: function(entity, is_use_scale) {
+            var matrix = new gb.mat4().identity();
+            var parent = entity.parent;
 
+            while (parent) {
+                var parent_transformation_component = parent.get_component(gb.ces_base_component.type.transformation);
+                if (is_use_scale) {
+                    matrix = gb.mat4.multiply(matrix, parent_transformation_component.matrix_m);
+                } else {
+                    matrix = gb.mat4.multiply(matrix, gb.mat4.multiply(parent_transformation_component.m_matrix_t, parent_transformation_component.m_matrix_r));
+                }
+                parent = parent.parent;
+            }
+            return matrix;
+        },
+
+        get_absolute_transformation: function(entity, is_use_scale) {
+            var matrix = gb.ces_transformation_component.get_parent_transformation(entity, is_use_scale);
+            var transformation_component = entity.get_component(gb.ces_base_component.type.transformation);
+            if (is_use_scale) {
+                matrix = gb.mat4.multiply(matrix, transformation_component.matrix_m);
+            } else {
+                matrix = gb.mat4.multiply(matrix, gb.mat4.multiply(transformation_component.m_matrix_t, transformation_component.m_matrix_r));
+            }
+            return matrix;
+        },
+
+        get_absolute_transformation_in_camera_space: function(entity) {
+            var matrix = gb.ces_transformation_component.get_absolute_transformation(entity);
+            if (entity.is_component_exist(gb.ces_base_component.type.scene)) {
+                var scene_component = entity.get_component(gb.ces_base_component.type.scene);
+                matrix = gb.mat4.multiply(matrix, scene_component.camera.matrix_v);
+            }
+            return matrix;
+        }
     }
 });

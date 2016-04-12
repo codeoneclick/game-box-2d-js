@@ -65,7 +65,6 @@ oop.define_class({
 					intersected: false
 				};
 			}
-
 			var t_2 = (r_dx * (s_py - r_py) + r_dy * (r_px - s_px)) / (s_dx * r_dy - s_dy * r_dx);
 			var t_1 = (s_px + s_dx * t_2 - r_px) / r_dx;
 
@@ -82,7 +81,8 @@ oop.define_class({
 			}
 			return {
 				intersected: true,
-				point: new gb.vec2(r_px + r_dx * t_1, r_py + r_dy * t_1),
+				point_x: r_px + r_dx * t_1,
+				point_y: r_py + r_dy * t_1,
 				distance: t_1
 			};
 		},
