@@ -2,7 +2,7 @@
 
 java -jar ../compiler/closure-compiler.jar \
 --js_output_file ../public_html/src/game_box-min.js \
---js=../public_html/main/oop.js \
+--js=../public_html/main/common.js \
 --js=../public_html/src/math/vec2.js \
 --js=../public_html/src/math/vec3.js \
 --js=../public_html/src/math/vec4.js \
@@ -47,6 +47,7 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/render_managment/techniques/render_technique_ws.js \
 --js=../public_html/src/render_managment/techniques/render_technique_ss.js \
 --js=../public_html/src/render_managment/render_pipeline.js \
+--js=../public_html/src/gesture_recognizers_managment/input_context.js \
 --js=../public_html/src/ces_managment/components/ces_base_component.js \
 --js=../public_html/src/ces_managment/components/ces_transformation_component.js \
 --js=../public_html/src/ces_managment/components/ces_material_component.js \
@@ -57,10 +58,12 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/ces_managment/components/ces_geometry_quad_component.js \
 --js=../public_html/src/ces_managment/components/ces_light_component.js \
 --js=../public_html/src/ces_managment/components/ces_light_mask_component.js \
+--js=../public_html/src/ces_managment/components/ces_touch_recognize_component.js \
 --js=../public_html/src/ces_managment/ces_entity.js \
 --js=../public_html/src/ces_managment/systems/ces_base_system.js \
 --js=../public_html/src/ces_managment/systems/ces_deferred_lighting_system.js \
 --js=../public_html/src/ces_managment/systems/ces_render_system.js \
+--js=../public_html/src/ces_managment/systems/ces_touches_system.js \
 --js=../public_html/src/ces_managment/ces_systems_feeder.js \
 --js=../public_html/src/scene_graph_managment/camera.js \
 --js=../public_html/src/scene_graph_managment/game_object.js \

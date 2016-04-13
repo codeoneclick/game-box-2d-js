@@ -10,6 +10,7 @@ oop.define_class({
         this.m_configurations_accessor = null;
         this.m_resources_accessor = null;
         this.m_systems_feeder = new gb.ces_systems_feeder();
+        this.m_input_context = new gb.input_context();
         this.m_scene = null;
 
         Object.defineProperty(this, 'guid', {
@@ -92,6 +93,11 @@ oop.define_class({
 
                 var deferred_lighting_system = new gb.ces_deferred_lighting_system();
                 self.m_systems_feeder.add_system(deferred_lighting_system);
+
+                var touches_system = new gb.ces_touches_system();
+
+                self.m_input_context.add_listener(touches_system);
+                self.m_systems_feeder.add_system(touches_system);
 
                 loop.add_listener(self.m_systems_feeder);
             });

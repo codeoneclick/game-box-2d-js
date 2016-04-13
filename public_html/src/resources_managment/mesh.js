@@ -41,7 +41,7 @@ oop.define_class({
         },
 
         draw: function() {
-            gl.drawElements(gl.TRIANGLES, this.m_ibo.used_size, gl.UNSIGNED_SHORT, 0);
+            gl.drawElements(this.m_mode, this.m_ibo.used_size, gl.UNSIGNED_SHORT, 0);
         }
     }
 });

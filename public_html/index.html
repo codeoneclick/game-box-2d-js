@@ -13,12 +13,20 @@
 
             var g_game_controller = null;
             var game_logic = null;
+
+            function on_mouse_down(event)
+            {
+                console.log(event);
+            }
+
+            function on_mouse_up(event)
+            {
+                console.log(event);
+            }
             
             function app_start()
             {
-                var canvas = document.getElementById("gl_canvas");
-                canvas.width = $(document).width();
-                canvas.height = $(document).height();
+                
 
                 var light_source_01 = null;
                 var light_source_02 = null;
@@ -64,6 +72,25 @@
                     sprite_01.size = new gb.vec2(128, 128);
                     sprite_01.cast_shadow = true;
 
+                    var touch_recognize_component = new gb.ces_touch_recognize_component();
+                    touch_recognize_component.bound = new gb.vec4(0.0, 0.0, 128.0, 128.0);
+                    touch_recognize_component.enable(gb.input_context.state.pressed, true);
+                    touch_recognize_component.enable(gb.input_context.state.dragged, true);
+
+                    touch_recognize_component.add_callback(gb.input_context.state.pressed, function() {
+                        console.log(arguments);
+                    });
+
+                    touch_recognize_component.add_callback(gb.input_context.state.dragged, function() {
+                        console.log(arguments);
+                    });
+                    sprite_01.add_component(touch_recognize_component);
+
+                    var grid_01 = scene.fabricator.create_grid("data/resources/configurations/game_objects/sprite_01.json", 128, 128, 32, 32, function() {
+                        grid_01.color = new gb.vec4(1.0, 1.0, 0.0, 1.0);
+                    });
+                    scene.add_child(grid_01);
+
                     light_source_01 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
                         light_source_01.position = new gb.vec2(250, 250);
                         light_source_01.radius = 512.0;
@@ -82,7 +109,7 @@
         </script>
     </head>
     <body onload="app_start();">
-        <canvas id="gl_canvas"></canvas>
+        <canvas id="gl_canvas" style="border: none; position: absolute; left: 50%; top: 50%; margin-right: -50%; transform: translate(-50%, -50%) " width="800" height="600"></canvas>
         <script src="src/game_box-min.js"></script>
     </body>
 </html>

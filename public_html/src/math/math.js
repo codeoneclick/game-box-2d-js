@@ -45,6 +45,14 @@ oop.define_class({
 		is_float: function(value) {
 			return Number(value) === value && value % 1 !== 0;
 		},
+		
+		intersect_min_max_bound: function(min_bound, max_bound, point) {
+			if (point.x >= min_bound.x && point.x <= max_bound.x &&
+				point.y >= min_bound.y && point.y <= max_bound.y) {
+				return true;
+			}
+			return false;
+		},
 
 		intersect: function(ray_origin, ray_direction, edge_point_01, edge_point_02) {
 			var r_px = ray_origin.x;

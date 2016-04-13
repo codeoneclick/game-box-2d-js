@@ -104,6 +104,39 @@ oop.define_class({
             ibo.unlock();
 
             return new gb.mesh(vbo, ibo, gl.TRIANGLES);
+        },
+
+        create_grid: function(num_rows, num_columns, rows_gap, columns_gap)
+        {
+            var num_vertices = (num_rows + 1) * (num_columns + 1) * 4;
+            var num_indices = (num_rows + 1) * (num_columns + 1) * 4;
+            
+            var vbo = new gb.vbo(num_vertices, gl.STATIC_DRAW);
+            var vertices = vbo.lock();
+            
+            var index = 0;
+            for(var i = 0; i <= num_rows; ++i)
+            {
+                vertices[index++].position = new gb.vec2(i * rows_gap, 0.0);
+                vertices[index++].position = new gb.vec2(i * rows_gap, num_columns * columns_gap);
+            }
+            
+            for(var i = 0; i <= num_columns; ++i)
+            {
+                vertices[index++].m_position = new gb.vec2(0.0, i * columns_gap);
+                vertices[index++].m_position = new gb.vec2(num_rows * rows_gap, i * columns_gap);
+            }
+            vbo.unlock();
+            
+            var ibo = new gb.ibo(num_indices * 4, gl.STATIC_DRAW);
+            var indices = ibo.lock();
+            for(var i = 0; i < num_indices; ++i)
+            {
+                indices[i] = i;
+            }
+            ibo.unlock();
+
+            return new gb.mesh(vbo, ibo, gl.LINES);
         }
     }
 });

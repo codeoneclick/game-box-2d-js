@@ -8,7 +8,8 @@ oop.define_class({
         type: {
             undefined: -1,
             render: 0,
-            deferred_lighting: 1
+            deferred_lighting: 1,
+            touches: 2
         }
     },
     
