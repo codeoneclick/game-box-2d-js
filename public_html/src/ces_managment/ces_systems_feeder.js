@@ -1,4 +1,4 @@
-/* global oop, FPSMeter */
+/* global oop */
 "use strict";
 
 oop.define_class({
@@ -8,8 +8,6 @@ oop.define_class({
   init: function() {
     this.m_systems = [];
     this.m_root = null;
-
-    this.m_fps_meter = new FPSMeter();
 
     Object.defineProperty(this, 'root', {
       set: function(value) {
@@ -36,7 +34,6 @@ oop.define_class({
         var system = this.m_systems[i];
         system.on_feed_end(deltatime);
       }
-      this.m_fps_meter.tick();
     },
 
     add_system: function(system) {

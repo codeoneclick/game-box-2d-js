@@ -80,11 +80,11 @@ oop.define_class({
             var vbo = new gb.vbo(num_vertices, gl.STATIC_DRAW);
             var vertices = vbo.lock();
 
-            vertices[0].m_position = new gb.vec2(0.0, 0.0);
+            vertices[0].position = new gb.vec2(0.0, 0.0);
 
             var index = 1;
             for (var angle = 0; angle <= Math.PI * 2.0; angle += ((Math.PI * 2.0) / num_subdivisions)) {
-                vertices[index++].m_position = new gb.vec2(radius * Math.cos(angle), radius * Math.sin(angle));
+                vertices[index++].position = new gb.vec2(radius * Math.cos(angle), radius * Math.sin(angle));
             }
             vbo.unlock();
 
@@ -117,14 +117,22 @@ oop.define_class({
             var index = 0;
             for(var i = 0; i <= num_rows; ++i)
             {
-                vertices[index++].position = new gb.vec2(i * rows_gap, 0.0);
-                vertices[index++].position = new gb.vec2(i * rows_gap, num_columns * columns_gap);
+                vertices[index].position.x = i * rows_gap;
+                vertices[index].position.y = 0.0;
+                index++;
+                vertices[index].position.x = i * rows_gap;
+                vertices[index].position.y = num_columns * columns_gap;
+                index++;
             }
             
             for(var i = 0; i <= num_columns; ++i)
             {
-                vertices[index++].m_position = new gb.vec2(0.0, i * columns_gap);
-                vertices[index++].m_position = new gb.vec2(num_rows * rows_gap, i * columns_gap);
+                vertices[index].position.x = 0.0;
+                vertices[index].position.y = i * columns_gap;
+                index++;
+                vertices[index].position.x = num_rows * rows_gap;
+                vertices[index].position.y = i * columns_gap;
+                index++;
             }
             vbo.unlock();
             

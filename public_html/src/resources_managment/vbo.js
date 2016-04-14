@@ -11,12 +11,17 @@ oop.define_class({
         this.m_texcoord = new gb.vec2(0);
         this.m_color = new gb.vec4(0);
 
+        this.m_raw_buffer = new ArrayBuffer(2 * 4 + 2 * 4 + 4 * 4);
+        this.m_raw_data = new DataView(this.m_raw_buffer);
+
         Object.defineProperty(this, 'position', {
             get: function() {
                 return this.m_position;
             },
             set: function(value) {
                 this.m_position = value;
+                this.m_raw_data.setFloat32(0, value.x, true);
+                this.m_raw_data.setFloat32(4, value.y, true);
             }
         });
 
@@ -26,6 +31,8 @@ oop.define_class({
             },
             set: function(value) {
                 this.m_texcoord = value;
+                this.m_raw_data.setFloat32(8, value.x, true);
+                this.m_raw_data.setFloat32(12, value.y, true);
             }
         });
 
@@ -35,6 +42,10 @@ oop.define_class({
             },
             set: function(value) {
                 this.m_color = value;
+                this.m_raw_data.setFloat32(16, value.x, true);
+                this.m_raw_data.setFloat32(20, value.y, true);
+                this.m_raw_data.setFloat32(24, value.z, true);
+                this.m_raw_data.setFloat32(28, value.w, true);
             }
         });
     },
@@ -45,10 +56,10 @@ oop.define_class({
 
     methods: {
         to_array: function() {
-            return [this.m_position.x, this.m_position.y,
+            return new Float32Array(this.m_raw_buffer);/*[this.m_position.x, this.m_position.y,
                 this.m_texcoord.x, this.m_texcoord.y,
                 this.m_color.x, this.m_color.y, this.m_color.z, this.m_color.w
-            ];
+            ];*/
         }
     }
 });
@@ -107,18 +118,19 @@ oop.define_class({
         unlock: function() {
             this.m_used_size = arguments.length !== 0 && arguments[0] > 0 && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
             gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler);
-            var vertices = [];
+            var vertices = new Float32Array(this.m_used_size * 2 * 2 * 4);
             var vertex = null;
+            var index = 0;
             for (var i = 0; i < this.m_used_size; ++i) {
                 vertex = this.m_data[i];
                 var vertex_attribute_array = vertex.to_array();
                 for (var j = 0; j < vertex_attribute_array.length; ++j) {
-                    vertices.push(vertex_attribute_array[j]);
+                    vertices[index++] = vertex_attribute_array[j];
                 }
                 this.m_min_bound.min(vertex.position); 
                 this.m_max_bound.max(vertex.position);
             }
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), this.m_mode);
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, this.m_mode);
         },
 
         bind: function(attributes) {

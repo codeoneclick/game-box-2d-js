@@ -42,12 +42,13 @@ oop.define_class({
         unlock: function() {
             this.m_used_size = arguments.length !== 0 && arguments[0] > 0 && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
-            var indices = [];
+            var indices = new Uint16Array(this.m_used_size);
             var indices_count = this.m_used_size;
+            var index = 0;
             for (var i = 0; i < indices_count; ++i) {
-                indices.push(this.m_data[i]);
+                indices[index++] = this.m_data[i];
             }
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.m_mode);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, this.m_mode);
         },
 
         bind: function() {

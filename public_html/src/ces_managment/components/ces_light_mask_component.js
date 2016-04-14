@@ -28,7 +28,7 @@ oop.define_class({
                 } else {
                     var vertices = this.m_mesh.vbo.lock();
                     for (var i = 0; i < this.m_vertices.length; ++i) {
-                        vertices[i].m_position = this.m_vertices[i].m_position;
+                        vertices[i].position = this.m_vertices[i].m_position;
                     }
                     vbo.unlock(this.m_vertices.length);
 

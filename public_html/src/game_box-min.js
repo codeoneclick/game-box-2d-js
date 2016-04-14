@@ -966,10 +966,10 @@ oop.define_class({namespace:"gb", name:"ibo", init:function(a, b) {
 }, unlock:function() {
   this.m_used_size = 0 !== arguments.length && 0 < arguments[0] && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
-  for (var a = [], b = this.m_used_size, c = 0;c < b;++c) {
-    a.push(this.m_data[c]);
+  for (var a = new Uint16Array(this.m_used_size), b = this.m_used_size, c = 0, d = 0;d < b;++d) {
+    a[c++] = this.m_data[d];
   }
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(a), this.m_mode);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, a, this.m_mode);
 }, bind:function() {
   0 !== this.m_used_size && gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
 }, unbind:function() {
@@ -979,24 +979,34 @@ oop.define_class({namespace:"gb", name:"vertex_attribute", init:function() {
   this.m_position = new gb.vec2(0);
   this.m_texcoord = new gb.vec2(0);
   this.m_color = new gb.vec4(0);
+  this.m_raw_buffer = new ArrayBuffer(32);
+  this.m_raw_data = new DataView(this.m_raw_buffer);
   Object.defineProperty(this, "position", {get:function() {
     return this.m_position;
   }, set:function(a) {
     this.m_position = a;
+    this.m_raw_data.setFloat32(0, a.x, !0);
+    this.m_raw_data.setFloat32(4, a.y, !0);
   }});
   Object.defineProperty(this, "texcoord", {get:function() {
     return this.m_texcoord;
   }, set:function(a) {
     this.m_texcoord = a;
+    this.m_raw_data.setFloat32(8, a.x, !0);
+    this.m_raw_data.setFloat32(12, a.y, !0);
   }});
   Object.defineProperty(this, "color", {get:function() {
     return this.m_color;
   }, set:function(a) {
     this.m_color = a;
+    this.m_raw_data.setFloat32(16, a.x, !0);
+    this.m_raw_data.setFloat32(20, a.y, !0);
+    this.m_raw_data.setFloat32(24, a.z, !0);
+    this.m_raw_data.setFloat32(28, a.w, !0);
   }});
 }, release:function() {
 }, methods:{to_array:function() {
-  return [this.m_position.x, this.m_position.y, this.m_texcoord.x, this.m_texcoord.y, this.m_color.x, this.m_color.y, this.m_color.z, this.m_color.w];
+  return new Float32Array(this.m_raw_buffer);
 }}});
 oop.define_class({namespace:"gb", name:"vbo", init:function(a, b) {
   this.m_handler = gl.createBuffer();
@@ -1028,14 +1038,14 @@ oop.define_class({namespace:"gb", name:"vbo", init:function(a, b) {
 }, unlock:function() {
   this.m_used_size = 0 !== arguments.length && 0 < arguments[0] && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
   gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler);
-  for (var a = [], b = null, c = 0;c < this.m_used_size;++c) {
-    for (var b = this.m_data[c], d = b.to_array(), e = 0;e < d.length;++e) {
-      a.push(d[e]);
+  for (var a = new Float32Array(16 * this.m_used_size), b = null, c = 0, d = 0;d < this.m_used_size;++d) {
+    for (var b = this.m_data[d], e = b.to_array(), f = 0;f < e.length;++f) {
+      a[c++] = e[f];
     }
     this.m_min_bound.min(b.position);
     this.m_max_bound.max(b.position);
   }
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(a), this.m_mode);
+  gl.bufferData(gl.ARRAY_BUFFER, a, this.m_mode);
 }, bind:function(a) {
   0 !== this.m_used_size && (gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler), 0 <= a[gb.shader.attribute_type.position] && (gl.vertexAttribPointer(a[gb.shader.attribute_type.position], 2, gl.FLOAT, !1, 32, 0), gl.enableVertexAttribArray(a[gb.shader.attribute_type.position])), 0 <= a[gb.shader.attribute_type.texcoord] && (gl.vertexAttribPointer(a[gb.shader.attribute_type.texcoord], 2, gl.FLOAT, !1, 32, 8), gl.enableVertexAttribArray(a[gb.shader.attribute_type.texcoord])), 0 <= a[gb.shader.attribute_type.color] && 
   (gl.vertexAttribPointer(a[gb.shader.attribute_type.color], 4, gl.FLOAT, !1, 32, 16), gl.enableVertexAttribArray(a[gb.shader.attribute_type.color])));
@@ -1630,9 +1640,9 @@ oop.define_class({namespace:"gb", name:"mesh_constructor", init:function() {
   return new gb.mesh(a, b, gl.TRIANGLES);
 }, create_circle:function() {
   var a = new gb.vbo(33, gl.STATIC_DRAW), b = a.lock();
-  b[0].m_position = new gb.vec2(0, 0);
+  b[0].position = new gb.vec2(0, 0);
   for (var c = 1, d = 0;d <= 2 * Math.PI;d += 2 * Math.PI / 32) {
-    b[c++].m_position = new gb.vec2(1 * Math.cos(d), 1 * Math.sin(d));
+    b[c++].position = new gb.vec2(1 * Math.cos(d), 1 * Math.sin(d));
   }
   a.unlock();
   for (var c = 1, d = new gb.ibo(99, gl.STATIC_DRAW), e = d.lock(), f = 0;96 > f;f += 3) {
@@ -1645,10 +1655,10 @@ oop.define_class({namespace:"gb", name:"mesh_constructor", init:function() {
   return new gb.mesh(a, d, gl.TRIANGLES);
 }, create_grid:function(a, b, c, d) {
   for (var e = (a + 1) * (b + 1) * 4, f = new gb.vbo((a + 1) * (b + 1) * 4, gl.STATIC_DRAW), h = f.lock(), l = 0, k = 0;k <= a;++k) {
-    h[l++].position = new gb.vec2(k * c, 0), h[l++].position = new gb.vec2(k * c, b * d);
+    h[l].position.x = k * c, h[l].position.y = 0, l++, h[l].position.x = k * c, h[l].position.y = b * d, l++;
   }
   for (k = 0;k <= b;++k) {
-    h[l++].m_position = new gb.vec2(0, k * d), h[l++].m_position = new gb.vec2(a * c, k * d);
+    h[l].position.x = 0, h[l].position.y = k * d, l++, h[l].position.x = a * c, h[l].position.y = k * d, l++;
   }
   f.unlock();
   a = new gb.ibo(4 * e, gl.STATIC_DRAW);
@@ -2322,10 +2332,10 @@ oop.define_class({namespace:"gb", name:"ces_geometry_quad_component", extend:gb.
 }, release:function() {
 }, methods:{update_mesh_position_attributes:function() {
   var a = new gb.vec2(this.m_frame.z - this.m_pivot.x, this.m_frame.w - this.m_pivot.y), b = new gb.vec2(a.x - this.m_frame.z, a.y - this.m_frame.w), a = new gb.vec4(b.x, a.y, a.x, b.y), b = this.m_mesh.vbo.lock();
-  b[0].m_position = new gb.vec2(a.x, a.z);
-  b[1].m_position = new gb.vec2(a.x, a.w);
-  b[2].m_position = new gb.vec2(a.y, a.z);
-  b[3].m_position = new gb.vec2(a.y, a.w);
+  b[0].position = new gb.vec2(a.x, a.z);
+  b[1].position = new gb.vec2(a.x, a.w);
+  b[2].position = new gb.vec2(a.y, a.z);
+  b[3].position = new gb.vec2(a.y, a.w);
   this.m_mesh.vbo.unlock();
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ces_light_component", extend:gb.ces_base_component, init:function() {
@@ -2353,7 +2363,7 @@ oop.define_class({namespace:"gb", name:"ces_light_mask_component", extend:gb.ces
       this.m_mesh.vbo.unlock(1), this.m_mesh.ibo.unlock(1);
     } else {
       for (var c = this.m_mesh.vbo.lock(), d = 0;d < this.m_vertices.length;++d) {
-        c[d].m_position = this.m_vertices[d].m_position;
+        c[d].position = this.m_vertices[d].m_position;
       }
       a.unlock(this.m_vertices.length);
       c = this.m_mesh.ibo.lock();
@@ -2720,7 +2730,6 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
 oop.define_class({namespace:"gb", name:"ces_systems_feeder", init:function() {
   this.m_systems = [];
   this.m_root = null;
-  this.m_fps_meter = new FPSMeter;
   Object.defineProperty(this, "root", {set:function(a) {
     this.m_root = a;
   }});
@@ -2736,7 +2745,6 @@ oop.define_class({namespace:"gb", name:"ces_systems_feeder", init:function() {
   for (b = 0;b < this.m_systems.length;++b) {
     c = this.m_systems[b], c.on_feed_end(a);
   }
-  this.m_fps_meter.tick();
 }, add_system:function(a) {
   this.remove_system(a.type);
   this.m_systems.push(a);
