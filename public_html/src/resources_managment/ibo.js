@@ -9,13 +9,9 @@ oop.define_class({
     init: function(size, mode) {
         this.m_handler = gl.createBuffer();
         this.m_allocated_size = size;
-        this.m_used_size = 0;
+        this.m_used_size = size;
         this.m_mode = mode;
-
-        this.m_data = [];
-        for (var i = 0; i < this.m_allocated_size; ++i) {
-            this.m_data[i] = 0;
-        }
+        this.m_data = new Uint16Array(size);
 
         Object.defineProperty(this, 'allocated_size', {
             get: function() {
@@ -28,6 +24,12 @@ oop.define_class({
                 return this.m_used_size;
             }
         });
+
+        Object.defineProperty(this, 'data', {
+            get: function() {
+                return this.m_data;
+            }
+        });
     },
 
     release: function() {
@@ -35,20 +37,16 @@ oop.define_class({
     },
 
     methods: {
-        lock: function() {
-            return this.m_data;
-        },
-
-        unlock: function() {
-            this.m_used_size = arguments.length !== 0 && arguments[0] > 0 && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
-            var indices = new Uint16Array(this.m_used_size);
-            var indices_count = this.m_used_size;
-            var index = 0;
-            for (var i = 0; i < indices_count; ++i) {
-                indices[index++] = this.m_data[i];
+        
+        submit: function(size) {
+            var data = this.m_data;
+            if(size && size > 0 && size < this.m_allocated_size)
+            {
+                this.m_used_size = size;
+                data = this.m_data.slice(0, size);
             }
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, this.m_mode);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, this.m_mode);
         },
 
         bind: function() {

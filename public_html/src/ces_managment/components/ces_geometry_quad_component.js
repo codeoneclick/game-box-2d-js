@@ -46,10 +46,10 @@ oop.define_class({
 			var frame = new gb.vec4(position.x, size.y, size.x, position.y);
 
 			var vbo = this.m_mesh.vbo;
-			vbo.write_attribute(gb.vbo.attributes.position, 0, new gb.vec2(frame.x, frame.z));
-			vbo.write_attribute(gb.vbo.attributes.position, 1, new gb.vec2(frame.x, frame.w));
-			vbo.write_attribute(gb.vbo.attributes.position, 2, new gb.vec2(frame.y, frame.z));
-			vbo.write_attribute(gb.vbo.attributes.position, 3, new gb.vec2(frame.y, frame.w));
+			vbo.write_attribute(gb.vbo.attribute.position, 0, new gb.vec2(frame.x, frame.z));
+			vbo.write_attribute(gb.vbo.attribute.position, 1, new gb.vec2(frame.x, frame.w));
+			vbo.write_attribute(gb.vbo.attribute.position, 2, new gb.vec2(frame.y, frame.z));
+			vbo.write_attribute(gb.vbo.attribute.position, 3, new gb.vec2(frame.y, frame.w));
 			vbo.submit();
 		}
 	},

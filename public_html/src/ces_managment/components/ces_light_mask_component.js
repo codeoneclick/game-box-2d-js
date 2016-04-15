@@ -15,7 +15,7 @@ oop.define_class({
         this.m_vertices = [];
         this.m_indices = [];
 
-        var vbo = new gb.vbo(1024, gl.DYNAMIC_DRAW, [gb.vbo.attributes.position, gb.vbo.attributes.texcoord, gb.vbo.attributes.color]);
+        var vbo = new gb.vbo(1024, gl.DYNAMIC_DRAW, gb.vbo.declaration.position_xy);
         var ibo = new gb.ibo(4096, gl.DYNAMIC_DRAW);
         this.m_mesh = new gb.mesh(vbo, ibo, gl.TRIANGLES);
 
@@ -23,19 +23,20 @@ oop.define_class({
             get: function() {
                 if (this.m_vertices.length === 0 || this.m_indices.length === 0) {
                     this.m_mesh.vbo.submit(1);
-                    this.m_mesh.ibo.unlock(1);
+                    this.m_mesh.ibo.submit(1);
                 } else {
 
                     var vbo = this.m_mesh.vbo;
                     for (var i = 0; i < this.m_vertices.length; ++i) {
-                        vbo.write_attribute(gb.vbo.attributes.position, i, this.m_vertices[i].m_position);
+                        vbo.write_attribute(gb.vbo.attribute.position, i, this.m_vertices[i]);
                     }
-                    vbo.submit(this.m_vertices.length);
-                    var indices = this.m_mesh.ibo.lock();
+                    vbo.submit();
+
+                    var indices = this.m_mesh.ibo.data;
                     for (var i = 0; i < this.m_indices.length; ++i) {
                         indices[i] = this.m_indices[i];
                     }
-                    ibo.unlock(this.m_indices.length);
+                    ibo.submit(this.m_indices.length);
                 }
                 return this.m_mesh;
             }
@@ -128,20 +129,20 @@ oop.define_class({
                 this.m_vertices.length = (intersections.length + 1);
                 for(var i = old_size; i < this.m_vertices.length; ++i)
                 {
-                    this.m_vertices[i] = new gb.vertex_attribute();
+                    this.m_vertices[i] = new gb.vec2();
                 }
             }
             else if(delta_size < 0)
             {
                 this.m_vertices.length = intersections.length + 1;
             }
-            this.m_vertices[0].m_position = light_caster_position;
+            this.m_vertices[0] = light_caster_position;
 
             var index = 1;
             for (var i = 0; i < intersections.length; ++i) {
                 var intersection = intersections[i];
-                this.m_vertices[index].m_position.x = intersection.point_x;
-                this.m_vertices[index].m_position.y = intersection.point_y;
+                this.m_vertices[index].x = intersection.point_x;
+                this.m_vertices[index].y = intersection.point_y;
                 index++;
             }
 

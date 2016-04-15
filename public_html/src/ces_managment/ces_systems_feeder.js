@@ -9,6 +9,15 @@ oop.define_class({
     this.m_systems = [];
     this.m_root = null;
 
+    this.m_fps_meter = new FPSMeter({
+      position: 'absolute',
+      zIndex: 10,
+      left: 'auto',
+      top: '8px',
+      right: '5px',
+      bottom: 'auto'
+    });
+
     Object.defineProperty(this, 'root', {
       set: function(value) {
         this.m_root = value;
@@ -34,6 +43,7 @@ oop.define_class({
         var system = this.m_systems[i];
         system.on_feed_end(deltatime);
       }
+      this.m_fps_meter.tick();
     },
 
     add_system: function(system) {

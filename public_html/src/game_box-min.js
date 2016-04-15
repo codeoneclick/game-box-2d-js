@@ -946,97 +946,51 @@ oop.define_class({namespace:"gb", name:"texture", extend:gb.resource_base, init:
 }}});
 oop.define_class({namespace:"gb", name:"ibo", init:function(a, b) {
   this.m_handler = gl.createBuffer();
-  this.m_allocated_size = a;
-  this.m_used_size = 0;
+  this.m_used_size = this.m_allocated_size = a;
   this.m_mode = b;
-  this.m_data = [];
-  for (var c = 0;c < this.m_allocated_size;++c) {
-    this.m_data[c] = 0;
-  }
+  this.m_data = new Uint16Array(a);
   Object.defineProperty(this, "allocated_size", {get:function() {
     return this.m_allocated_size;
   }});
   Object.defineProperty(this, "used_size", {get:function() {
     return this.m_used_size;
   }});
+  Object.defineProperty(this, "data", {get:function() {
+    return this.m_data;
+  }});
 }, release:function() {
   gl.deleteBuffer(this.m_handler);
-}, methods:{lock:function() {
-  return this.m_data;
-}, unlock:function() {
-  this.m_used_size = 0 !== arguments.length && 0 < arguments[0] && arguments[0] < this.m_allocated_size ? arguments[0] : this.m_allocated_size;
+}, methods:{submit:function(a) {
+  var b = this.m_data;
+  a && 0 < a && a < this.m_allocated_size && (this.m_used_size = a, b = this.m_data.slice(0, a));
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
-  for (var a = new Uint16Array(this.m_used_size), b = this.m_used_size, c = 0, d = 0;d < b;++d) {
-    a[c++] = this.m_data[d];
-  }
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, a, this.m_mode);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, b, this.m_mode);
 }, bind:function() {
   0 !== this.m_used_size && gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
 }, unbind:function() {
   0 !== this.m_used_size && gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 }}});
-oop.define_class({namespace:"gb", name:"vertex_attribute", init:function() {
-  this.m_position = new gb.vec2(0);
-  this.m_texcoord = new gb.vec2(0);
-  this.m_color = new gb.vec4(0);
-  this.m_raw_buffer = new ArrayBuffer(32);
-  this.m_raw_data = new DataView(this.m_raw_buffer);
-  Object.defineProperty(this, "position", {get:function() {
-    return this.m_position;
-  }, set:function(a) {
-    this.m_position = a;
-    this.m_raw_data.setFloat32(0, a.x, !0);
-    this.m_raw_data.setFloat32(4, a.y, !0);
-  }});
-  Object.defineProperty(this, "texcoord", {get:function() {
-    return this.m_texcoord;
-  }, set:function(a) {
-    this.m_texcoord = a;
-    this.m_raw_data.setFloat32(8, a.x, !0);
-    this.m_raw_data.setFloat32(12, a.y, !0);
-  }});
-  Object.defineProperty(this, "color", {get:function() {
-    return this.m_color;
-  }, set:function(a) {
-    this.m_color = a;
-    this.m_raw_data.setFloat32(16, a.x, !0);
-    this.m_raw_data.setFloat32(20, a.y, !0);
-    this.m_raw_data.setFloat32(24, a.z, !0);
-    this.m_raw_data.setFloat32(28, a.w, !0);
-  }});
-}, release:function() {
-}, methods:{to_array:function() {
-  return new Float32Array(this.m_raw_buffer);
-}}});
-oop.define_class({namespace:"gb", name:"vbo", constants:{attributes:{position:0, texcoord:1, color:2}}, init:function(a, b, c) {
+oop.define_class({namespace:"gb", name:"vbo", constants:{attribute:{position:0, texcoord:1, color:2}, declaration:{position_xy:0, position_xy_texcoord_uv:1, position_xy_texcoord_uv_color_rgba:2}}, init:function(a, b, c) {
   this.m_handler = gl.createBuffer();
   this.m_used_size = this.m_allocated_size = a;
   this.m_mode = b;
   this.m_min_bound = new gb.vec2(gb.math.INT16_MAX);
   this.m_max_bound = new gb.vec2(gb.math.INT16_MIN);
-  if (c) {
-    this.m_attributes = new Uint8Array(3);
-    for (b = this.m_stride = 0;b < c.length;++b) {
-      var d = c[b];
-      switch(d) {
-        case gb.vbo.attributes.position:
-          this.m_stride += 8;
-          break;
-        case gb.vbo.attributes.texcoord:
-          this.m_stride += 8;
-          break;
-        case gb.vbo.attributes.color:
-          this.m_stride += 16;
-      }
-      this.m_attributes[d] = 1;
-    }
-    this.m_raw_data = new ArrayBuffer(a * this.m_stride);
-    this.m_raw_data_accessor = new DataView(this.m_raw_data);
-  } else {
-    for (this.m_data = [], b = 0;b < this.m_allocated_size;++b) {
-      this.m_data[b] = new gb.vertex_attribute;
-    }
+  this.m_declaration = c;
+  this.m_stride = 0;
+  switch(c) {
+    case gb.vbo.declaration.position_xy:
+      this.m_stride = 8;
+      break;
+    case gb.vbo.declaration.position_xy_texcoord_uv:
+      this.m_stride = 16;
+      break;
+    case gb.vbo.declaration.position_xy_texcoord_uv_color_rgba:
+      this.m_stride = 32;
   }
+  console.log("stride: " + this.m_stride);
+  this.m_data = new ArrayBuffer(a * this.m_stride);
+  this.m_data_accessor = new DataView(this.m_data);
   Object.defineProperty(this, "allocated_size", {get:function() {
     return this.m_allocated_size;
   }});
@@ -1052,42 +1006,43 @@ oop.define_class({namespace:"gb", name:"vbo", constants:{attributes:{position:0,
 }, release:function() {
   gl.deleteBuffer(this.m_handler);
 }, methods:{write_attribute:function(a, b, c) {
-  a === gb.vbo.attributes.position && (b < this.m_allocated_size ? (this.m_raw_data_accessor.setFloat32(b * this.m_stride + 0, c.x, !0), this.m_raw_data_accessor.setFloat32(b * this.m_stride + 4, c.y, !0), this.m_min_bound = gb.vec2.min(c, this.m_min_bound), this.m_max_bound = gb.vec2.max(c, this.m_max_bound)) : console.error("out of vbo bound"));
-  a === gb.vbo.attributes.texcoord && (b < this.m_allocated_size ? (this.m_raw_data_accessor.setFloat32(b * this.m_stride + 8, c.x, !0), this.m_raw_data_accessor.setFloat32(b * this.m_stride + 12, c.y, !0)) : console.error("out of vbo bound"));
-  a === gb.vbo.attributes.color && (b < this.m_allocated_size ? (this.m_raw_data_accessor.setFloat32(b * this.m_stride + 16, c.x, !0), this.m_raw_data_accessor.setFloat32(b * this.m_stride + 20, c.y, !0), this.m_raw_data_accessor.setFloat32(b * this.m_stride + 24, c.z, !0), this.m_raw_data_accessor.setFloat32(b * this.m_stride + 28, c.w, !0)) : console.error("out of vbo bound"));
+  a === gb.vbo.attribute.position && (b < this.m_allocated_size ? (this.m_data_accessor.setFloat32(b * this.m_stride + 0, c.x, !0), this.m_data_accessor.setFloat32(b * this.m_stride + 4, c.y, !0), this.m_min_bound = gb.vec2.min(c, this.m_min_bound), this.m_max_bound = gb.vec2.max(c, this.m_max_bound)) : console.error("out of vbo bound"));
+  a !== gb.vbo.attribute.texcoord || this.m_declaration !== gb.vbo.declaration.position_xy_texcoord_uv && this.m_declaration !== gb.vbo.declaration.position_xy_texcoord_uv_color_rgba || (b < this.m_allocated_size ? (this.m_data_accessor.setFloat32(b * this.m_stride + 8, c.x, !0), this.m_data_accessor.setFloat32(b * this.m_stride + 12, c.y, !0)) : console.error("out of vbo bound"));
+  a === gb.vbo.attribute.color && this.m_declaration === gb.vbo.declaration.position_xy_texcoord_uv_color_rgba && (b < this.m_allocated_size ? (this.m_data_accessor.setFloat32(b * this.m_stride + 16, c.x, !0), this.m_data_accessor.setFloat32(b * this.m_stride + 20, c.y, !0), this.m_data_accessor.setFloat32(b * this.m_stride + 24, c.z, !0), this.m_data_accessor.setFloat32(b * this.m_stride + 28, c.w, !0)) : console.error("out of vbo bound"));
 }, read_attribute:function(a, b) {
-  if (a === gb.vbo.attributes.position) {
+  if (a === gb.vbo.attribute.position) {
     if (b < this.m_allocated_size) {
-      return {x:this.m_raw_data_accessor.getFloat32(b * this.m_stride + 0, !0), y:this.m_raw_data_accessor.getFloat32(b * this.m_stride + 4, !0)};
+      return {x:this.m_data_accessor.getFloat32(b * this.m_stride + 0, !0), y:this.m_data_accessor.getFloat32(b * this.m_stride + 4, !0)};
     }
     console.error("out of vbo bound");
   }
-  if (a === gb.vbo.attributes.texcoord) {
+  if (a === gb.vbo.attribute.texcoord && (this.m_declaration === gb.vbo.declaration.position_xy_texcoord_uv || this.m_declaration === gb.vbo.declaration.position_xy_texcoord_uv_color_rgba)) {
     if (b < this.m_allocated_size) {
-      return {x:this.m_raw_data_accessor.getFloat32(b * this.m_stride + 8, !0), y:this.m_raw_data_accessor.getFloat32(b * this.m_stride + 12, !0)};
+      return {x:this.m_data_accessor.getFloat32(b * this.m_stride + 8, !0), y:this.m_data_accessor.getFloat32(b * this.m_stride + 12, !0)};
     }
     console.error("out of vbo bound");
   }
-  if (a === gb.vbo.attributes.color) {
+  if (a === gb.vbo.attribute.color && this.m_declaration === gb.vbo.declaration.position_xy_texcoord_uv_color_rgba) {
     if (b < this.m_allocated_size) {
-      return {x:this.m_raw_data_accessor.getFloat32(b * this.m_stride + 16, !0), y:this.m_raw_data_accessor.getFloat32(b * this.m_stride + 20, !0), z:this.m_raw_data_accessor.getFloat32(b * this.m_stride + 24, !0), w:this.m_raw_data_accessor.getFloat32(b * this.m_stride + 28, !0)};
+      return {x:this.m_data_accessor.getFloat32(b * this.m_stride + 16, !0), y:this.m_data_accessor.getFloat32(b * this.m_stride + 20, !0), z:this.m_data_accessor.getFloat32(b * this.m_stride + 24, !0), w:this.m_data_accessor.getFloat32(b * this.m_stride + 28, !0)};
     }
     console.error("out of vbo bound");
   }
   return null;
 }, submit:function(a) {
-  var b = this.m_raw_data;
-  a && 0 < a && a < this.m_allocated_size && (b = this.m_raw_data.slice(0, a * this.m_stride));
+  var b = this.m_data;
+  a && 0 < a && a < this.m_allocated_size && (this.m_used_size = a, b = this.m_data.slice(0, a * this.m_stride));
   gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler);
   gl.bufferData(gl.ARRAY_BUFFER, b, this.m_mode);
 }, bind:function(a) {
-  0 !== this.m_used_size && (gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler), 0 <= a[gb.shader.attribute_type.position] && (gl.vertexAttribPointer(a[gb.shader.attribute_type.position], 2, gl.FLOAT, !1, 32, 0), gl.enableVertexAttribArray(a[gb.shader.attribute_type.position])), 0 <= a[gb.shader.attribute_type.texcoord] && (gl.vertexAttribPointer(a[gb.shader.attribute_type.texcoord], 2, gl.FLOAT, !1, 32, 8), gl.enableVertexAttribArray(a[gb.shader.attribute_type.texcoord])), 0 <= a[gb.shader.attribute_type.color] && 
-  (gl.vertexAttribPointer(a[gb.shader.attribute_type.color], 4, gl.FLOAT, !1, 32, 16), gl.enableVertexAttribArray(a[gb.shader.attribute_type.color])));
+  0 !== this.m_used_size && (gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler), 0 <= a[gb.shader.attribute_type.position] && (gl.vertexAttribPointer(a[gb.shader.attribute_type.position], 2, gl.FLOAT, !1, this.m_stride, 0), gl.enableVertexAttribArray(a[gb.shader.attribute_type.position])), 0 <= a[gb.shader.attribute_type.texcoord] && (this.m_declaration === gb.vbo.declaration.position_xy_texcoord_uv || this.m_declaration === gb.vbo.declaration.position_xy_texcoord_uv_color_rgba) && (gl.vertexAttribPointer(a[gb.shader.attribute_type.texcoord], 
+  2, gl.FLOAT, !1, this.m_stride, 8), gl.enableVertexAttribArray(a[gb.shader.attribute_type.texcoord])), 0 <= a[gb.shader.attribute_type.color] && this.m_declaration === gb.vbo.declaration.position_xy_texcoord_uv_color_rgba && (gl.vertexAttribPointer(a[gb.shader.attribute_type.color], 4, gl.FLOAT, !1, this.m_stride, 16), gl.enableVertexAttribArray(a[gb.shader.attribute_type.color])));
 }, unbind:function(a) {
-  0 !== this.m_used_size && (gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler), 0 <= a[gb.shader.attribute_type.position] && gl.disableVertexAttribArray(a[gb.shader.attribute_type.position]), 0 <= a[gb.shader.attribute_type.texcoord] && gl.disableVertexAttribArray(a[gb.shader.attribute_type.texcoord]), 0 <= a[gb.shader.attribute_type.color] && gl.disableVertexAttribArray(a[gb.shader.attribute_type.color]), gl.bindBuffer(gl.ARRAY_BUFFER, null));
+  0 !== this.m_used_size && (gl.bindBuffer(gl.ARRAY_BUFFER, this.m_handler), 0 <= a[gb.shader.attribute_type.position] && gl.disableVertexAttribArray(a[gb.shader.attribute_type.position]), 0 <= a[gb.shader.attribute_type.texcoord] && (this.m_declaration === gb.vbo.declaration.position_xy_texcoord_uv || this.m_declaration === gb.vbo.declaration.position_xy_texcoord_uv_color_rgba) && gl.disableVertexAttribArray(a[gb.shader.attribute_type.texcoord]), 0 <= a[gb.shader.attribute_type.color] && this.m_declaration === 
+  gb.vbo.declaration.position_xy_texcoord_uv_color_rgba && gl.disableVertexAttribArray(a[gb.shader.attribute_type.color]), gl.bindBuffer(gl.ARRAY_BUFFER, null));
 }, to_vertices_positions:function() {
   for (var a = [], b = 0;b < this.m_allocated_size;++b) {
-    var c = this.read_attribute(gb.vbo.attributes.position, b);
+    var c = this.read_attribute(gb.vbo.attribute.position, b);
     a.push(new gb.vec2(c.x, c.y));
   }
   return a;
@@ -1639,74 +1594,74 @@ oop.define_class({namespace:"gb", name:"configuration_accessor", init:function()
 oop.define_class({namespace:"gb", name:"mesh_constructor", init:function() {
 }, release:function() {
 }, methods:{}, static_methods:{create_screen_quad:function() {
-  var a = new gb.vbo(4, gl.STATIC_DRAW, [gb.vbo.attributes.position, gb.vbo.attributes.texcoord, gb.vbo.attributes.color]);
-  a.write_attribute(gb.vbo.attributes.position, 0, new gb.vec2(-1, -1));
-  a.write_attribute(gb.vbo.attributes.position, 1, new gb.vec2(-1, 1));
-  a.write_attribute(gb.vbo.attributes.position, 2, new gb.vec2(1, -1));
-  a.write_attribute(gb.vbo.attributes.position, 3, new gb.vec2(1, 1));
-  a.write_attribute(gb.vbo.attributes.texcoord, 0, new gb.vec2(0, 0));
-  a.write_attribute(gb.vbo.attributes.texcoord, 1, new gb.vec2(0, 1));
-  a.write_attribute(gb.vbo.attributes.texcoord, 2, new gb.vec2(1, 0));
-  a.write_attribute(gb.vbo.attributes.texcoord, 3, new gb.vec2(1, 1));
+  var a = new gb.vbo(4, gl.STATIC_DRAW, gb.vbo.declaration.position_xy_texcoord_uv);
+  a.write_attribute(gb.vbo.attribute.position, 0, new gb.vec2(-1, -1));
+  a.write_attribute(gb.vbo.attribute.position, 1, new gb.vec2(-1, 1));
+  a.write_attribute(gb.vbo.attribute.position, 2, new gb.vec2(1, -1));
+  a.write_attribute(gb.vbo.attribute.position, 3, new gb.vec2(1, 1));
+  a.write_attribute(gb.vbo.attribute.texcoord, 0, new gb.vec2(0, 0));
+  a.write_attribute(gb.vbo.attribute.texcoord, 1, new gb.vec2(0, 1));
+  a.write_attribute(gb.vbo.attribute.texcoord, 2, new gb.vec2(1, 0));
+  a.write_attribute(gb.vbo.attribute.texcoord, 3, new gb.vec2(1, 1));
   a.submit();
-  var b = new gb.ibo(6, gl.STATIC_DRAW), c = b.lock();
+  var b = new gb.ibo(6, gl.STATIC_DRAW), c = b.data;
   c[0] = 0;
   c[1] = 2;
   c[2] = 1;
   c[3] = 1;
   c[4] = 2;
   c[5] = 3;
-  b.unlock();
+  b.submit();
   return new gb.mesh(a, b, gl.TRIANGLES);
 }, create_shape_quad:function() {
-  var a = new gb.vbo(4, gl.STATIC_DRAW, [gb.vbo.attributes.position, gb.vbo.attributes.texcoord, gb.vbo.attributes.color]);
-  a.write_attribute(gb.vbo.attributes.position, 0, new gb.vec2(-.5, -.5));
-  a.write_attribute(gb.vbo.attributes.position, 1, new gb.vec2(-.5, .5));
-  a.write_attribute(gb.vbo.attributes.position, 2, new gb.vec2(.5, -.5));
-  a.write_attribute(gb.vbo.attributes.position, 3, new gb.vec2(.5, .5));
-  a.write_attribute(gb.vbo.attributes.texcoord, 0, new gb.vec2(0, 0));
-  a.write_attribute(gb.vbo.attributes.texcoord, 1, new gb.vec2(0, 1));
-  a.write_attribute(gb.vbo.attributes.texcoord, 2, new gb.vec2(1, 0));
-  a.write_attribute(gb.vbo.attributes.texcoord, 3, new gb.vec2(1, 1));
+  var a = new gb.vbo(4, gl.STATIC_DRAW, gb.vbo.declaration.position_xy_texcoord_uv);
+  a.write_attribute(gb.vbo.attribute.position, 0, new gb.vec2(-.5, -.5));
+  a.write_attribute(gb.vbo.attribute.position, 1, new gb.vec2(-.5, .5));
+  a.write_attribute(gb.vbo.attribute.position, 2, new gb.vec2(.5, -.5));
+  a.write_attribute(gb.vbo.attribute.position, 3, new gb.vec2(.5, .5));
+  a.write_attribute(gb.vbo.attribute.texcoord, 0, new gb.vec2(0, 0));
+  a.write_attribute(gb.vbo.attribute.texcoord, 1, new gb.vec2(0, 1));
+  a.write_attribute(gb.vbo.attribute.texcoord, 2, new gb.vec2(1, 0));
+  a.write_attribute(gb.vbo.attribute.texcoord, 3, new gb.vec2(1, 1));
   a.submit();
-  var b = new gb.ibo(6, gl.STATIC_DRAW), c = b.lock();
+  var b = new gb.ibo(6, gl.STATIC_DRAW), c = b.data;
   c[0] = 0;
   c[1] = 2;
   c[2] = 1;
   c[3] = 1;
   c[4] = 2;
   c[5] = 3;
-  b.unlock();
+  b.submit();
   return new gb.mesh(a, b, gl.TRIANGLES);
 }, create_circle:function() {
-  var a = new gb.vbo(33, gl.STATIC_DRAW, [gb.vbo.attributes.position, gb.vbo.attributes.texcoord, gb.vbo.attributes.color]), b = 1, c = new gb.vec2;
-  a.write_attribute(gb.vbo.attributes.position, 0, c);
+  var a = new gb.vbo(33, gl.STATIC_DRAW, gb.vbo.declaration.position_xy), b = 1, c = new gb.vec2;
+  a.write_attribute(gb.vbo.attribute.position, 0, c);
   for (var d = 0;d <= 2 * Math.PI;d += 2 * Math.PI / 32) {
-    c.x = 1 * Math.cos(d), c.y = 1 * Math.sin(d), a.write_attribute(gb.vbo.attributes.position, b, c), b++;
+    c.x = 1 * Math.cos(d), c.y = 1 * Math.sin(d), a.write_attribute(gb.vbo.attribute.position, b, c), b++;
   }
   a.submit();
-  for (var b = 1, c = new gb.ibo(99, gl.STATIC_DRAW), d = c.lock(), e = 0;96 > e;e += 3) {
+  for (var b = 1, c = new gb.ibo(99, gl.STATIC_DRAW), d = c.data, e = 0;96 > e;e += 3) {
     d[e + 0] = 0, d[e + 1] = Math.min(b++, 32), d[e + 2] = Math.min(b, 32);
   }
   d[96] = 0;
   d[97] = Math.min(b - 1, 32);
   d[98] = 1;
-  c.unlock();
+  c.submit();
   return new gb.mesh(a, c, gl.TRIANGLES);
 }, create_grid:function(a, b, c, d) {
-  for (var e = (a + 1) * (b + 1) * 4, f = new gb.vbo((a + 1) * (b + 1) * 4, gl.STATIC_DRAW, [gb.vbo.attributes.position, gb.vbo.attributes.texcoord, gb.vbo.attributes.color]), h = 0, l = new gb.vec2, k = 0;k <= a;++k) {
-    l.x = k * c, l.y = 0, f.write_attribute(gb.vbo.attributes.position, h, l), h++, l.x = k * c, l.y = b * d, f.write_attribute(gb.vbo.attributes.position, h, l), h++;
+  for (var e = (a + 1) * (b + 1) * 4, f = new gb.vbo((a + 1) * (b + 1) * 4, gl.STATIC_DRAW, gb.vbo.declaration.position_xy), h = 0, l = new gb.vec2, k = 0;k <= a;++k) {
+    l.x = k * c, l.y = 0, f.write_attribute(gb.vbo.attribute.position, h, l), h++, l.x = k * c, l.y = b * d, f.write_attribute(gb.vbo.attribute.position, h, l), h++;
   }
   for (k = 0;k <= b;++k) {
-    l.x = 0, l.y = k * d, f.write_attribute(gb.vbo.attributes.position, h, l), h++, l.x = a * c, l.y = k * d, f.write_attribute(gb.vbo.attributes.position, h, l), h++;
+    l.x = 0, l.y = k * d, f.write_attribute(gb.vbo.attribute.position, h, l), h++, l.x = a * c, l.y = k * d, f.write_attribute(gb.vbo.attribute.position, h, l), h++;
   }
   f.submit();
   a = new gb.ibo(4 * e, gl.STATIC_DRAW);
-  b = a.lock();
+  b = a.data;
   for (k = 0;k < e;++k) {
     b[k] = k;
   }
-  a.unlock();
+  a.submit();
   return new gb.mesh(f, a, gl.LINES);
 }}});
 var g_cached_parameters = null;
@@ -2372,10 +2327,10 @@ oop.define_class({namespace:"gb", name:"ces_geometry_quad_component", extend:gb.
 }, release:function() {
 }, methods:{update_mesh_position_attributes:function() {
   var a = new gb.vec2(this.m_frame.z - this.m_pivot.x, this.m_frame.w - this.m_pivot.y), b = new gb.vec2(a.x - this.m_frame.z, a.y - this.m_frame.w), a = new gb.vec4(b.x, a.y, a.x, b.y), b = this.m_mesh.vbo;
-  b.write_attribute(gb.vbo.attributes.position, 0, new gb.vec2(a.x, a.z));
-  b.write_attribute(gb.vbo.attributes.position, 1, new gb.vec2(a.x, a.w));
-  b.write_attribute(gb.vbo.attributes.position, 2, new gb.vec2(a.y, a.z));
-  b.write_attribute(gb.vbo.attributes.position, 3, new gb.vec2(a.y, a.w));
+  b.write_attribute(gb.vbo.attribute.position, 0, new gb.vec2(a.x, a.z));
+  b.write_attribute(gb.vbo.attribute.position, 1, new gb.vec2(a.x, a.w));
+  b.write_attribute(gb.vbo.attribute.position, 2, new gb.vec2(a.y, a.z));
+  b.write_attribute(gb.vbo.attribute.position, 3, new gb.vec2(a.y, a.w));
   b.submit();
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ces_light_component", extend:gb.ces_base_component, init:function() {
@@ -2396,21 +2351,21 @@ oop.define_class({namespace:"gb", name:"ces_light_mask_component", extend:gb.ces
   this.m_shadow_casters_edges = [];
   this.m_vertices = [];
   this.m_indices = [];
-  var a = new gb.vbo(1024, gl.DYNAMIC_DRAW, [gb.vbo.attributes.position, gb.vbo.attributes.texcoord, gb.vbo.attributes.color]), b = new gb.ibo(4096, gl.DYNAMIC_DRAW);
+  var a = new gb.vbo(1024, gl.DYNAMIC_DRAW, gb.vbo.declaration.position_xy), b = new gb.ibo(4096, gl.DYNAMIC_DRAW);
   this.m_mesh = new gb.mesh(a, b, gl.TRIANGLES);
   Object.defineProperty(this, "mesh", {get:function() {
     if (0 === this.m_vertices.length || 0 === this.m_indices.length) {
-      this.m_mesh.vbo.submit(1), this.m_mesh.ibo.unlock(1);
+      this.m_mesh.vbo.submit(1), this.m_mesh.ibo.submit(1);
     } else {
       for (var a = this.m_mesh.vbo, d = 0;d < this.m_vertices.length;++d) {
-        a.write_attribute(gb.vbo.attributes.position, d, this.m_vertices[d].m_position);
+        a.write_attribute(gb.vbo.attribute.position, d, this.m_vertices[d]);
       }
-      a.submit(this.m_vertices.length);
-      a = this.m_mesh.ibo.lock();
+      a.submit();
+      a = this.m_mesh.ibo.data;
       for (d = 0;d < this.m_indices.length;++d) {
         a[d] = this.m_indices[d];
       }
-      b.unlock(this.m_indices.length);
+      b.submit(this.m_indices.length);
     }
     return this.m_mesh;
   }});
@@ -2449,15 +2404,15 @@ oop.define_class({namespace:"gb", name:"ces_light_mask_component", extend:gb.ces
   c = d.length + 1 - this.m_vertices.length;
   if (0 < c) {
     for (c = this.m_vertices.length, this.m_vertices.length = d.length + 1;c < this.m_vertices.length;++c) {
-      this.m_vertices[c] = new gb.vertex_attribute;
+      this.m_vertices[c] = new gb.vec2;
     }
   } else {
     0 > c && (this.m_vertices.length = d.length + 1);
   }
-  this.m_vertices[0].m_position = a;
+  this.m_vertices[0] = a;
   a = 1;
   for (c = 0;c < d.length;++c) {
-    p = d[c], this.m_vertices[a].m_position.x = p.point_x, this.m_vertices[a].m_position.y = p.point_y, a++;
+    p = d[c], this.m_vertices[a].x = p.point_x, this.m_vertices[a].y = p.point_y, a++;
   }
   for (c = 1;c < this.m_vertices.length;++c) {
     a = Math.max((c + 1) % this.m_vertices.length, 1), this.m_indices.push(0), this.m_indices.push(c), this.m_indices.push(a);
@@ -2770,6 +2725,7 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
 oop.define_class({namespace:"gb", name:"ces_systems_feeder", init:function() {
   this.m_systems = [];
   this.m_root = null;
+  this.m_fps_meter = new FPSMeter({position:"absolute", zIndex:10, left:"auto", top:"8px", right:"5px", bottom:"auto"});
   Object.defineProperty(this, "root", {set:function(a) {
     this.m_root = a;
   }});
@@ -2785,6 +2741,7 @@ oop.define_class({namespace:"gb", name:"ces_systems_feeder", init:function() {
   for (b = 0;b < this.m_systems.length;++b) {
     c = this.m_systems[b], c.on_feed_end(a);
   }
+  this.m_fps_meter.tick();
 }, add_system:function(a) {
   this.remove_system(a.type);
   this.m_systems.push(a);
