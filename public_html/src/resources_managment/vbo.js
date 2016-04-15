@@ -86,8 +86,8 @@ oop.define_class({
                     this.m_data_accessor.setFloat32(index * this.m_stride + 0, value.x, true);
                     this.m_data_accessor.setFloat32(index * this.m_stride + 4, value.y, true);
 
-                    this.m_min_bound = gb.vec2.min(value, this.m_min_bound);
-                    this.m_max_bound = gb.vec2.max(value, this.m_max_bound);
+                    this.m_min_bound.min(value);
+                    this.m_max_bound.max(value);
                 } else {
                     console.error("out of vbo bound");
                 }
