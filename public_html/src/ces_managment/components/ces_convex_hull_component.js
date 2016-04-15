@@ -35,11 +35,10 @@ oop.define_class({
 				return;
 			}
 			this.m_oriented_vertices = [];
-
 			var leftmost_point_index = 0;
 
 			for (var i = 0; i < vertices.length; ++i) {
-				if (vertices[i].m_position.x < vertices[leftmost_point_index].m_position.x) {
+				if (vertices[i].x < vertices[leftmost_point_index].x) {
 					leftmost_point_index = i;
 				}
 			}
@@ -49,11 +48,11 @@ oop.define_class({
 				end_point_index = (start_point_index + 1) % vertices.length;
 
 				for (var i = 0; i < vertices.length; ++i) {
-					if (gb.math.point_orientation(vertices[start_point_index].m_position, vertices[i].m_position, vertices[end_point_index].m_position) === gb.math.orientation.counterclockwise) {
+					if (gb.math.point_orientation(vertices[start_point_index], vertices[i], vertices[end_point_index]) === gb.math.orientation.counterclockwise) {
 						end_point_index = i;
 					}
 				}
-				this.m_oriented_vertices.push(vertices[end_point_index].m_position);
+				this.m_oriented_vertices.push(vertices[end_point_index]);
 				start_point_index = end_point_index;
 			}
 			while (start_point_index !== leftmost_point_index);

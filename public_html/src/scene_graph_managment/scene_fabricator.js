@@ -82,18 +82,12 @@ oop.define_class({
             var geometry_component = grid.get_component(gb.ces_base_component.type.geometry);
             geometry_component.mesh = gb.mesh_constructor.create_grid(num_rows, num_columns, rows_gap, columns_gap);
 
-            var bound = grid.bound;
-                
+            var bound = grid.bound;  
             var vertices = [];
-            vertices.push(new gb.vertex_attribute());
-            vertices.push(new gb.vertex_attribute());
-            vertices.push(new gb.vertex_attribute());
-            vertices.push(new gb.vertex_attribute());
-
-            vertices[0].position = new gb.vec2(bound.x, bound.y);
-            vertices[1].position = new gb.vec2(bound.z, bound.y);
-            vertices[2].position = new gb.vec2(bound.z, bound.w);
-            vertices[3].position = new gb.vec2(bound.x, bound.w);
+            vertices.push(new gb.vec2(bound.x, bound.y));
+            vertices.push(new gb.vec2(bound.z, bound.y));
+            vertices.push(new gb.vec2(bound.z, bound.w));
+            vertices.push(new gb.vec2(bound.x, bound.w));
 
             var convex_hull_component = new gb.ces_convex_hull_component();
             convex_hull_component.generate_convex_hull(vertices);

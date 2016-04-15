@@ -15,23 +15,22 @@ oop.define_class({
         this.m_vertices = [];
         this.m_indices = [];
 
-        var vbo = new gb.vbo(1024, gl.STATIC_DRAW);
-        var ibo = new gb.ibo(4096, gl.STATIC_DRAW);
+        var vbo = new gb.vbo(1024, gl.DYNAMIC_DRAW, [gb.vbo.attributes.position, gb.vbo.attributes.texcoord, gb.vbo.attributes.color]);
+        var ibo = new gb.ibo(4096, gl.DYNAMIC_DRAW);
         this.m_mesh = new gb.mesh(vbo, ibo, gl.TRIANGLES);
 
         Object.defineProperty(this, 'mesh', {
             get: function() {
-
                 if (this.m_vertices.length === 0 || this.m_indices.length === 0) {
-                    this.m_mesh.vbo.unlock(1);
+                    this.m_mesh.vbo.submit(1);
                     this.m_mesh.ibo.unlock(1);
                 } else {
-                    var vertices = this.m_mesh.vbo.lock();
-                    for (var i = 0; i < this.m_vertices.length; ++i) {
-                        vertices[i].position = this.m_vertices[i].m_position;
-                    }
-                    vbo.unlock(this.m_vertices.length);
 
+                    var vbo = this.m_mesh.vbo;
+                    for (var i = 0; i < this.m_vertices.length; ++i) {
+                        vbo.write_attribute(gb.vbo.attributes.position, i, this.m_vertices[i].m_position);
+                    }
+                    vbo.submit(this.m_vertices.length);
                     var indices = this.m_mesh.ibo.lock();
                     for (var i = 0; i < this.m_indices.length; ++i) {
                         indices[i] = this.m_indices[i];

@@ -48,8 +48,8 @@
 
                     if(light_source_02)
                     {
-                        light_source_02.position.x = 350.0 + Math.cos(angle) * 64.0;
-                        light_source_02.position.y = 450.0 + Math.sin(angle) * 64.0;
+                        light_source_02.position.x = 650.0 + Math.cos(angle) * 64.0;
+                        light_source_02.position.y = 250.0 + Math.sin(angle) * 64.0;
                     }
                 };
                 loop.add_listener(game_logic);
@@ -82,8 +82,8 @@
                     
                     var sprite_02 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_02.json");
                     scene.add_child(sprite_02);
-                    sprite_02.position = new gb.vec2(0, 0);
-                    sprite_02.size = new gb.vec2(480, 640);
+                    sprite_02.position = new gb.vec2(400, 100);
+                    sprite_02.size = new gb.vec2(128, 128);
                     sprite_02.cast_shadow = true;
                     
                     var sprite_01 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json");
@@ -106,21 +106,21 @@
                     });
                     sprite_01.add_component(touch_recognize_component);
 
-                    var grid_01 = scene.fabricator.create_grid("data/resources/configurations/game_objects/sprite_01.json", 128, 128, 32, 32, function() {
+                    var grid_01 = scene.fabricator.create_grid("data/resources/configurations/game_objects/sprite_02.json", 128, 128, 32, 32, function() {
                         grid_01.color = new gb.vec4(1.0, 1.0, 0.0, 1.0);
                     });
                     scene.add_child(grid_01);
 
                     light_source_01 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
                         light_source_01.position = new gb.vec2(250, 250);
-                        light_source_01.radius = 512.0;
+                        light_source_01.radius = 1024.0;
                         light_source_01.color = new gb.vec4(1.0, 0.0, 0.0, 1.0);
                     });
                     scene.add_child(light_source_01);
 
                     light_source_02 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
-                        light_source_02.position = new gb.vec2(350, 450);
-                        light_source_02.radius = 256.0;
+                        light_source_02.position = new gb.vec2(500, 250);
+                        light_source_02.radius = 512.0;
                         light_source_02.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
                     });
                     scene.add_child(light_source_02);

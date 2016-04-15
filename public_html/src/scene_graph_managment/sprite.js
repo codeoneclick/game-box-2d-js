@@ -43,7 +43,7 @@ oop.define_class({
 				if (value) {
 					var geometry_component = this.get_component(gb.ces_base_component.type.geometry);
 					var convex_hull_component = new gb.ces_convex_hull_component();
-					convex_hull_component.generate_convex_hull(geometry_component.mesh.vbo.lock());
+					convex_hull_component.generate_convex_hull(geometry_component.mesh.vbo.to_vertices_positions());
 					this.add_component(convex_hull_component);
 				} else {
 					this.remove_component(gb.ces_base_component.type.convex_hull);
