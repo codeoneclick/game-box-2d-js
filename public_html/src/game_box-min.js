@@ -2725,7 +2725,8 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
 oop.define_class({namespace:"gb", name:"ces_systems_feeder", init:function() {
   this.m_systems = [];
   this.m_root = null;
-  this.m_fps_meter = new FPSMeter({position:"absolute", zIndex:10, left:"auto", top:"8px", right:"5px", bottom:"auto"});
+  var a = document.getElementById("main_container");
+  this.m_fps_meter = new FPSMeter(a, {position:"absolute", zIndex:10, left:"auto", top:"0px", right:"0px", bottom:"auto"});
   Object.defineProperty(this, "root", {set:function(a) {
     this.m_root = a;
   }});

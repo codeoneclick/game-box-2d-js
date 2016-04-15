@@ -9,12 +9,13 @@ oop.define_class({
     this.m_systems = [];
     this.m_root = null;
 
-    this.m_fps_meter = new FPSMeter({
+    var container = document.getElementById("main_container");
+    this.m_fps_meter = new FPSMeter(container, {
       position: 'absolute',
       zIndex: 10,
       left: 'auto',
-      top: '8px',
-      right: '5px',
+      top: '0px',
+      right: '0px',
       bottom: 'auto'
     });
 
