@@ -67,6 +67,21 @@ oop.define_class({
                     }
                 }
             }
+        },
+
+        set_texture: function(texture, sampler, technique_name, technique_pass) {
+            if (arguments.length === 4) {
+                var material = this.get_material(technique_name, technique_pass);
+                if (material) {
+                    material.set_texture(texture, sampler);
+                }
+            } else {
+                for (var key in this.m_materials) {
+                    for (var i = 0; i < this.m_materials[key].length; ++i) {
+                        this.m_materials[key][i].set_texture(texture, sampler);
+                    }
+                }
+            }
         }
     },
 

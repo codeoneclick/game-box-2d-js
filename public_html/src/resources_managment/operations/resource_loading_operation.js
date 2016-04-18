@@ -15,13 +15,14 @@ oop.define_class({
         }
     },
 
-    init: function(guid, resource) {
+    init: function(guid, resource, data) {
         this.m_guid = guid;
         this.m_resource = resource;
         this.m_status = gb.resource_loading_operation.status.undefined;
         this.m_transfering_data = null;
         this.m_serializer = null;
         this.m_commiter = null;
+        this.m_serialized_data = data;
 
         Object.defineProperty(this, 'guid', {
             get: function() {

@@ -30,14 +30,26 @@ oop.define_class({
     },
 
     serialize: function(callback) {
-      this.m_status = gb.resource_loading_operation.status.in_progress;
-      this.m_serializer = new gb.texture_serializer_png(this.m_guid, this.m_resource);
 
-      var self = this;
-      this.m_serializer.serialize(this.m_transfering_data, function() {
-        self.m_status = self.m_serializer.status === gb.resource_serializer.status.success ? gb.resource_loading_operation.status.waiting : gb.resource_loading_operation.status.failure;
-        callback();
-      });
+      if (!this.m_serialized_data) {
+        this.m_status = gb.resource_loading_operation.status.in_progress;
+        this.m_serializer = new gb.texture_serializer_png(this.m_guid, this.m_resource);
+
+        var self = this;
+        this.m_serializer.serialize(this.m_transfering_data, function() {
+          self.m_status = self.m_serializer.status === gb.resource_serializer.status.success ? gb.resource_loading_operation.status.waiting : gb.resource_loading_operation.status.failure;
+          callback();
+        });
+      }
+      else
+      {
+          this.m_status = gb.resource_loading_operation.status.waiting;
+          this.m_transfering_data.data = this.m_serialized_data;
+          this.m_transfering_data.width = this.m_serialized_data.width;
+          this.m_transfering_data.height = this.m_serialized_data.height;
+          this.m_resource.on_transfering_data_serialized(this.m_transfering_data);
+          callback();
+      }
     },
 
     commit: function(callback) {

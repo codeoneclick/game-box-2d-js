@@ -14,6 +14,8 @@
 
             var g_game_controller = null;
             var game_logic = null;
+            var g_sprite_01 = null;
+            var g_scene = null;
 
             function on_mouse_down(event)
             {
@@ -24,6 +26,52 @@
             {
                 console.log(event);
             }
+
+            function handle_file_select(event) 
+            {
+                console.log(event);
+
+                event.stopPropagation();
+                event.preventDefault();
+
+                var files = event.dataTransfer.files;
+
+                for (var i = 0; i < files.length; ++i) 
+                {
+                    var file = files[i];
+                    if (!file.type.match('image.*')) 
+                    {
+                        continue;
+                    }
+                    console.log(file);
+
+                    var reader = new FileReader();
+
+                    reader.onload = (function(data) {
+                        return function(data) 
+                        {
+                            var image = new Image();
+                            image.src = data.target.result;
+                            
+                            var new_texture = g_scene.fabricator.resources_accessor.get_texture(file.name, image);
+                            new_texture.add_resource_loading_callback(function(resource, userdata) {
+                                var material_component = g_sprite_01.get_component(gb.ces_base_component.type.material);
+                                material_component.set_texture(resource, 0);
+                            });
+                        };
+                    })(file);
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            function handle_drag_over(event)
+            {
+                console.log(event);
+
+                event.stopPropagation();
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'copy';
+            }
             
             function app_start()
             {
@@ -31,6 +79,10 @@
                 $("#radio1").click(function(){
                     alert("The paragraph was clicked.");
                 });
+
+                var drop_zone = document.getElementById('drop_zone');
+                drop_zone.addEventListener('dragover', handle_drag_over, false);
+                drop_zone.addEventListener('drop', handle_file_select, false);
 
                 var light_source_01 = null;
                 var light_source_02 = null;
@@ -77,6 +129,8 @@
                 g_game_controller.add_transition(game_transition);
                 g_game_controller.goto_transition("data/resources/configurations/transitions/transition.main.json", function(scene) {
                     
+                    g_scene = scene;
+
                     var camera = new gb.camera(gl.viewport_width, gl.viewport_height);
                     scene.camera = camera;
                     
@@ -86,11 +140,11 @@
                     sprite_02.size = new gb.vec2(128, 128);
                     sprite_02.cast_shadow = true;
                     
-                    var sprite_01 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json");
-                    scene.add_child(sprite_01);
-                    sprite_01.position = new gb.vec2(70, 70);
-                    sprite_01.size = new gb.vec2(128, 128);
-                    sprite_01.cast_shadow = true;
+                    g_sprite_01 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json");
+                    scene.add_child(g_sprite_01);
+                    g_sprite_01.position = new gb.vec2(70, 70);
+                    g_sprite_01.size = new gb.vec2(128, 128);
+                    g_sprite_01.cast_shadow = true;
 
                     var touch_recognize_component = new gb.ces_touch_recognize_component();
                     touch_recognize_component.bound = new gb.vec4(0.0, 0.0, 128.0, 128.0);
@@ -104,7 +158,7 @@
                     touch_recognize_component.add_callback(gb.input_context.state.dragged, function() {
                         console.log(arguments);
                     });
-                    sprite_01.add_component(touch_recognize_component);
+                    g_sprite_01.add_component(touch_recognize_component);
 
                     var grid_01 = scene.fabricator.create_grid("data/resources/configurations/game_objects/sprite_02.json", 128, 128, 32, 32, function() {
                         grid_01.color = new gb.vec4(1.0, 1.0, 0.0, 1.0);
@@ -135,6 +189,7 @@
                 <input type="radio" id="radio1" name="radio" checked="checked"><label id="radio_button_container_01" for="radio1">Scene</label>
                 <input type="radio" id="radio2" name="radio"><label id="radio_button_container_02" for="radio2">Sprite Sheet</label>
             </div>
+            <div id="drop_zone">Drop files here</div>
         </div>
         <script src="src/game_box-min.js"></script>
     </body>

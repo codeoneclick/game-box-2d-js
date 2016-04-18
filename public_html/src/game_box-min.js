@@ -988,7 +988,6 @@ oop.define_class({namespace:"gb", name:"vbo", constants:{attribute:{position:0, 
     case gb.vbo.declaration.position_xy_texcoord_uv_color_rgba:
       this.m_stride = 32;
   }
-  console.log("stride: " + this.m_stride);
   this.m_data = new ArrayBuffer(a * this.m_stride);
   this.m_data_accessor = new DataView(this.m_data);
   Object.defineProperty(this, "allocated_size", {get:function() {
@@ -1171,11 +1170,12 @@ oop.define_class({namespace:"gb", name:"texture_commiter_png", extend:gb.resourc
   this.m_resource.on_transfering_data_commited(a);
   this.m_status = gb.resource_commiter.status.success;
 }}, static_methods:{}});
-oop.define_class({namespace:"gb", name:"resource_loading_operation", constants:{status:{undefined:0, in_progress:1, waiting:2, failure:3, success:4}}, init:function(a, b) {
+oop.define_class({namespace:"gb", name:"resource_loading_operation", constants:{status:{undefined:0, in_progress:1, waiting:2, failure:3, success:4}}, init:function(a, b, c) {
   this.m_guid = a;
   this.m_resource = b;
   this.m_status = gb.resource_loading_operation.status.undefined;
   this.m_commiter = this.m_serializer = this.m_transfering_data = null;
+  this.m_serialized_data = c;
   Object.defineProperty(this, "guid", {get:function() {
     return this.m_guid;
   }});
@@ -1220,13 +1220,17 @@ oop.define_class({namespace:"gb", name:"texture_loading_operation", extend:gb.re
     }) : a();
   });
 }, serialize:function(a) {
-  this.m_status = gb.resource_loading_operation.status.in_progress;
-  this.m_serializer = new gb.texture_serializer_png(this.m_guid, this.m_resource);
-  var b = this;
-  this.m_serializer.serialize(this.m_transfering_data, function() {
-    b.m_status = b.m_serializer.status === gb.resource_serializer.status.success ? gb.resource_loading_operation.status.waiting : gb.resource_loading_operation.status.failure;
-    a();
-  });
+  if (this.m_serialized_data) {
+    this.m_status = gb.resource_loading_operation.status.waiting, this.m_transfering_data.data = this.m_serialized_data, this.m_transfering_data.width = this.m_serialized_data.width, this.m_transfering_data.height = this.m_serialized_data.height, this.m_resource.on_transfering_data_serialized(this.m_transfering_data), a();
+  } else {
+    this.m_status = gb.resource_loading_operation.status.in_progress;
+    this.m_serializer = new gb.texture_serializer_png(this.m_guid, this.m_resource);
+    var b = this;
+    this.m_serializer.serialize(this.m_transfering_data, function() {
+      b.m_status = b.m_serializer.status === gb.resource_serializer.status.success ? gb.resource_loading_operation.status.waiting : gb.resource_loading_operation.status.failure;
+      a();
+    });
+  }
 }, commit:function(a) {
   this.m_status = gb.resource_loading_operation.status.in_progress;
   this.m_commiter = new gb.texture_commiter_png(this.m_guid, this.m_resource);
@@ -1245,27 +1249,29 @@ oop.define_class({namespace:"gb", name:"resource_accessor", init:function() {
   if ("undefined" === typeof b) {
     b = new gb.shader(a);
     this.m_resources[a] = b;
-    var c = new gb.shader_loading_operation(a, b), d = this;
+    var c = new gb.shader_loading_operation(a, b);
+    this.m_operations_queue[a] = c;
+    var d = this;
     c.start(function() {
       d.m_resources[a].on_resource_loaded(d.m_operations_queue[a].status === gb.resource_loading_operation.status.success);
       d.m_operations_queue[a] = null;
     });
-    this.m_operations_queue[a] = c;
   }
   return b;
-}, get_texture:function(a) {
-  var b = this.m_resources[a];
-  if ("undefined" === typeof b) {
-    b = new gb.texture(a);
-    this.m_resources[a] = b;
-    var c = new gb.texture_loading_operation(a, b), d = this;
-    c.start(function() {
-      d.m_resources[a].on_resource_loaded(d.m_operations_queue[a].status === gb.resource_loading_operation.status.success);
-      d.m_operations_queue[a] = null;
+}, get_texture:function(a, b) {
+  var c = this.m_resources[a];
+  if ("undefined" === typeof c) {
+    c = new gb.texture(a);
+    this.m_resources[a] = c;
+    var d = new gb.texture_loading_operation(a, c, b);
+    this.m_operations_queue[a] = d;
+    var e = this;
+    d.start(function() {
+      e.m_resources[a].on_resource_loaded(e.m_operations_queue[a].status === gb.resource_loading_operation.status.success);
+      e.m_operations_queue[a] = null;
     });
-    this.m_operations_queue[a] = c;
   }
-  return b;
+  return c;
 }}, static_methods:{}});
 var g_string_to_glenum = null;
 oop.define_class({namespace:"gb", name:"configuration_base", init:function() {
@@ -2232,6 +2238,17 @@ oop.define_class({namespace:"gb", name:"ces_material_component", extend:gb.ces_b
     for (e in this.m_materials) {
       for (var f = 0;f < this.m_materials[e].length;++f) {
         this.m_materials[e][f].set_custom_shader_uniform(a, b);
+      }
+    }
+  }
+}, set_texture:function(a, b, c, d) {
+  if (4 === arguments.length) {
+    var e = this.get_material(c, d);
+    e && e.set_texture(a, b);
+  } else {
+    for (e in this.m_materials) {
+      for (var f = 0;f < this.m_materials[e].length;++f) {
+        this.m_materials[e][f].set_texture(a, b);
       }
     }
   }

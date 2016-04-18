@@ -43,8 +43,6 @@ oop.define_class({
                 break;
         }
 
-        console.log("stride: " + this.m_stride);
-
         var size_in_bytes = size * this.m_stride;
         this.m_data = new ArrayBuffer(size_in_bytes);
         this.m_data_accessor = new DataView(this.m_data);

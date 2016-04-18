@@ -59,3 +59,11 @@
 	color: white;
     display: inline;
 }
+
+#drop_zone {
+    border: 2px dashed #bbb;
+    border-radius: 5px;
+    padding: 25px;
+    text-align: center;
+    color: #bbb;
+}

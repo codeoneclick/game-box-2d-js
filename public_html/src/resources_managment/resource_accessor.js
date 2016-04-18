@@ -27,29 +27,29 @@ oop.define_class({
                 this.m_resources[filename] = resource;
 
                 var operation = new gb.shader_loading_operation(filename, resource);
+                this.m_operations_queue[filename] = operation;
                 var self = this;
                 operation.start(function() {
                     self.m_resources[filename].on_resource_loaded(self.m_operations_queue[filename].status === gb.resource_loading_operation.status.success);
                     self.m_operations_queue[filename] = null;
                 });
-                this.m_operations_queue[filename] = operation;
             }
             return resource;
         },
 
-        get_texture: function(filename) {
+        get_texture: function(filename, data) {
             var resource = this.m_resources[filename];
             if (typeof resource === 'undefined') {
                 resource = new gb.texture(filename);
                 this.m_resources[filename] = resource;
 
-                var operation = new gb.texture_loading_operation(filename, resource);
+                var operation = new gb.texture_loading_operation(filename, resource, data);
+                this.m_operations_queue[filename] = operation;
                 var self = this;
                 operation.start(function() {
                     self.m_resources[filename].on_resource_loaded(self.m_operations_queue[filename].status === gb.resource_loading_operation.status.success);
                     self.m_operations_queue[filename] = null;
                 });
-                this.m_operations_queue[filename] = operation;
             }
             return resource;
         }
