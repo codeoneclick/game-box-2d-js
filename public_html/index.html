@@ -52,6 +52,11 @@
                         {
                             var image = new Image();
                             image.src = data.target.result;
+
+                            if(!gb.math.is_pot(image.width) || !gb.math.is_pot(image.height))
+                            {
+                                console.error("wrong image");
+                            }
                             
                             var new_texture = g_scene.fabricator.resources_accessor.get_texture(file.name, image);
                             new_texture.add_resource_loading_callback(function(resource, userdata) {
@@ -168,14 +173,14 @@
                     light_source_01 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
                         light_source_01.position = new gb.vec2(250, 250);
                         light_source_01.radius = 1024.0;
-                        light_source_01.color = new gb.vec4(1.0, 0.0, 0.0, 1.0);
+                        light_source_01.color = new gb.vec4(1.0, 1.0, 1.0, 1.0);
                     });
                     scene.add_child(light_source_01);
 
                     light_source_02 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
                         light_source_02.position = new gb.vec2(500, 250);
                         light_source_02.radius = 512.0;
-                        light_source_02.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
+                        light_source_02.color = new gb.vec4(1.0, 1.0, 1.0, 1.0);
                     });
                     scene.add_child(light_source_02);
                 });

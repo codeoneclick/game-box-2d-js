@@ -102,5 +102,10 @@ oop.define_class({
 			}
 			return (result > 0) ? gb.math.orientation.clockwise : gb.math.orientation.counterclockwise;
 		},
+
+		is_pot: function(value)
+		{
+    		return (value !== 0) && ((value & (value - 1)) === 0);
+		}
 	}
 });

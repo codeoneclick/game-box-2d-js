@@ -669,6 +669,8 @@ oop.define_class({namespace:"gb", name:"math", constants:{INT16_MAX:32767, INT16
 }, point_orientation:function(a, b, c) {
   a = (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
   return 0 === a ? gb.math.orientation.colinear : 0 < a ? gb.math.orientation.clockwise : gb.math.orientation.counterclockwise;
+}, is_pot:function(a) {
+  return 0 !== a && 0 === (a & a - 1);
 }}});
 var gl = null;
 oop.define_class({namespace:"gb", name:"graphics_context", init:function() {
