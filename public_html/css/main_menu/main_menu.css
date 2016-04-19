@@ -1,5 +1,14 @@
-.container {
-    position: relative;
+#container {
+    background: black;
+    height:     100%;
+    margin:     0 auto;
+    width:      100%;
+}
+.pane {
+   display:    none;
+}
+.ui-layout-resizer {
+    background: orange;
 }
 
 #radio {
@@ -60,10 +69,102 @@
     display: inline;
 }
 
-#drop_zone {
+#resizable { 
+	width: 160px; 
+	height: 160px; 
+	min-width: 130px;
+	min-height: 130px; 
+}
+
+#frame-size {
+    color: orange;
+    font: italic bold 16px Georgia, serif;
     border: 2px dashed #bbb;
-    border-radius: 5px;
-    padding: 25px;
+    border-color: orange;
+    padding: 20px;
+    margin: 5px;
     text-align: center;
-    color: #bbb;
+}
+
+#frame-width-slider {
+    margin: 15px;
+    text-align: right;
+}
+
+#frame-width-value {
+    background: black;
+    font: italic bold 10px Georgia, serif;
+    color: orange;
+    border: 0;
+    margin-top: 30px;
+    text-align: right;
+    font-size: 12px !important;
+}
+
+#frame-height-slider {
+    margin-top: 40px;
+    margin-left: 15px;
+    margin-right: 15px;
+    text-align: right;
+}
+
+#frame-height-value {
+    background: black;
+    font: italic bold 10px Georgia, serif;
+    color: orange;
+    border: 0;
+    margin-top: 30px;
+    text-align: right;
+    font-size: 12px !important;
+}
+
+#images-container {
+    color: orange;
+    font: italic bold 16px Georgia, serif;
+    border: 2px dashed #bbb;
+    border-color: orange;
+    padding: 20px;
+    margin: 5px;
+    text-align: center;
+}
+
+#images-list { 
+    list-style-type: none; 
+    margin-top: 30px; 
+    width: 90%;
+    max-height: 450px;
+    overflow: auto;
+    border-top: 4px solid;
+    border-bottom: 4px solid;
+    border-left: 4px solid;
+    border-right: 0px;
+    border-color: orange;
+}
+
+#images-list li {
+    background: black;
+    border: 2px dashed #bbb;
+    border-color: orange;
+    font-size: 1.4em;
+    height: 128px;
+    margin-left: -35px;
+    margin-right: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#images-list li span { 
+    position: absolute; 
+}
+
+#drop-zone {
+    border: 2px dashed #bbb;
+    margin: 5px;
+	min-width: 80px;
+	min-height: 80px; 
+    border-color: orange;
+    font: italic bold 16px Georgia, serif;
+    color: orange;
+    text-align: center;
+    padding-top: 40px;
 }

@@ -4,13 +4,31 @@
         <title>game-box-2d</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-        <script src="lib/underscore/underscore-min.js"></script>
-        <script src="lib/fps_meter/fps_meter-min.js"></script>
+        <link rel="stylesheet" href="libs/jquery.ui-1.11.4/jquery-ui.min.css">
         <link rel="stylesheet" href="css/main_menu/main_menu.css">
+        <script src="libs/jquery-1.12.3/jquery-min.js"></script>
+        <script src="libs/jquery.ui-1.11.4/jquery-ui.min.js"></script>
+        <script src="libs/jquery.layout-1.4.3/jquery.layout-min.js"></script>
+        <script src="libs/underscore/underscore-min.js"></script>
+        <script src="libs/fps_meter/fps_meter-min.js"></script>
+        <style type="text/css">
+            html, body {
+                background: #666;
+                width:      100%;
+                height:     100%;                   
+                padding:    0;
+                margin:     0;
+                overflow:   auto;
+            }
+        </style>
+
         <script type="text/javascript">
+            
+            $(function() {
+                $( "#resizable" ).resizable({
+                    animate: true
+                });
+             });
 
             var g_game_controller = null;
             var game_logic = null;
@@ -80,12 +98,61 @@
             
             function app_start()
             {
+                $("#container").append($("<div class=\"pane ui-layout-north\" id=\"ui-layout-north\">TABS</div>"));
+                $("#container").append($("<div class=\"pane ui-layout-center\" id=\"ui-layout-center\"/>"));
+                $("#container").append($("<div class=\"pane ui-layout-west\" id=\"ui-layout-west\"/>"));
+                $("#ui-layout-center").append($("<canvas id=\"gl_canvas\" width=\"640\" height=\"480\"></canvas>"));
+                $("#ui-layout-west").append($("<div id=\"frame-size\">Frame Size</div>"));
+                $("#frame-size").append($("<div id=\"frame-width-slider\">\
+                    <input type=\"text\" id=\"frame-width-value\" readonly\ value=\"Width 32 px\"></div></p>"));
+                $("#frame-size").append($("<div id=\"frame-height-slider\">\
+                    <input type=\"text\" id=\"frame-height-value\" readonly\ value=\"Height 32 px\"></div></p>"));
+                $("#ui-layout-west").append($("<div id=\"images-container\">Images</div>"));
+                $("#images-container").append($("<ul id=\"images-list\">"));
+                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
+                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
+                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
+                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
+                $("#images-container").append($("</ul>"));
+                
+                $("#ui-layout-west").append($("<div id=\"drop-zone\">Drop Zone</div>"));
+
+                var layout = $('#container').layout();
                 $("#radio").buttonset();
                 $("#radio1").click(function(){
                     alert("The paragraph was clicked.");
                 });
 
-                var drop_zone = document.getElementById('drop_zone');
+                layout.panes.north.css({ height: '100px' }); 
+                layout._sizePane("north", 100);
+
+                layout.panes.west.css({ width: '400px' }); 
+                layout._sizePane("west", 400);
+
+                $( "#frame-width-slider" ).slider({
+                    value:32,
+                    min: 32,
+                    max: 1024,
+                    step: 32,
+                    slide: function( event, ui ) {
+                         $( "#frame-width-value" ).val("Width " + ui.value + " px");   
+                    }
+                });
+
+                $( "#frame-height-slider" ).slider({
+                    value:32,
+                    min: 32,
+                    max: 1024,
+                    step: 32,
+                    slide: function( event, ui ) {
+                         $( "#frame-height-value" ).val("Height " + ui.value + " px");   
+                    }
+                });
+
+                $("#images-list").sortable();
+                $("#images-list").disableSelection();
+
+                var drop_zone = document.getElementById('drop-zone');
                 drop_zone.addEventListener('dragover', handle_drag_over, false);
                 drop_zone.addEventListener('drop', handle_file_select, false);
 
@@ -188,14 +255,7 @@
         </script>
     </head>
     <body onload="app_start();">
-        <div class="container" id="main_container">
-            <canvas id="gl_canvas" width="800" height="600"></canvas>
-            <div id="radio">
-                <input type="radio" id="radio1" name="radio" checked="checked"><label id="radio_button_container_01" for="radio1">Scene</label>
-                <input type="radio" id="radio2" name="radio"><label id="radio_button_container_02" for="radio2">Sprite Sheet</label>
-            </div>
-            <div id="drop_zone">Drop files here</div>
-        </div>
+        <div class="container" id="container"/>
         <script src="src/game_box-min.js"></script>
     </body>
 </html>
