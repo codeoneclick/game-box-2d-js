@@ -1,86 +1,111 @@
-#container {
+#menu-tabs {
     background: black;
-    height:     100%;
-    margin:     0 auto;
-    width:      100%;
+    width: 1424px;
+    margin: auto;
 }
-.pane {
-   display:    none;
+
+.ui-widget-header
+{
+    background: black;
+    border-top: 0px;
+    border-bottom: 6px solid #336633;
+    border-left: 0px;
+    border-right: 0px;
+    border-radius: 0px;
 }
+
 .ui-layout-resizer {
-    background: orange;
+    background: #336633;
 }
 
-#radio {
+.ui-state-default a:link {
+    color: darkgray;
+    font: italic bold 16px Georgia, serif;
+}
+
+.ui-state-active a:link {
+    color: #66CC33;
+    font: italic bold 16px Georgia, serif;
+}
+
+.ui-state-hover a:link {
+    color: #66CC33;
+    font: italic bold 16px Georgia, serif;
+}
+
+#tabs-list li {
+    background: black;
+}
+
+#tabs-list li .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    border: 2px dashed;
+    border-color: #336633;
+    border-radius: 0px;
+}
+
+#tabs-list li .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+    border: 2px solid;
+    border-color: #336633;
+    border-radius: 0px;
+}
+
+#ss-merge-tab {
+    background: black;
+    height: 1024px;
+    margin: auto;
+    width: 1424px;
+    padding: 0px;
+}
+
+#ui-ss-merge-left {
     position: absolute;
-    left: 10px;
-    top: 10px;
+    background-color: black;
+    width: 400px;
+    height: 768px;
+    float:left;
 }
 
-#radio_button_container_01.ui-state-default {
-	background: slategray;
-	width: 96px;
-    height: 24px;
-    font-size: 18px !important;
-    font-weight: bold;
+#ui-ss-merge-center {
+    position: absolute;
+    background-color: black;
+    width: 1024px;
+    height: 768px;
+    left: 400px;
+    float: left;
+    margin-left: 4px;
 }
 
-#radio_button_container_01.ui-state-default span.ui-button-text { 
-	color: white;
-    display: inline;
+#ss-animation-tab {
+    background: black;
+    height: 1024px;
+    margin: auto;
+    width: 1424px;
+    padding: 0px;
 }
 
-#radio_button_container_01.ui-state-active {
-	background: palegreen;
-	width: 96px;
-    height: 24px;
-    font-size: 18px !important;
-    font-weight: bold;
+#ui-ss-animation-left {
+    position: absolute;
+    background-color: black;
+    width: 400px;
+    height: 768px;
+    float:left;
 }
 
-#radio_button_container_01.ui-state-active span.ui-button-text { 
-	color: white;
-    display: inline;
-}
-
-#radio_button_container_02.ui-state-default {
-	background: slategray;
-	width: 170px;
-    height: 24px;
-    font-size: 18px !important;
-    font-weight: bold;
-}
-
-#radio_button_container_02.ui-state-default span.ui-button-text { 
-	color: white;
-    display: inline;
-}
-
-#radio_button_container_02.ui-state-active {
-	background: palegreen;
-	width: 170px;
-    height: 24px;
-    font-size: 18px !important;
-    font-weight: bold;
-}
-
-#radio_button_container_02.ui-state-active span.ui-button-text { 
-	color: white;
-    display: inline;
-}
-
-#resizable { 
-	width: 160px; 
-	height: 160px; 
-	min-width: 130px;
-	min-height: 130px; 
+#ui-ss-animation-center {
+    position: absolute;
+    background-color: black;
+    width: 1024px;
+    height: 768px;
+    left: 400px;
+    float: left;
+    margin-left: 4px;
 }
 
 #frame-size {
-    color: orange;
+    color: #66CC33;
     font: italic bold 16px Georgia, serif;
-    border: 2px dashed #bbb;
-    border-color: orange;
+    border: 2px dashed;
+    border-color: #336633;
     padding: 20px;
     margin: 5px;
     text-align: center;
@@ -89,12 +114,19 @@
 #frame-width-slider {
     margin: 15px;
     text-align: right;
+    border: 0px;
+    background: #336633;
+}
+
+#frame-width-slider span {
+    border: 0px;
+    background: #66CC33;
 }
 
 #frame-width-value {
     background: black;
     font: italic bold 10px Georgia, serif;
-    color: orange;
+    color: #66CC33;
     border: 0;
     margin-top: 30px;
     text-align: right;
@@ -106,12 +138,19 @@
     margin-left: 15px;
     margin-right: 15px;
     text-align: right;
+    border: 0px;
+    background: #336633;
+}
+
+#frame-height-slider span {
+    border: 0px;
+    background: #66CC33;
 }
 
 #frame-height-value {
     background: black;
     font: italic bold 10px Georgia, serif;
-    color: orange;
+    color: #66CC33;
     border: 0;
     margin-top: 30px;
     text-align: right;
@@ -119,10 +158,10 @@
 }
 
 #images-container {
-    color: orange;
+    color: #66CC33;
     font: italic bold 16px Georgia, serif;
-    border: 2px dashed #bbb;
-    border-color: orange;
+    border: 2px dashed;
+    border-color: #336633;
     padding: 20px;
     margin: 5px;
     text-align: center;
@@ -134,17 +173,12 @@
     width: 90%;
     max-height: 450px;
     overflow: auto;
-    border-top: 4px solid;
-    border-bottom: 4px solid;
-    border-left: 4px solid;
-    border-right: 0px;
-    border-color: orange;
 }
 
 #images-list li {
     background: black;
-    border: 2px dashed #bbb;
-    border-color: orange;
+    border: 2px dashed;
+    border-color: #336633;
     font-size: 1.4em;
     height: 128px;
     margin-left: -35px;
@@ -158,13 +192,20 @@
 }
 
 #drop-zone {
-    border: 2px dashed #bbb;
+    border: 2px dashed;
     margin: 5px;
 	min-width: 80px;
 	min-height: 80px; 
-    border-color: orange;
+    border-color: #336633;
     font: italic bold 16px Georgia, serif;
-    color: orange;
+    color: #66CC33;
     text-align: center;
     padding-top: 40px;
+}
+
+#images-list-cell-image {
+    width: 120px;
+    height: 120px;
+    margin-left: 4px;
+    margin-top: 4px;
 }

@@ -28,8 +28,8 @@ oop.define_class({
 				return new gb.vec2(this.m_frame.z, this.m_frame.w);
 			},
 			set: function(value) {
-				this.m_frame.z = value.x;
-				this.m_frame.w = value.y;
+				this.m_frame.w = value.x;
+				this.m_frame.z = value.y;
 				this.update_mesh_position_attributes();
 			}
 		});

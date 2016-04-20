@@ -75,5 +75,7 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/game_states_managment/game_loop.js \
 --js=../public_html/src/game_states_managment/game_transition.js \
 --js=../public_html/src/game_states_managment/game_controller.js \
+--js=../public_html/src/ui_managment/ss_merge_controller.js \
+--js=../public_html/src/ui_managment/ss_animation_controller.js \
 --js=!../public_html/src/game_box-min.js \
 --formatting=PRETTY_PRINT

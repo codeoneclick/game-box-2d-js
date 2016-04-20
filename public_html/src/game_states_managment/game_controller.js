@@ -1,6 +1,8 @@
 /* global oop, gb, console */
 "use strict";
 
+var g_game_controller = null;
+
 oop.define_class({
 	namespace: "gb",
 	name: "game_controller",
@@ -52,6 +54,11 @@ oop.define_class({
 	},
 
 	static_methods: {
-
+		 get_instance: function() {
+            if (!g_game_controller) {
+                g_game_controller = new gb.game_controller();
+            }
+            return g_game_controller;
+        }
 	}
 });

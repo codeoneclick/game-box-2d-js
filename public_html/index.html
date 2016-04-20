@@ -98,65 +98,38 @@
             
             function app_start()
             {
-                $("#container").append($("<div class=\"pane ui-layout-north\" id=\"ui-layout-north\">TABS</div>"));
-                $("#container").append($("<div class=\"pane ui-layout-center\" id=\"ui-layout-center\"/>"));
-                $("#container").append($("<div class=\"pane ui-layout-west\" id=\"ui-layout-west\"/>"));
-                $("#ui-layout-center").append($("<canvas id=\"gl_canvas\" width=\"640\" height=\"480\"></canvas>"));
-                $("#ui-layout-west").append($("<div id=\"frame-size\">Frame Size</div>"));
-                $("#frame-size").append($("<div id=\"frame-width-slider\">\
-                    <input type=\"text\" id=\"frame-width-value\" readonly\ value=\"Width 32 px\"></div></p>"));
-                $("#frame-size").append($("<div id=\"frame-height-slider\">\
-                    <input type=\"text\" id=\"frame-height-value\" readonly\ value=\"Height 32 px\"></div></p>"));
-                $("#ui-layout-west").append($("<div id=\"images-container\">Images</div>"));
-                $("#images-container").append($("<ul id=\"images-list\">"));
-                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
-                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
-                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
-                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
-                $("#images-container").append($("</ul>"));
+                var menu_tabs = $("#menu-tabs").tabs();
+                menu_tabs.find(".ui-tabs-nav" ).sortable({
+                            axis: "x",
+                            stop: function() {
+                                menu_tabs.tabs( "refresh" );
+                            }
+                });
+
+                var ss_merge_controller = new gb.ss_merge_controller();
+                ss_merge_controller.activate();
                 
-                $("#ui-layout-west").append($("<div id=\"drop-zone\">Drop Zone</div>"));
+                var ss_animation_controller = new gb.ss_animation_controller();
 
-                var layout = $('#container').layout();
-                $("#radio").buttonset();
-                $("#radio1").click(function(){
-                    alert("The paragraph was clicked.");
+                $("#ss-merge-tab-button").click(function(){
+                    ss_merge_controller.activate();
                 });
 
-                layout.panes.north.css({ height: '100px' }); 
-                layout._sizePane("north", 100);
-
-                layout.panes.west.css({ width: '400px' }); 
-                layout._sizePane("west", 400);
-
-                $( "#frame-width-slider" ).slider({
-                    value:32,
-                    min: 32,
-                    max: 1024,
-                    step: 32,
-                    slide: function( event, ui ) {
-                         $( "#frame-width-value" ).val("Width " + ui.value + " px");   
-                    }
+                 $("#ss-animation-tab-button").click(function(){
+                    ss_animation_controller.activate();
                 });
+                
+                
 
-                $( "#frame-height-slider" ).slider({
-                    value:32,
-                    min: 32,
-                    max: 1024,
-                    step: 32,
-                    slide: function( event, ui ) {
-                         $( "#frame-height-value" ).val("Height " + ui.value + " px");   
-                    }
-                });
+                //var gl_canvas = $("#gl_canvas").detach();
+                //console.log(gl_canvas);
 
-                $("#images-list").sortable();
-                $("#images-list").disableSelection();
+                //var gl_canvas = $("#gl_canvas").detach();
+                //console.log(gl_canvas);
+                //$("#ss-animation-tab").append(gl_canvas);
+                //$("#ui-ss-merge-center").append($("<canvas id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
 
-                var drop_zone = document.getElementById('drop-zone');
-                drop_zone.addEventListener('dragover', handle_drag_over, false);
-                drop_zone.addEventListener('drop', handle_file_select, false);
-
-                var light_source_01 = null;
+                /*var light_source_01 = null;
                 var light_source_02 = null;
                 var angle = 0.0;
 
@@ -192,9 +165,9 @@
                 raw_data.setFloat32(24, 0.0, true);
                 raw_data.setFloat32(28, 1.0, true);
 
-                console.log(new Float32Array(raw_buffer));
+                console.log(new Float32Array(raw_buffer));*/
 
-                var gl_context = new gb.graphics_context();
+                /*var gl_context = new gb.graphics_context();
 
                 g_game_controller = new gb.game_controller();
                 var game_transition = new gb.game_transition("data/resources/configurations/transitions/transition.main.json");
@@ -250,12 +223,22 @@
                         light_source_02.color = new gb.vec4(1.0, 1.0, 1.0, 1.0);
                     });
                     scene.add_child(light_source_02);
-                });
+                });*/
             }
         </script>
     </head>
     <body onload="app_start();">
-        <div class="container" id="container"/>
+        <div id="menu-tabs">
+            <ul id="tabs-list">
+                <li id="ss-merge-tab-button"><a href="#ss-merge-tab">SS Merge</a></li>
+                <li id="ss-split-tab-button"><a href="#ss-split-tab">SS Split</a></li>
+                <li id="ss-animation-tab-button"><a href="#ss-animation-tab">SS Animation</a></li>
+            </ul>
+            <div id="ss-merge-tab"></div>
+            <div id="ss-split-tab"></div>
+            <div id="ss-animation-tab"></div>
+        </div>
+        
         <script src="src/game_box-min.js"></script>
     </body>
 </html>

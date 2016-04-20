@@ -34,13 +34,12 @@ oop.define_class({
             vbo.submit();
 
             var ibo = new gb.ibo(6, gl.STATIC_DRAW);
-            var indices = ibo.data;
-            indices[0] = 0;
-            indices[1] = 2;
-            indices[2] = 1;
-            indices[3] = 1;
-            indices[4] = 2;
-            indices[5] = 3;
+            ibo.write_element(0, 0);
+            ibo.write_element(1, 2);
+            ibo.write_element(2, 1);
+            ibo.write_element(3, 1);
+            ibo.write_element(4, 2);
+            ibo.write_element(5, 3);
             ibo.submit();
 
             return new gb.mesh(vbo, ibo, gl.TRIANGLES);
@@ -60,13 +59,12 @@ oop.define_class({
             vbo.submit();
 
             var ibo = new gb.ibo(6, gl.STATIC_DRAW);
-            var indices = ibo.data;
-            indices[0] = 0;
-            indices[1] = 2;
-            indices[2] = 1;
-            indices[3] = 1;
-            indices[4] = 2;
-            indices[5] = 3;
+            ibo.write_element(0, 0);
+            ibo.write_element(1, 2);
+            ibo.write_element(2, 1);
+            ibo.write_element(3, 1);
+            ibo.write_element(4, 2);
+            ibo.write_element(5, 3);
             ibo.submit();
 
             return new gb.mesh(vbo, ibo, gl.TRIANGLES);
@@ -93,16 +91,15 @@ oop.define_class({
             index = 1;
             var num_indices = (num_subdivisions + 1) * 3;
             var ibo = new gb.ibo(num_indices, gl.STATIC_DRAW);
-            var indices = ibo.data;
             for (var i = 0; i < num_subdivisions * 3; i += 3) {
-                indices[i + 0] = 0;
-                indices[i + 1] = Math.min(index++, num_vertices - 1);
-                indices[i + 2] = Math.min(index, num_vertices - 1);
+                ibo.write_element(i + 0, 0);
+                ibo.write_element(i + 1, Math.min(index++, num_vertices - 1));
+                ibo.write_element(i + 2, Math.min(index, num_vertices - 1));
             }
 
-            indices[num_indices - 3] = 0;
-            indices[num_indices - 2] = Math.min(index - 1, num_vertices - 1);
-            indices[num_indices - 1] = 1;
+            ibo.write_element(num_indices - 3, 0);
+            ibo.write_element(num_indices - 2, Math.min(index - 1, num_vertices - 1));
+            ibo.write_element(num_indices - 1, 1);
             ibo.submit();
 
             return new gb.mesh(vbo, ibo, gl.TRIANGLES);
@@ -144,10 +141,9 @@ oop.define_class({
             vbo.submit();
             
             var ibo = new gb.ibo(num_indices * 4, gl.STATIC_DRAW);
-            var indices = ibo.data;
             for(var i = 0; i < num_indices; ++i)
             {
-                indices[i] = i;
+                ibo.write_element(i, i);
             }
             ibo.submit();
 

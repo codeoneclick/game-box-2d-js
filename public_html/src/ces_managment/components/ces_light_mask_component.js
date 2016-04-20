@@ -32,9 +32,9 @@ oop.define_class({
                     }
                     vbo.submit();
 
-                    var indices = this.m_mesh.ibo.data;
+                    var ibo = this.m_mesh.ibo;
                     for (var i = 0; i < this.m_indices.length; ++i) {
-                        indices[i] = this.m_indices[i];
+                        ibo.write_element(i, this.m_indices[i]);
                     }
                     ibo.submit(this.m_indices.length);
                 }

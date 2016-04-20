@@ -676,7 +676,7 @@ var gl = null;
 oop.define_class({namespace:"gb", name:"graphics_context", init:function() {
   var a = document.getElementById("gl_canvas"), b = null;
   try {
-    b = a.getContext("experimental-webgl"), b.viewport_width = a.width, b.viewport_height = a.height, console.log("OpenGL context created"), console.log("viewport: [ " + b.viewport_width + ", " + b.viewport_height + " ]");
+    b = a.getContext("webgl"), b.viewport_width = a.width, b.viewport_height = a.height, console.log("OpenGL context created"), console.log("viewport: [ " + b.viewport_width + ", " + b.viewport_height + " ]");
   } catch (c) {
   }
   b || alert("could not initialise gl context");
@@ -950,21 +950,27 @@ oop.define_class({namespace:"gb", name:"ibo", init:function(a, b) {
   this.m_handler = gl.createBuffer();
   this.m_used_size = this.m_allocated_size = a;
   this.m_mode = b;
-  this.m_data = new Uint16Array(a);
+  this.m_stride = 2;
+  this.m_data = new ArrayBuffer(a * this.m_stride);
+  this.m_data_accessor = new DataView(this.m_data);
   Object.defineProperty(this, "allocated_size", {get:function() {
     return this.m_allocated_size;
   }});
   Object.defineProperty(this, "used_size", {get:function() {
     return this.m_used_size;
   }});
-  Object.defineProperty(this, "data", {get:function() {
-    return this.m_data;
-  }});
 }, release:function() {
   gl.deleteBuffer(this.m_handler);
-}, methods:{submit:function(a) {
+}, methods:{write_element:function(a, b) {
+  a < this.m_allocated_size ? this.m_data_accessor.setUint16(a * this.m_stride, b, !0) : console.error("out of ibo bound");
+}, read_attribute:function(a) {
+  if (a < this.m_allocated_size) {
+    return this.m_data_accessor.getUint16(a * this.m_stride, !0);
+  }
+  console.error("out of ibo bound");
+}, submit:function(a) {
   var b = this.m_data;
-  a && 0 < a && a < this.m_allocated_size && (this.m_used_size = a, b = this.m_data.slice(0, a));
+  a && 0 < a && a < this.m_allocated_size && (this.m_used_size = a, b = this.m_data.slice(0, a * this.m_stride));
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.m_handler);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, b, this.m_mode);
 }, bind:function() {
@@ -1612,13 +1618,13 @@ oop.define_class({namespace:"gb", name:"mesh_constructor", init:function() {
   a.write_attribute(gb.vbo.attribute.texcoord, 2, new gb.vec2(1, 0));
   a.write_attribute(gb.vbo.attribute.texcoord, 3, new gb.vec2(1, 1));
   a.submit();
-  var b = new gb.ibo(6, gl.STATIC_DRAW), c = b.data;
-  c[0] = 0;
-  c[1] = 2;
-  c[2] = 1;
-  c[3] = 1;
-  c[4] = 2;
-  c[5] = 3;
+  var b = new gb.ibo(6, gl.STATIC_DRAW);
+  b.write_element(0, 0);
+  b.write_element(1, 2);
+  b.write_element(2, 1);
+  b.write_element(3, 1);
+  b.write_element(4, 2);
+  b.write_element(5, 3);
   b.submit();
   return new gb.mesh(a, b, gl.TRIANGLES);
 }, create_shape_quad:function() {
@@ -1632,13 +1638,13 @@ oop.define_class({namespace:"gb", name:"mesh_constructor", init:function() {
   a.write_attribute(gb.vbo.attribute.texcoord, 2, new gb.vec2(1, 0));
   a.write_attribute(gb.vbo.attribute.texcoord, 3, new gb.vec2(1, 1));
   a.submit();
-  var b = new gb.ibo(6, gl.STATIC_DRAW), c = b.data;
-  c[0] = 0;
-  c[1] = 2;
-  c[2] = 1;
-  c[3] = 1;
-  c[4] = 2;
-  c[5] = 3;
+  var b = new gb.ibo(6, gl.STATIC_DRAW);
+  b.write_element(0, 0);
+  b.write_element(1, 2);
+  b.write_element(2, 1);
+  b.write_element(3, 1);
+  b.write_element(4, 2);
+  b.write_element(5, 3);
   b.submit();
   return new gb.mesh(a, b, gl.TRIANGLES);
 }, create_circle:function() {
@@ -1648,12 +1654,14 @@ oop.define_class({namespace:"gb", name:"mesh_constructor", init:function() {
     c.x = 1 * Math.cos(d), c.y = 1 * Math.sin(d), a.write_attribute(gb.vbo.attribute.position, b, c), b++;
   }
   a.submit();
-  for (var b = 1, c = new gb.ibo(99, gl.STATIC_DRAW), d = c.data, e = 0;96 > e;e += 3) {
-    d[e + 0] = 0, d[e + 1] = Math.min(b++, 32), d[e + 2] = Math.min(b, 32);
+  b = 1;
+  c = new gb.ibo(99, gl.STATIC_DRAW);
+  for (d = 0;96 > d;d += 3) {
+    c.write_element(d + 0, 0), c.write_element(d + 1, Math.min(b++, 32)), c.write_element(d + 2, Math.min(b, 32));
   }
-  d[96] = 0;
-  d[97] = Math.min(b - 1, 32);
-  d[98] = 1;
+  c.write_element(96, 0);
+  c.write_element(97, Math.min(b - 1, 32));
+  c.write_element(98, 1);
   c.submit();
   return new gb.mesh(a, c, gl.TRIANGLES);
 }, create_grid:function(a, b, c, d) {
@@ -1665,9 +1673,8 @@ oop.define_class({namespace:"gb", name:"mesh_constructor", init:function() {
   }
   f.submit();
   a = new gb.ibo(4 * e, gl.STATIC_DRAW);
-  b = a.data;
   for (k = 0;k < e;++k) {
-    b[k] = k;
+    a.write_element(k, k);
   }
   a.submit();
   return new gb.mesh(f, a, gl.LINES);
@@ -2339,8 +2346,8 @@ oop.define_class({namespace:"gb", name:"ces_geometry_quad_component", extend:gb.
   Object.defineProperty(this, "size", {get:function() {
     return new gb.vec2(this.m_frame.z, this.m_frame.w);
   }, set:function(a) {
-    this.m_frame.z = a.x;
-    this.m_frame.w = a.y;
+    this.m_frame.w = a.x;
+    this.m_frame.z = a.y;
     this.update_mesh_position_attributes();
   }});
 }, release:function() {
@@ -2376,15 +2383,15 @@ oop.define_class({namespace:"gb", name:"ces_light_mask_component", extend:gb.ces
     if (0 === this.m_vertices.length || 0 === this.m_indices.length) {
       this.m_mesh.vbo.submit(1), this.m_mesh.ibo.submit(1);
     } else {
-      for (var a = this.m_mesh.vbo, d = 0;d < this.m_vertices.length;++d) {
-        a.write_attribute(gb.vbo.attribute.position, d, this.m_vertices[d]);
+      for (var a = this.m_mesh.vbo, b = 0;b < this.m_vertices.length;++b) {
+        a.write_attribute(gb.vbo.attribute.position, b, this.m_vertices[b]);
       }
       a.submit();
-      a = this.m_mesh.ibo.data;
-      for (d = 0;d < this.m_indices.length;++d) {
-        a[d] = this.m_indices[d];
+      a = this.m_mesh.ibo;
+      for (b = 0;b < this.m_indices.length;++b) {
+        a.write_element(b, this.m_indices[b]);
       }
-      b.submit(this.m_indices.length);
+      a.submit(this.m_indices.length);
     }
     return this.m_mesh;
   }});
@@ -3126,6 +3133,7 @@ oop.define_class({namespace:"gb", name:"game_transition", init:function(a) {
   });
 }, on_deactivated:function() {
 }}, static_methods:{}});
+var g_game_controller = null;
 oop.define_class({namespace:"gb", name:"game_controller", init:function() {
   this.m_current_transition = null;
   this.m_transitions = [];
@@ -3152,5 +3160,121 @@ oop.define_class({namespace:"gb", name:"game_controller", init:function() {
     this.m_current_transition = this.m_transitions[c];
     this.m_current_transition.on_activated(this.configuration_accessor, this.resource_accessor, b);
   }
+}}, static_methods:{get_instance:function() {
+  g_game_controller || (g_game_controller = new gb.game_controller);
+  return g_game_controller;
+}}});
+var g_ss_merge_controller = null, g_ss_merge_scene = null;
+oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
+  $("#ss-merge-tab").append($('<div id="ui-ss-merge-center"/>'));
+  $("#ss-merge-tab").append($('<div id="ui-ss-merge-left"/>'));
+  $("#ui-ss-merge-center").append($('<canvas id="gl_canvas" width="1024" height="1024"></canvas>'));
+  $("#ui-ss-merge-left").append($('<div id="frame-size">Frame Size</div>'));
+  $("#frame-size").append($('<div id="frame-width-slider"><input type="text" id="frame-width-value" readonly value="Width 32 px"></div></p>'));
+  $("#frame-size").append($('<div id="frame-height-slider"><input type="text" id="frame-height-value" readonly value="Height 32 px"></div></p>'));
+  $("#ui-ss-merge-left").append($('<div id="images-container">Images</div>'));
+  $("#images-container").append($('<ul id="images-list">'));
+  $("#images-container").append($("</ul>"));
+  $("#ui-ss-merge-left").append($('<div id="drop-zone">Drop Zone</div>'));
+  $("#frame-width-slider").slider({value:32, min:32, max:1024, step:32, slide:function(a, c) {
+    $("#frame-width-value").val("Width " + c.value + " px");
+    g_ss_merge_controller.m_frame_width = c.value;
+  }});
+  $("#frame-height-slider").slider({value:32, min:32, max:1024, step:32, slide:function(a, c) {
+    $("#frame-height-value").val("Height " + c.value + " px");
+    g_ss_merge_controller.m_frame_height = c.value;
+  }});
+  $("#images-list").sortable();
+  $("#images-list").disableSelection();
+  var a = document.getElementById("drop-zone");
+  a.addEventListener("dragover", this.handle_drag_over, !1);
+  a.addEventListener("drop", this.handle_file_select, !1);
+  g_ss_merge_controller = this;
+}, release:function() {
+}, methods:{activate:function() {
+  var a = $("#gl_canvas").detach();
+  $("#ui-ss-merge-center").append(a);
+  new gb.graphics_context;
+  a = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json");
+  gb.game_controller.get_instance().add_transition(a);
+  gb.game_controller.get_instance().goto_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json", function(a) {
+    g_ss_merge_scene = a;
+    var c = new gb.camera(gl.viewport_width, gl.viewport_height);
+    a.camera = c;
+    var d = a.fabricator.create_grid("data/resources/configurations/game_objects/sprite_02.json", 32, 32, 32, 32, function() {
+      d.color = new gb.vec4(1, 1, 0, 1);
+    });
+    a.add_child(d);
+  });
+  this.m_sprites = [];
+  this.m_frame_height = this.m_frame_width = 32;
+}, deactivate:function() {
+}, handle_file_select:function(a) {
+  a.stopPropagation();
+  a.preventDefault();
+  a = a.dataTransfer.files;
+  for (var b = 0;b < a.length;++b) {
+    var c = a[b];
+    if (c.type.match("image.*")) {
+      var d = new FileReader;
+      d.m_filename = c.name;
+      d.onload = function(a) {
+        return function(a) {
+          var b = new Image;
+          b.src = a.target.result;
+          g_ss_merge_scene.fabricator.resources_accessor.get_texture(a.target.m_filename, b).add_resource_loading_callback(function(b, c) {
+            var d = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json", function() {
+              b.wrap_mode = gl.CLAMP_TO_EDGE;
+              d.get_component(gb.ces_base_component.type.material).set_texture(b, 0);
+            });
+            g_ss_merge_scene.add_child(d);
+            var e = '<li class="ui-state-default">' + ['<img id="images-list-cell-image" align="left" src="', a.target.result, '"/>'].join("") + "</li>";
+            $("#images-list").append($(e));
+            g_ss_merge_controller.m_sprites.push(d);
+            g_ss_merge_controller.reorder_sprites_positions();
+          });
+        };
+      }(c);
+      d.readAsDataURL(c);
+    }
+  }
+}, handle_drag_over:function(a) {
+  a.stopPropagation();
+  a.preventDefault();
+  a.dataTransfer.dropEffect = "copy";
+}, reorder_sprites_positions:function() {
+  for (var a = this.m_sprites.length, b = 0, c = 0, d = 0;d < a;++d) {
+    var e = this.m_sprites[d];
+    e.size = new gb.vec2(this.m_frame_width, this.m_frame_height);
+    e.position = new gb.vec2(b, c);
+    b += this.m_frame_width;
+    b >= gl.viewport_width && (b = 0, c += this.m_frame_height);
+    c >= gl.viewport_height && console.error("can't insert image");
+  }
+}}, static_methods:{}});
+var g_ss_animation_controller = null, g_ss_animation_scene = null;
+oop.define_class({namespace:"gb", name:"ss_animation_controller", init:function() {
+  $("#ss-animation-tab").append($('<div id="ui-ss-animation-center"/>'));
+  $("#ss-animation-tab").append($('<div id="ui-ss-animation-left"/>'));
+  g_ss_animation_controller = this;
+}, release:function() {
+}, methods:{activate:function() {
+  var a = $("#gl_canvas").detach();
+  $("#ui-ss-animation-center").append(a);
+  new gb.graphics_context;
+  a = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.animation.json");
+  gb.game_controller.get_instance().add_transition(a);
+  gb.game_controller.get_instance().goto_transition("data/resources/configurations/transitions/transition.spritesheets.animation.json", function(a) {
+    g_ss_merge_scene = a;
+    var c = new gb.camera(gl.viewport_width, gl.viewport_height);
+    a.camera = c;
+    var d = a.fabricator.create_grid("data/resources/configurations/game_objects/sprite_02.json", 32, 32, 32, 32, function() {
+      d.color = new gb.vec4(1, 1, 0, 1);
+    });
+    a.add_child(d);
+  });
+  this.m_sprites = [];
+  this.m_frame_height = this.m_frame_width = 32;
+}, deactivate:function() {
 }}, static_methods:{}});
 
