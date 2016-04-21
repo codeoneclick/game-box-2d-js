@@ -48,7 +48,7 @@ oop.define_class({
             gl.clear(gl.COLOR_BUFFER_BIT);
         },
 
-        end: function() {
+        end: function(clip_width, clip_height) {
             var data = new Uint8Array(this.m_color_attachment_texture.width * this.m_color_attachment_texture.height * 4);
             gl.readPixels(0, 0, this.m_color_attachment_texture.width, this.m_color_attachment_texture.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
 
@@ -56,12 +56,21 @@ oop.define_class({
             canvas_2d.width = this.m_color_attachment_texture.width;
             canvas_2d.height = this.m_color_attachment_texture.height;
             var context_2d = canvas_2d.getContext('2d');
-            var image_data = context_2d.createImageData(canvas_2d.width, canvas_2d.height);
+
+            var image_data = context_2d.createImageData(this.m_color_attachment_texture.width, this.m_color_attachment_texture.height);
             image_data.data.set(data);
             context_2d.putImageData(image_data, 0, 0);
 
             var image = new Image();
             image.src = canvas_2d.toDataURL();
+
+            canvas_2d.width = clip_width;
+            canvas_2d.height = clip_height;
+            context_2d.clearRect(0, 0, this.m_color_attachment_texture.width, this.m_color_attachment_texture.height);
+            context_2d.scale(1, -1);
+            context_2d.drawImage(image, 0, -image.height);
+            image.src = canvas_2d.toDataURL();
+
             return image;
         }
     },

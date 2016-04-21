@@ -13,18 +13,18 @@ oop.define_class({
 
         $("#ss-merge-tab").append($("<div id=\"ui-ss-merge-center\"/>"));
         $("#ss-merge-tab").append($("<div id=\"ui-ss-merge-left\"/>"));
-        $("#ui-ss-merge-center").append($("<canvas id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
+        $("#ui-ss-merge-center").append($("<canvas id=\"gl_canvas\" width=\"1024\" height=\"768\"></canvas>"));
         $("#ui-ss-merge-left").append($("<div id=\"frame-size\">Frame Size</div>"));
-        $("#frame-size").append($("<div id=\"frame-width-slider\"><input type=\"text\" id=\"frame-width-value\" readonly value=\"Width 32 px\"></div></p>"));
-        $("#frame-size").append($("<div id=\"frame-height-slider\"><input type=\"text\" id=\"frame-height-value\" readonly value=\"Height 32 px\"></div></p>"));
+        $("#frame-size").append($("<div id=\"frame-width-slider\"><input type=\"text\" id=\"frame-width-value\" readonly value=\"Width 128 px\"></div></p>"));
+        $("#frame-size").append($("<div id=\"frame-height-slider\"><input type=\"text\" id=\"frame-height-value\" readonly value=\"Height 128 px\"></div></p>"));
         $("#ui-ss-merge-left").append($("<div id=\"images-container\">Images</div>"));
         $("#images-container").append($("<ul id=\"images-list\">"));
         $("#images-container").append($("</ul>"));
         $("#ui-ss-merge-left").append($("<div id=\"drop-zone\">Drop Zone</div>"));
-        $("#ui-ss-merge-left").append($("<div id=\"save-zone\"><button id=\"ss-merge-save-button\" type=\"button\">Save</button></div>"));
+        $("#ui-ss-merge-left").append($("<div id=\"ss-merge-save-zone\"><button id=\"ss-merge-save-button\" type=\"button\">Save</button></div>"));
         
         $("#frame-width-slider").slider({
-            value:32,
+            value: 128,
             min: 32,
             max: 1024,
             step: 32,
@@ -35,7 +35,7 @@ oop.define_class({
         });
 
         $("#frame-height-slider").slider({
-            value:32,
+            value: 128,
             min: 32,
             max: 1024,
             step: 32,
@@ -48,14 +48,40 @@ oop.define_class({
         $("#images-list").sortable();
         $("#images-list").disableSelection();
 
+        $( "#images-list" ).sortable({
+            stop: function( ) {
+                var value = $("#sortable").sortable("serialize", {key: "image-index[]"});
+                console.log(value);
+            }
+        });
+
         var drop_zone = document.getElementById('drop-zone');
         drop_zone.addEventListener('dragover', this.handle_drag_over, false);
         drop_zone.addEventListener('drop', this.handle_file_select, false);
 
+        var self = this;
         var save_button = document.getElementById('ss-merge-save-button');
         save_button.onclick = function() {
-            var image = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0,  512, 512);
-            window.location.href = image.src.replace('image/png', 'image/octet-stream');
+
+            var sprites_count = self.m_sprites.length;
+            var offset_x = 0;
+            var image_width = 0;
+            var image_height = self.m_frame_height;
+            for(var i = 0; i < sprites_count; ++i) {
+                image_width += self.m_frame_width;
+                offset_x += self.m_frame_width;
+                if(offset_x > gl.viewport_width) {
+                    offset_x = 0;
+                    image_height += self.m_frame_height;
+                }
+            }
+            image_width = Math.min(image_width, gl.viewport_width);
+            image_height = Math.min(image_height, gl.viewport_height);
+
+            if(image_width > 0 && image_height > 0) {
+                var image = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0,  image_width, image_height);
+                window.location.href = image.src.replace('image/png', 'image/octet-stream');
+            }
         };
 
         g_ss_merge_controller = this;
@@ -66,8 +92,8 @@ oop.define_class({
         gb.game_controller.get_instance().add_transition(g_ss_merge_transition);
 
         this.m_sprites = [];
-        this.m_frame_width = 32;
-        this.m_frame_height = 32;
+        this.m_frame_width = 128;
+        this.m_frame_height = 128;
 
         this.m_grid = null;
     },
@@ -122,6 +148,7 @@ oop.define_class({
                 event.stopPropagation();
                 event.preventDefault();
 
+                var frame_index = 0;
                 var files = event.dataTransfer.files;
                 for(var i = 0; i < files.length; ++i) {
                     var file = files[i];
@@ -145,7 +172,9 @@ oop.define_class({
                                 });
                                 g_ss_merge_scene.add_child(sprite);
 
-                                var new_cell_tag = "<li class=\"ui-state-default\">" + ['<img id="images-list-cell-image" align="left" src="', data.target.result,'"/>'].join('') + "</li>";
+                                frame_index++;
+                                var frame_index_tag = "<div id=\"image-index\">Frame " + frame_index +"</div>"
+                                var new_cell_tag = "<li class=\"ui-state-default\">" + ['<img id="images-list-cell-image" align="left" src="', data.target.result,'"/>'].join('') + frame_index_tag + "<button id=\"delete-image-button\" type=\"button\">Delete</button>" + "</li>";
                                 $("#images-list").append($(new_cell_tag));
 
                                 g_ss_merge_controller.m_sprites.push(sprite);

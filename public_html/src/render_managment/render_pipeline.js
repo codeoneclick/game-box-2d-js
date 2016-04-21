@@ -99,7 +99,7 @@ oop.define_class({
                 material.set_texture(technique.color_attachment_texture, gb.shader.sampler_type.sampler_01);
                 
                 var screen_quad = new gb.mesh_constructor.create_screen_quad();
-                var render_target = new gb.render_target(image_width, image_height);
+                var render_target = new gb.render_target(technique.frame_width, technique.frame_height);
 
                 render_target.begin();
                 if (material.shader && material.shader.is_commited) {
@@ -109,7 +109,7 @@ oop.define_class({
                     material.unbind();
                     screen_quad.unbind(material.shader.attributes);
                 }
-                var image = render_target.end();
+                var image = render_target.end(image_width, image_height);
                 render_target.release();
                 screen_quad.release();
             }

@@ -1,6 +1,7 @@
 #menu-tabs {
     background: black;
-    width: 1424px;
+    width: 1420px;
+    height: 812px;
     margin: auto;
 }
 
@@ -88,7 +89,7 @@
     background-color: black;
     width: 400px;
     height: 768px;
-    float:left;
+    float: left;
 }
 
 #ui-ss-animation-center {
@@ -169,9 +170,9 @@
 
 #images-list { 
     list-style-type: none; 
-    margin-top: 30px; 
+    margin-top: 5px; 
     width: 90%;
-    max-height: 450px;
+    max-height: 275px;
     overflow: auto;
 }
 
@@ -201,6 +202,28 @@
     color: #66CC33;
     text-align: center;
     padding-top: 40px;
+}
+
+#ss-merge-save-zone {
+    border: 2px dashed;
+    margin: 5px;
+    min-width: 80px;
+    min-height: 40px; 
+    border-color: #336633;
+    font: italic bold 16px Georgia, serif;
+    color: #66CC33;
+    text-align: center;
+    padding-top: 40px;
+}
+
+#ss-merge-save-button {
+    background: black;
+    border: 2px solid;
+    min-width: 120px;
+    border-color: #336633;
+    font: italic bold 16px Georgia, serif;
+    color: #66CC33;
+    text-align: center;
 }
 
 #images-list-cell-image {

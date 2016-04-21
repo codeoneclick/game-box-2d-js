@@ -2133,10 +2133,8 @@ oop.define_class({namespace:"gb", name:"render_pipeline", init:function() {
 }, get_ws_technique_result_as_image:function(a, b, c, d) {
   var e = null;
   a = "" + b + a;
-  console.log(a);
-  console.log(this.m_unique_ws_render_techniques);
-  this.m_unique_ws_render_techniques[a] && (a = this.m_unique_ws_render_techniques[a], e = new gb.material, b = gb.builtin_shaders.get_screen_quad_tex2d_shader(), e.shader = b, e.set_texture(a.color_attachment_texture, gb.shader.sampler_type.sampler_01), a = new gb.mesh_constructor.create_screen_quad, c = new gb.render_target(c, d), c.begin(), e.shader && e.shader.is_commited && (e.bind(), a.bind(e.shader.attributes), a.draw(), e.unbind(), a.unbind(e.shader.attributes)), e = c.end(), console.log(e), 
-  c.release(), a.release());
+  this.m_unique_ws_render_techniques[a] && (b = this.m_unique_ws_render_techniques[a], e = new gb.material, a = gb.builtin_shaders.get_screen_quad_tex2d_shader(), e.shader = a, e.set_texture(b.color_attachment_texture, gb.shader.sampler_type.sampler_01), a = new gb.mesh_constructor.create_screen_quad, b = new gb.render_target(b.frame_width, b.frame_height), b.begin(), e.shader && e.shader.is_commited && (e.bind(), a.bind(e.shader.attributes), a.draw(), e.unbind(), a.unbind(e.shader.attributes)), 
+  e = b.end(c, d), b.release(), a.release());
   return e;
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"render_target", init:function(a, b) {
@@ -2167,18 +2165,24 @@ oop.define_class({namespace:"gb", name:"render_target", init:function(a, b) {
   gb.material_cached_parameters.get_cached_parameters().is_stencil_test = !1;
   gl.clearColor(0, 0, 0, 0);
   gl.clear(gl.COLOR_BUFFER_BIT);
-}, end:function() {
-  var a = new Uint8Array(this.m_color_attachment_texture.width * this.m_color_attachment_texture.height * 4);
-  gl.readPixels(0, 0, this.m_color_attachment_texture.width, this.m_color_attachment_texture.height, gl.RGBA, gl.UNSIGNED_BYTE, a);
-  var b = document.createElement("canvas");
-  b.width = this.m_color_attachment_texture.width;
-  b.height = this.m_color_attachment_texture.height;
-  var c = b.getContext("2d"), d = c.createImageData(b.width, b.height);
-  d.data.set(a);
-  c.putImageData(d, 0, 0);
-  a = new Image;
-  a.src = b.toDataURL();
-  return a;
+}, end:function(a, b) {
+  var c = new Uint8Array(this.m_color_attachment_texture.width * this.m_color_attachment_texture.height * 4);
+  gl.readPixels(0, 0, this.m_color_attachment_texture.width, this.m_color_attachment_texture.height, gl.RGBA, gl.UNSIGNED_BYTE, c);
+  var d = document.createElement("canvas");
+  d.width = this.m_color_attachment_texture.width;
+  d.height = this.m_color_attachment_texture.height;
+  var e = d.getContext("2d"), f = e.createImageData(this.m_color_attachment_texture.width, this.m_color_attachment_texture.height);
+  f.data.set(c);
+  e.putImageData(f, 0, 0);
+  c = new Image;
+  c.src = d.toDataURL();
+  d.width = a;
+  d.height = b;
+  e.clearRect(0, 0, this.m_color_attachment_texture.width, this.m_color_attachment_texture.height);
+  e.scale(1, -1);
+  e.drawImage(c, 0, -c.height);
+  c.src = d.toDataURL();
+  return c;
 }}, static_methods:{}});
 var g_input_context = null;
 oop.define_class({namespace:"gb", name:"input_context", constants:{source:{mouse:0, keyboard:3}, state:{pressed:0, released:1, moved:2, dragged:3}}, init:function() {
@@ -3272,38 +3276,47 @@ var g_ss_merge_controller = null, g_ss_merge_transition = null, g_ss_merge_scene
 oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
   $("#ss-merge-tab").append($('<div id="ui-ss-merge-center"/>'));
   $("#ss-merge-tab").append($('<div id="ui-ss-merge-left"/>'));
-  $("#ui-ss-merge-center").append($('<canvas id="gl_canvas" width="1024" height="1024"></canvas>'));
+  $("#ui-ss-merge-center").append($('<canvas id="gl_canvas" width="1024" height="768"></canvas>'));
   $("#ui-ss-merge-left").append($('<div id="frame-size">Frame Size</div>'));
-  $("#frame-size").append($('<div id="frame-width-slider"><input type="text" id="frame-width-value" readonly value="Width 32 px"></div></p>'));
-  $("#frame-size").append($('<div id="frame-height-slider"><input type="text" id="frame-height-value" readonly value="Height 32 px"></div></p>'));
+  $("#frame-size").append($('<div id="frame-width-slider"><input type="text" id="frame-width-value" readonly value="Width 128 px"></div></p>'));
+  $("#frame-size").append($('<div id="frame-height-slider"><input type="text" id="frame-height-value" readonly value="Height 128 px"></div></p>'));
   $("#ui-ss-merge-left").append($('<div id="images-container">Images</div>'));
   $("#images-container").append($('<ul id="images-list">'));
   $("#images-container").append($("</ul>"));
   $("#ui-ss-merge-left").append($('<div id="drop-zone">Drop Zone</div>'));
-  $("#ui-ss-merge-left").append($('<div id="save-zone"><button id="ss-merge-save-button" type="button">Save</button></div>'));
-  $("#frame-width-slider").slider({value:32, min:32, max:1024, step:32, slide:function(a, c) {
-    $("#frame-width-value").val("Width " + c.value + " px");
-    g_ss_merge_controller.m_frame_width = c.value;
+  $("#ui-ss-merge-left").append($('<div id="ss-merge-save-zone"><button id="ss-merge-save-button" type="button">Save</button></div>'));
+  $("#frame-width-slider").slider({value:128, min:32, max:1024, step:32, slide:function(a, b) {
+    $("#frame-width-value").val("Width " + b.value + " px");
+    g_ss_merge_controller.m_frame_width = b.value;
   }});
-  $("#frame-height-slider").slider({value:32, min:32, max:1024, step:32, slide:function(a, c) {
-    $("#frame-height-value").val("Height " + c.value + " px");
-    g_ss_merge_controller.m_frame_height = c.value;
+  $("#frame-height-slider").slider({value:128, min:32, max:1024, step:32, slide:function(a, b) {
+    $("#frame-height-value").val("Height " + b.value + " px");
+    g_ss_merge_controller.m_frame_height = b.value;
   }});
   $("#images-list").sortable();
   $("#images-list").disableSelection();
+  $("#images-list").sortable({stop:function() {
+    var a = $("#sortable").sortable("serialize", {key:"image-index[]"});
+    console.log(a);
+  }});
   var a = document.getElementById("drop-zone");
   a.addEventListener("dragover", this.handle_drag_over, !1);
   a.addEventListener("drop", this.handle_file_select, !1);
+  var b = this;
   document.getElementById("ss-merge-save-button").onclick = function() {
-    var a = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, 512, 512);
-    window.location.href = a.src.replace("image/png", "image/octet-stream");
+    for (var a = b.m_sprites.length, d = 0, e = 0, f = b.m_frame_height, g = 0;g < a;++g) {
+      e += b.m_frame_width, d += b.m_frame_width, d > gl.viewport_width && (d = 0, f += b.m_frame_height);
+    }
+    e = Math.min(e, gl.viewport_width);
+    f = Math.min(f, gl.viewport_height);
+    0 < e && 0 < f && (a = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, e, f), window.location.href = a.src.replace("image/png", "image/octet-stream"));
   };
   g_ss_merge_controller = this;
   new gb.graphics_context;
   g_ss_merge_transition = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json");
   gb.game_controller.get_instance().add_transition(g_ss_merge_transition);
   this.m_sprites = [];
-  this.m_frame_height = this.m_frame_width = 32;
+  this.m_frame_height = this.m_frame_width = 128;
   this.m_grid = null;
 }, release:function() {
 }, methods:{activate:function() {
@@ -3337,30 +3350,32 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
 }, handle_file_select:function(a) {
   a.stopPropagation();
   a.preventDefault();
+  var b = 0;
   a = a.dataTransfer.files;
-  for (var b = 0;b < a.length;++b) {
-    var c = a[b];
-    if (c.type.match("image.*")) {
-      var d = new FileReader;
-      d.m_filename = c.name;
-      d.onload = function(a) {
+  for (var c = 0;c < a.length;++c) {
+    var d = a[c];
+    if (d.type.match("image.*")) {
+      var e = new FileReader;
+      e.m_filename = d.name;
+      e.onload = function(a) {
         return function(a) {
-          var b = new Image;
-          b.src = a.target.result;
-          g_ss_merge_scene.fabricator.resources_accessor.get_texture(a.target.m_filename, b).add_resource_loading_callback(function(b, c) {
-            var d = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
-              b.wrap_mode = gl.CLAMP_TO_EDGE;
-              d.get_component(gb.ces_base_component.type.material).set_texture(b, 0);
+          var c = new Image;
+          c.src = a.target.result;
+          g_ss_merge_scene.fabricator.resources_accessor.get_texture(a.target.m_filename, c).add_resource_loading_callback(function(c, d) {
+            var e = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+              c.wrap_mode = gl.CLAMP_TO_EDGE;
+              e.get_component(gb.ces_base_component.type.material).set_texture(c, 0);
             });
-            g_ss_merge_scene.add_child(d);
-            var e = '<li class="ui-state-default">' + ['<img id="images-list-cell-image" align="left" src="', a.target.result, '"/>'].join("") + "</li>";
-            $("#images-list").append($(e));
-            g_ss_merge_controller.m_sprites.push(d);
+            g_ss_merge_scene.add_child(e);
+            b++;
+            var f = '<div id="image-index">Frame ' + b + "</div>", f = '<li class="ui-state-default">' + ['<img id="images-list-cell-image" align="left" src="', a.target.result, '"/>'].join("") + f + '<button id="delete-image-button" type="button">Delete</button></li>';
+            $("#images-list").append($(f));
+            g_ss_merge_controller.m_sprites.push(e);
             g_ss_merge_controller.reorder_sprites_positions();
           });
         };
-      }(c);
-      d.readAsDataURL(c);
+      }(d);
+      e.readAsDataURL(d);
     }
   }
 }, handle_drag_over:function(a) {
