@@ -88,7 +88,12 @@ oop.define_class({
     },
 
     remove_listener: function(listener) {
-
+      var index = _.indexOf(this.m_listeners, listener);
+      if (index !== -1) {
+          this.m_listeners.splice(index, 1);
+      } else {
+          console.error("input context doesn't contain this listener");
+      }
     }
   },
 

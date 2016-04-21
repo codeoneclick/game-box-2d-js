@@ -1,0 +1,5 @@
+{
+    "materials": 
+    [{ "filename": "data/resources/configurations/game_objects/materials/material.sprite.base.json"},
+    { "filename": "data/resources/configurations/game_objects/materials/material.sprite.savetoimage.json"}]
+}

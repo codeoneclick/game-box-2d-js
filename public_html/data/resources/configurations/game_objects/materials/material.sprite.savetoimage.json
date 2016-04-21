@@ -1,7 +1,7 @@
 {
-    "technique_name": "ws.deferred.lighting",
+    "technique_name": "ws.savetoimage",
     "technique_pass": "0",
-    "is_cull_face": "0",
+    "is_cull_face": "1",
     "cull_face_mode": "GL_FRONT",
     "is_depth_test": "0",
     "is_depth_mask": "0",
@@ -16,14 +16,7 @@
     "stencil_mask_parameter": "0",
     "is_debugging": "0",
     "shader": {
-        "filename": "data/resources/shaders/shader_transparent"
+        "filename": "data/resources/shaders/shader_tex2d"
     },
-    "textures": [{
-        "filename": "data/resources/textures/img_02_n.png",
-        "technique_name": "",
-        "sampler_index": "0",
-        "wrap_mode": "GL_REPEAT",
-        "mag_filter": "GL_LINEAR",
-        "min_filter": "GL_MIPMAP"
-    }]
+    "textures": []
 }

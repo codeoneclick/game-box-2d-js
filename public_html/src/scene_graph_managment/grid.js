@@ -16,7 +16,7 @@ oop.define_class({
 		var geometry_component = new gb.ces_geometry_freeform_component();
 		this.add_component(geometry_component);
 
-		this.m_color = new gb.vec4(0.0);
+		this.m_color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
 		Object.defineProperty(this, 'color', {
 			get: function() {
 				return this.m_color;

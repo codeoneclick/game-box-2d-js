@@ -14,7 +14,7 @@ oop.define_class({
     },
 
     release: function() {
-
+        this.m_screen_quad.release();
     },
 
     methods: {

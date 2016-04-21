@@ -26,13 +26,16 @@ oop.define_class({
                 return -1;
             }
 
-            gl.shaderSource(handler, shader_type === gl.VERTEX_SHADER ?
+            var full_source_code = shader_type === gl.VERTEX_SHADER ?
                 (gb.shader_compiler_glsl.vs_shader_header + source_code).trim() :
-                (gb.shader_compiler_glsl.fs_shader_header + source_code).trim());
+                (gb.shader_compiler_glsl.fs_shader_header + source_code).trim();
+
+            gl.shaderSource(handler, full_source_code);
             gl.compileShader(handler);
 
             var compile_message = gl.getShaderInfoLog(handler) || "";
             if (!gl.getShaderParameter(handler, gl.COMPILE_STATUS)) {
+                console.error(full_source_code);
                 console.error(compile_message);
             }
             return handler;

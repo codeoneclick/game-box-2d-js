@@ -104,7 +104,16 @@ oop.define_class({
         },
 
         on_deactivated: function() {
+            var touches_system = this.m_systems_feeder.get_system(gb.ces_base_system.type.touches);
+            this.m_input_context.remove_listener(touches_system);
 
+            this.m_systems_feeder.deallock_systems();
+            loop.remove_listener(this.m_systems_feeder);
+        },
+
+        get_ws_technique_result_as_image: function(technique_name, technique_index, image_width, image_height) {
+            var render_system = this.m_systems_feeder.get_system(gb.ces_base_system.type.render);
+            return render_system.render_pipeline.get_ws_technique_result_as_image(technique_name, technique_index, image_width, image_height);
         }
     },
 

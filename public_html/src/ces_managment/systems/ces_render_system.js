@@ -23,17 +23,12 @@ oop.define_class({
                 return this.m_render_pipeline;
             }
         });
-
         this.m_screed_quad_mesh = gb.mesh_constructor.create_screen_quad();
-        Object.defineProperty(this, 'screed_quad_mesh', {
-            get: function() {
-                return this.m_screed_quad_mesh;
-            }
-        });
     },
 
     release: function() {
-
+        this.m_screed_quad_mesh.release();
+        this.m_render_pipeline.release();
     },
 
     methods: {
@@ -209,9 +204,9 @@ oop.define_class({
 
                         material.shader.set_mat4(new gb.mat4().identity(), gb.shader.uniform_type.mat_m);
 
-                        self.screed_quad_mesh.bind(material.shader.attributes);
-                        self.screed_quad_mesh.draw();
-                        self.screed_quad_mesh.unbind(material.shader.attributes);
+                        self.m_screed_quad_mesh.bind(material.shader.attributes);
+                        self.m_screed_quad_mesh.draw();
+                        self.m_screed_quad_mesh.unbind(material.shader.attributes);
 
                         gl.colorMask(true, true, true, true);
                         gl.depthMask(true);

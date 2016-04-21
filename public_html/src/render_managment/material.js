@@ -10,15 +10,15 @@ oop.define_class({
 
     init: function() {
         this.m_is_cull_face = false;
-        this.m_cull_face_mode = -1;
+        this.m_cull_face_mode = gl.FRONT;
 
         this.m_is_blending = false;
-        this.m_blending_function_source = -1;
-        this.m_blending_function_destination = -1;
-        this.m_blending_equation = -1;
+        this.m_blending_function_source = gl.SRC_ALPHA;
+        this.m_blending_function_destination = gl.ONE_MINUS_SRC_ALPHA;
+        this.m_blending_equation = gl.FUNC_ADD;
 
         this.m_is_stencil_test = false;
-        this.m_stencil_function = -1;
+        this.m_stencil_function = gl.ALWAYS;
         this.m_stencil_function_parameter_1 = -1;
         this.m_stencil_function_parameter_2 = -1;
         this.m_stencil_mask_parameter = -1;
@@ -548,17 +548,20 @@ oop.define_class({
 
         set_textures: function(material, configuration, resource_accessor) {
             
-            var on_texture_loaded_callback = function(resource, userdata) {
-                    resource.wrap_mode = userdata.wrap_mode;
-                    resource.mag_filter = userdata.mag_filter;
-                    resource.min_filter = userdata.min_filter;
-                    material.set_texture(resource, userdata.sampler_index);
-                };
-            for (var i = 0; i < configuration.textures_configurations.length; ++i) {
-                var texture_configuration = configuration.textures_configurations[i];
-                var texture_name = texture_configuration.filename.length !== 0 ? texture_configuration.filename : texture_configuration.technique_name;
-                var texture = resource_accessor.get_texture(texture_name);
-                texture.add_resource_loading_callback(on_texture_loaded_callback, texture_configuration);
+            var textures_count = configuration.textures_configurations ? configuration.textures_configurations.length : 0;
+            if(textures_count) {
+                var on_texture_loaded_callback = function(resource, userdata) {
+                        resource.wrap_mode = userdata.wrap_mode;
+                        resource.mag_filter = userdata.mag_filter;
+                        resource.min_filter = userdata.min_filter;
+                        material.set_texture(resource, userdata.sampler_index);
+                    };
+                for (var i = 0; i < textures_count; ++i) {
+                    var texture_configuration = configuration.textures_configurations[i];
+                    var texture_name = texture_configuration.filename.length !== 0 ? texture_configuration.filename : texture_configuration.technique_name;
+                    var texture = resource_accessor.get_texture(texture_name);
+                    texture.add_resource_loading_callback(on_texture_loaded_callback, texture_configuration);
+                }
             }
         }
     }

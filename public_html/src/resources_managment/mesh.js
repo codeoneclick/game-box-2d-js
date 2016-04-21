@@ -25,8 +25,8 @@ oop.define_class({
     },
 
     release: function() {
-        this.vbo.destroy();
-        this.ibo.destroy();
+        this.vbo.release();
+        this.ibo.release();
     },
 
     methods: {

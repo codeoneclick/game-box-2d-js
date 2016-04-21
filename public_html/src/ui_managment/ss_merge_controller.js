@@ -2,6 +2,7 @@
 "use strict";
 
 var g_ss_merge_controller = null;
+var g_ss_merge_transition = null;
 var g_ss_merge_scene = null;
 
 oop.define_class({
@@ -20,7 +21,8 @@ oop.define_class({
         $("#images-container").append($("<ul id=\"images-list\">"));
         $("#images-container").append($("</ul>"));
         $("#ui-ss-merge-left").append($("<div id=\"drop-zone\">Drop Zone</div>"));
-
+        $("#ui-ss-merge-left").append($("<div id=\"save-zone\"><button id=\"ss-merge-save-button\" type=\"button\">Save</button></div>"));
+        
         $("#frame-width-slider").slider({
             value:32,
             min: 32,
@@ -50,7 +52,24 @@ oop.define_class({
         drop_zone.addEventListener('dragover', this.handle_drag_over, false);
         drop_zone.addEventListener('drop', this.handle_file_select, false);
 
+        var save_button = document.getElementById('ss-merge-save-button');
+        save_button.onclick = function() {
+            var image = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0,  512, 512);
+            window.location.href = image.src.replace('image/png', 'image/octet-stream');
+        };
+
         g_ss_merge_controller = this;
+
+        var gl_context = new gb.graphics_context();
+
+        g_ss_merge_transition = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json");
+        gb.game_controller.get_instance().add_transition(g_ss_merge_transition);
+
+        this.m_sprites = [];
+        this.m_frame_width = 32;
+        this.m_frame_height = 32;
+
+        this.m_grid = null;
     },
 
     release: function() {
@@ -63,30 +82,40 @@ oop.define_class({
 
             var gl_canvas = $("#gl_canvas").detach();
             $("#ui-ss-merge-center").append(gl_canvas);
-            var gl_context = new gb.graphics_context();
 
-            var game_transition = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json");
-            gb.game_controller.get_instance().add_transition(game_transition);
-
+            var self = this;
             gb.game_controller.get_instance().goto_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json", function(scene) {
             
                 g_ss_merge_scene = scene;
                 var camera = new gb.camera(gl.viewport_width, gl.viewport_height);
                 scene.camera = camera;
                     
-                var grid_01 = scene.fabricator.create_grid("data/resources/configurations/game_objects/sprite_02.json", 32, 32, 32, 32, function() {
-                    grid_01.color = new gb.vec4(1.0, 1.0, 0.0, 1.0);
+                self.m_grid = scene.fabricator.create_grid("data/resources/configurations/game_objects/grid.json", 32, 32, 32, 32, function() {
+                    self.m_grid.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
                 });
-                scene.add_child(grid_01);
-            });
+                scene.add_child(self.m_grid);
 
-            this.m_sprites = [];
-            this.m_frame_width = 32;
-            this.m_frame_height = 32;
+                var sprites_count = self.m_sprites.length;
+                if(sprites_count !== 0) {
+                    for(var i = 0; i < sprites_count; ++i) {
+                        var sprite = self.m_sprites[i];
+                        scene.add_child(sprite);
+                    }
+                }
+            });
         },
 
         deactivate: function() {
-
+            var sprites_count = this.m_sprites.length;
+            if(sprites_count !== 0) {
+                for(var i = 0; i < sprites_count; ++i) {
+                    var sprite = this.m_sprites[i];
+                    g_ss_merge_scene.remove_child(sprite);
+                }
+            }
+            g_ss_merge_scene.remove_child(this.m_grid);
+            var geometry_component = this.m_grid.get_component(gb.ces_base_component.type.geometry);
+            geometry_component.mesh.release();
         },
 
         handle_file_select: function(event) {
@@ -109,7 +138,7 @@ oop.define_class({
 
                             var new_texture = g_ss_merge_scene.fabricator.resources_accessor.get_texture(data.target.m_filename, image);
                             new_texture.add_resource_loading_callback(function(resource, userdata) {
-                                var sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json", function() {
+                                var sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
                                     resource.wrap_mode = gl.CLAMP_TO_EDGE;
                                     var material_component = sprite.get_component(gb.ces_base_component.type.material);
                                     material_component.set_texture(resource, 0);

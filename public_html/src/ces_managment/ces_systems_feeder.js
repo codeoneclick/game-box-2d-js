@@ -62,6 +62,30 @@ oop.define_class({
       if (index !== -1) {
         this.m_systems.splice(index, 1);
       }
+    },
+
+    remove_systems: function() {
+      this.m_systems = [];
+    },
+
+    deallock_systems: function() {
+      var systems_count = this.m_systems.length;
+      for(var i = 0; i < systems_count; ++i) {
+        var system = this.m_systems[i];
+        system.release();
+      }
+      this.remove_systems();
+    },
+
+    get_system: function(type) {
+      var system = null;
+      var index = this.m_systems.findIndex(function(system) {
+        return system.type === type;
+      });
+      if (index !== -1) {
+        system = this.m_systems[index];
+      }
+      return system;
     }
   },
 

@@ -18,6 +18,7 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/resources_managment/ibo.js \
 --js=../public_html/src/resources_managment/vbo.js \
 --js=../public_html/src/resources_managment/mesh.js \
+--js=../public_html/src/resources_managment/builtin_shaders/builtin_shaders.js \
 --js=../public_html/src/resources_managment/operations/serializers/resource_serializer.js \
 --js=../public_html/src/resources_managment/operations/serializers/shader_serializer_glsl.js \
 --js=../public_html/src/resources_managment/operations/serializers/texture_serializer_png.js \
@@ -47,6 +48,7 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/render_managment/techniques/render_technique_ws.js \
 --js=../public_html/src/render_managment/techniques/render_technique_ss.js \
 --js=../public_html/src/render_managment/render_pipeline.js \
+--js=../public_html/src/render_managment/render_target.js \
 --js=../public_html/src/gesture_recognizers_managment/input_context.js \
 --js=../public_html/src/ces_managment/components/ces_base_component.js \
 --js=../public_html/src/ces_managment/components/ces_transformation_component.js \

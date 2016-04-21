@@ -8,7 +8,6 @@
         <link rel="stylesheet" href="css/main_menu/main_menu.css">
         <script src="libs/jquery-1.12.3/jquery-min.js"></script>
         <script src="libs/jquery.ui-1.11.4/jquery-ui.min.js"></script>
-        <script src="libs/jquery.layout-1.4.3/jquery.layout-min.js"></script>
         <script src="libs/underscore/underscore-min.js"></script>
         <script src="libs/fps_meter/fps_meter-min.js"></script>
         <style type="text/css">
@@ -112,13 +111,14 @@
                 var ss_animation_controller = new gb.ss_animation_controller();
 
                 $("#ss-merge-tab-button").click(function(){
+                    ss_animation_controller.deactivate();
                     ss_merge_controller.activate();
                 });
 
                  $("#ss-animation-tab-button").click(function(){
+                    ss_merge_controller.deactivate();
                     ss_animation_controller.activate();
                 });
-                
                 
 
                 //var gl_canvas = $("#gl_canvas").detach();

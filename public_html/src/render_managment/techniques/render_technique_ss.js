@@ -42,7 +42,9 @@ oop.define_class({
     },
 
     release: function() {
-
+        this.m_screen_quad.release();
+        this.m_color_attachment_texture.release();
+        gl.deleteFramebuffer(this.m_frame_buffer);
     },
 
     methods: {

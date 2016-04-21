@@ -108,11 +108,12 @@ oop.define_class({
         },
 
         remove_child: function(child) {
-            var index = this.m_systems.findIndex(function(analized_child) {
+            var index = this.m_children.findIndex(function(analized_child) {
                 return analized_child.tag === child.tag;
             });
             if (index !== -1) {
                 this.m_children[index].remove_scene_component();
+                this.m_children[index].parent = null;
                 this.m_children.splice(index, 1);
             }
         },

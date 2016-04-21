@@ -64,11 +64,10 @@ oop.define_class({
 
         on_transfering_data_serialized: function(data) {
             switch (data.type) {
-                case gb.resource_transfering_data.type.texture:
-                    {
-                        this.m_status = gb.resource_base.status.loaded;
-                    }
-                    break;
+                case gb.resource_transfering_data.type.texture: {
+                    this.m_status = gb.resource_base.status.loaded;
+                }
+                break;
             }
         },
 
