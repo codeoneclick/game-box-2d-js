@@ -8,7 +8,7 @@ oop.define_class({
 
     init: function() {
 
-        this.m_type = gb.ces_base_system.type.touches;
+        this.m_type = gb.ces_base_system.type.touches_recognize;
         this.m_events = [];
         this.m_captured_entities = [];
     },
@@ -27,7 +27,6 @@ oop.define_class({
             while (this.m_events.length !== 0) {
                 var event = this.m_events.pop();
                 var intersected_entity = this.intersected_entity(root, event.state, event.point);
-
                 if (event.state === gb.input_context.state.released) {
                     var captured_entities_count = this.m_captured_entities.length;
                     for (var i = 0; i < captured_entities_count; ++i) {
@@ -57,7 +56,6 @@ oop.define_class({
                     var touch_recognize_component = intersected_entity.get_component(gb.ces_base_component.type.touch_recognize);
                     var callbacks = touch_recognize_component.get_callbacks(event.state);
                     var callbacks_count = callbacks.length;
-                    console.log(callbacks_count);
                     for (var i = 0; i < callbacks_count; ++i) {
                         var callback = callbacks[i];
                         var index = this.m_captured_entities.findIndex(function(analized_entity) {

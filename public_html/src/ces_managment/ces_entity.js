@@ -118,6 +118,12 @@ oop.define_class({
             }
         },
 
+        remove_from_parent: function() {
+            if(this.parent) {
+                this.parent.remove_child(this);
+            }
+        },
+
         add_scene_component: function() {
             var scene_component = this.parent ? this.parent.get_component(gb.ces_base_component.type.scene) : null;
             if (!this.is_component_exist(gb.ces_base_component.type.scene) && scene_component) {

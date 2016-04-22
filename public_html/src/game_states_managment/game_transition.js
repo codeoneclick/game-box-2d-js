@@ -10,7 +10,7 @@ oop.define_class({
         this.m_configurations_accessor = null;
         this.m_resources_accessor = null;
         this.m_systems_feeder = new gb.ces_systems_feeder();
-        this.m_input_context = new gb.input_context();
+        this.m_input_context = null;
         this.m_scene = null;
 
         Object.defineProperty(this, 'guid', {
@@ -25,7 +25,8 @@ oop.define_class({
     },
 
     methods: {
-        on_activated: function(configurations_accessor, resources_accessor, callback) {
+        on_activated: function(input_context, configurations_accessor, resources_accessor, callback) {
+            this.m_input_context = input_context;
             this.m_configurations_accessor = configurations_accessor;
             this.m_resources_accessor = resources_accessor;
 
@@ -94,18 +95,20 @@ oop.define_class({
                 var deferred_lighting_system = new gb.ces_deferred_lighting_system();
                 self.m_systems_feeder.add_system(deferred_lighting_system);
 
-                var touches_system = new gb.ces_touches_system();
+                var animation_system = new gb.ces_animation_system();
+                self.m_systems_feeder.add_system(animation_system);
 
-                self.m_input_context.add_listener(touches_system);
-                self.m_systems_feeder.add_system(touches_system);
+                var touches_recognize_system = new gb.ces_touches_system();
+                self.m_input_context.add_listener(touches_recognize_system);
+                self.m_systems_feeder.add_system(touches_recognize_system);
 
                 loop.add_listener(self.m_systems_feeder);
             });
         },
 
         on_deactivated: function() {
-            var touches_system = this.m_systems_feeder.get_system(gb.ces_base_system.type.touches);
-            this.m_input_context.remove_listener(touches_system);
+            var touches_recognize_system = this.m_systems_feeder.get_system(gb.ces_base_system.type.touches_recognize);
+            this.m_input_context.remove_listener(touches_recognize_system);
 
             this.m_systems_feeder.deallock_systems();
             loop.remove_listener(this.m_systems_feeder);

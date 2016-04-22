@@ -32,7 +32,7 @@ oop.define_class({
     this.m_listeners = [];
 
     this.m_mouse_pressed = false;
-    this.m_previouse_pressed_point = new gb.vec2(0.0);
+    this.m_previouse_pressed_point = new gb.vec2(0);
   },
 
   release: function() {

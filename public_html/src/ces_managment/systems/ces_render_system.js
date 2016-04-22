@@ -78,7 +78,7 @@ oop.define_class({
                     material.shader.set_mat4(scene_component.camera.matrix_p, gb.shader.uniform_type.mat_p);
                     material.shader.set_mat4(scene_component.camera.matrix_v, gb.shader.uniform_type.mat_v);
 
-                    var matrix_m = gb.ces_transformation_component.get_absolute_transformation(entity, false);
+                    var matrix_m = gb.ces_transformation_component.get_absolute_transformation(entity, true);
                     material.shader.set_mat4(matrix_m, gb.shader.uniform_type.mat_m);
 
                     mesh.bind(material.shader.attributes);

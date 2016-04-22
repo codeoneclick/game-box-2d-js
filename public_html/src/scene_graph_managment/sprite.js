@@ -16,11 +16,25 @@ oop.define_class({
 		Object.defineProperty(this, 'size', {
 			get: function() {
 				var geometry_component = this.get_component(gb.ces_base_component.type.geometry);
-				return geometry_component.size;
+				if(geometry_component instanceof gb.ces_geometry_quad_component) {
+					return geometry_component.size;
+				} else {
+					var transformation_component = this.get_component(gb.ces_base_component.type.transformation);
+					return transformation_component.scale;
+				}
 			},
 			set: function(value) {
 				var geometry_component = this.get_component(gb.ces_base_component.type.geometry);
-				geometry_component.size = value;
+				if(geometry_component instanceof gb.ces_geometry_quad_component) {
+					geometry_component.size = value;
+				} else {
+					var transformation_component = this.get_component(gb.ces_base_component.type.transformation);
+					transformation_component.scale = value;
+				}
+				var touch_recognize_component = this.get_component(gb.ces_base_component.type.touch_recognize);
+				if(touch_recognize_component) {
+                	touch_recognize_component.bound = new gb.vec4(0.0, 0.0, value.x, value.y);
+				}
 			}
 		});
 
@@ -48,6 +62,30 @@ oop.define_class({
 				} else {
 					this.remove_component(gb.ces_base_component.type.convex_hull);
 				}
+			}
+		});
+
+		Object.defineProperty(this, 'is_touchable', {
+			get: function() {
+				if(this.get_component(gb.ces_base_component.type.touch_recognize)) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+			set: function(value) {
+				if(value) {
+					if(!this.get_component(gb.ces_base_component.type.touch_recognize)) {
+						var touch_recognize_component = new gb.ces_touch_recognize_component();
+						var size = this.size;
+                		touch_recognize_component.bound = new gb.vec4(0.0, 0.0, size.x, size.y);
+                		touch_recognize_component.enable(gb.input_context.state.pressed, true);
+                		touch_recognize_component.enable(gb.input_context.state.dragged, true);
+                		this.add_component(touch_recognize_component);
+					}
+				} else {
+					this.remove_component(gb.ces_base_component.type.touch_recognize);
+				}    
 			}
 		});
 
@@ -84,7 +122,14 @@ oop.define_class({
 	},
 
 	methods: {
-
+		add_animation: function(animation_name, frames) {
+			var animation_component = this.get_component(gb.ces_base_component.type.animation);
+			if(!animation_component) {
+				animation_component = new gb.ces_animation_component();
+				this.add_component(animation_component);
+			}
+			animation_component.add_animation(animation_name, frames);
+		}
 	},
 
 	static_methods: {

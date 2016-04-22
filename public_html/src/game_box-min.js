@@ -21,59 +21,59 @@ var oop = {global:function() {
     if (e && "function" !== typeof e) {
       throw Error("parent constructor must be function");
     }
-    var f = null;
+    var g = null;
     if (e) {
-      f = function() {
+      g = function() {
         e.apply(this, arguments);
-        f.prototype.init.apply(this, arguments);
+        g.prototype.init.apply(this, arguments);
       };
-      if (e === f) {
+      if (e === g) {
         throw Error("class cannot extend himself");
       }
-      var g = new Function;
-      g.prototype = e.prototype;
-      f.prototype = new g;
-      f.prototype.constructor = f;
+      var f = new Function;
+      f.prototype = e.prototype;
+      g.prototype = new f;
+      g.prototype.constructor = g;
     } else {
-      f = function() {
-        f.prototype.init.apply(this, arguments);
+      g = function() {
+        g.prototype.init.apply(this, arguments);
       };
     }
-    f.prototype.init = c;
-    f.prototype.release = d;
-    var l = a.methods;
-    if (l) {
-      for (var k in l) {
-        if ("function" !== typeof l[k]) {
-          throw Error("class method must be function");
-        }
-        f.prototype[k] = l[k];
-      }
-    }
-    var h = a.static_methods;
+    g.prototype.init = c;
+    g.prototype.release = d;
+    var h = a.methods;
     if (h) {
-      for (k in h) {
-        if ("function" !== typeof h[k]) {
+      for (var l in h) {
+        if ("function" !== typeof h[l]) {
           throw Error("class method must be function");
         }
-        f[k] = h[k];
+        g.prototype[l] = h[l];
       }
     }
-    var n = a.constants;
-    if (n) {
-      for (var m in n) {
-        if ("function" === typeof n[m]) {
+    var k = a.static_methods;
+    if (k) {
+      for (l in k) {
+        if ("function" !== typeof k[l]) {
+          throw Error("class method must be function");
+        }
+        g[l] = k[l];
+      }
+    }
+    var m = a.constants;
+    if (m) {
+      for (var p in m) {
+        if ("function" === typeof m[p]) {
           throw Error("class constant cannot be function");
         }
-        f[m] = n[m];
+        g[p] = m[p];
       }
     }
-    var p = oop.global;
-    a.namespace && (p[a.namespace] || (p[a.namespace] = {}, console.warn("created new namespace: ", a.namespace)), p = p[a.namespace]);
-    if (p[b]) {
+    var n = oop.global;
+    a.namespace && (n[a.namespace] || (n[a.namespace] = {}, console.warn("created new namespace: ", a.namespace)), n = n[a.namespace]);
+    if (n[b]) {
       throw Error("can't create class with same definition name");
     }
-    p[b] = f;
+    n[b] = g;
   } catch (q) {
     console.error("class_definition --\x3e"), console.error(a);
   } finally {
@@ -451,15 +451,15 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
 }, rotate:function(a) {
   var b = a.x, c = a.y, d = a.z;
   a = Math.cos(b);
-  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), f = Math.cos(d), d = Math.sin(d), g = a * f, l = a * d, k = b * f, h = b * d;
-  this.m_elements[0] = e * f;
+  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), g = Math.cos(d), d = Math.sin(d), f = a * g, h = a * d, l = b * g, k = b * d;
+  this.m_elements[0] = e * g;
   this.m_elements[4] = -e * d;
   this.m_elements[8] = c;
-  this.m_elements[1] = l + k * c;
-  this.m_elements[5] = g - h * c;
+  this.m_elements[1] = h + l * c;
+  this.m_elements[5] = f - k * c;
   this.m_elements[9] = -b * e;
-  this.m_elements[2] = h - g * c;
-  this.m_elements[6] = k + l * c;
+  this.m_elements[2] = k - f * c;
+  this.m_elements[6] = l + h * c;
   this.m_elements[10] = a * e;
   this.m_elements[3] = 0;
   this.m_elements[7] = 0;
@@ -553,7 +553,7 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
   this.m_elements[11] = 0;
   this.m_elements[15] = 1;
   return this;
-}, frustum:function(a, b, c, d, e, f) {
+}, frustum:function(a, b, c, d, e, g) {
   this.m_elements[0] = 2 * e / (b - a);
   this.m_elements[4] = 0;
   this.m_elements[8] = (b + a) / (b - a);
@@ -564,8 +564,8 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
   this.m_elements[13] = 0;
   this.m_elements[2] = 0;
   this.m_elements[6] = 0;
-  this.m_elements[10] = -(f + e) / (f - e);
-  this.m_elements[14] = -2 * f * e / (f - e);
+  this.m_elements[10] = -(g + e) / (g - e);
+  this.m_elements[14] = -2 * g * e / (g - e);
   this.m_elements[3] = 0;
   this.m_elements[7] = 0;
   this.m_elements[11] = -1;
@@ -575,30 +575,30 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
   a = c * Math.tan(gb.math.radians(.5 * a));
   var e = -a;
   return this.frustum(e * b, a * b, e, a, c, d);
-}, ortho:function(a, b, c, d, e, f) {
+}, ortho:function(a, b, c, d, e, g) {
   this.identity();
   this.m_elements[0] = 2 / (b - a);
   this.m_elements[5] = 2 / (d - c);
-  this.m_elements[10] = -2 / (f - e);
+  this.m_elements[10] = -2 / (g - e);
   this.m_elements[12] = -(b + a) / (b - a);
   this.m_elements[13] = -(d + c) / (d - c);
-  this.m_elements[14] = -(f + e) / (f - e);
+  this.m_elements[14] = -(g + e) / (g - e);
   return this;
 }, look_at:function(a, b, c) {
-  var d = new gb.vec3, e = new gb.vec3, f = new gb.vec3, f = gb.vec3.sub(a, b).normalize();
-  0 === f.length_sq() && (f.z = 1);
-  d = gb.vec3.cross(c, f).normalize();
-  0 === d.length_sq() && (f.x += 1E-4, d = gb.vec3.cross(c, f).normalize());
-  e = gb.vec3.cross(f, d);
+  var d = new gb.vec3, e = new gb.vec3, g = new gb.vec3, g = gb.vec3.sub(a, b).normalize();
+  0 === g.length_sq() && (g.z = 1);
+  d = gb.vec3.cross(c, g).normalize();
+  0 === d.length_sq() && (g.x += 1E-4, d = gb.vec3.cross(c, g).normalize());
+  e = gb.vec3.cross(g, d);
   this.m_elements[0] = d.x;
   this.m_elements[4] = e.x;
-  this.m_elements[8] = f.x;
+  this.m_elements[8] = g.x;
   this.m_elements[1] = d.y;
   this.m_elements[5] = e.y;
-  this.m_elements[9] = f.y;
+  this.m_elements[9] = g.y;
   this.m_elements[2] = d.z;
   this.m_elements[6] = e.z;
-  this.m_elements[10] = f.z;
+  this.m_elements[10] = g.z;
   return this;
 }, equals:function(a) {
   for (var b = 0;16 > b;b++) {
@@ -610,15 +610,15 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
 }, to_array:function() {
   return this.m_elements;
 }}, static_methods:{multiply:function(a, b) {
-  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, f = c[0], g = c[4], l = c[8], k = c[12], h = c[1], n = c[5], m = c[9], p = c[13], q = c[2], r = c[6], t = c[10], u = c[14], v = c[3], w = c[7], x = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
-  e.m_elements[0] = f * y + g * C + l * G + k * K;
-  e.m_elements[4] = f * z + g * D + l * H + k * L;
-  e.m_elements[8] = f * A + g * E + l * I + k * M;
-  e.m_elements[12] = f * B + g * F + l * J + k * d;
-  e.m_elements[1] = h * y + n * C + m * G + p * K;
-  e.m_elements[5] = h * z + n * D + m * H + p * L;
-  e.m_elements[9] = h * A + n * E + m * I + p * M;
-  e.m_elements[13] = h * B + n * F + m * J + p * d;
+  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, g = c[0], f = c[4], h = c[8], l = c[12], k = c[1], m = c[5], p = c[9], n = c[13], q = c[2], r = c[6], t = c[10], u = c[14], v = c[3], w = c[7], x = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
+  e.m_elements[0] = g * y + f * C + h * G + l * K;
+  e.m_elements[4] = g * z + f * D + h * H + l * L;
+  e.m_elements[8] = g * A + f * E + h * I + l * M;
+  e.m_elements[12] = g * B + f * F + h * J + l * d;
+  e.m_elements[1] = k * y + m * C + p * G + n * K;
+  e.m_elements[5] = k * z + m * D + p * H + n * L;
+  e.m_elements[9] = k * A + m * E + p * I + n * M;
+  e.m_elements[13] = k * B + m * F + p * J + n * d;
   e.m_elements[2] = q * y + r * C + t * G + u * K;
   e.m_elements[6] = q * z + r * D + t * H + u * L;
   e.m_elements[10] = q * A + r * E + t * I + u * M;
@@ -654,18 +654,18 @@ oop.define_class({namespace:"gb", name:"math", constants:{INT16_MAX:32767, INT16
 }, intersect_min_max_bound:function(a, b, c) {
   return c.x >= a.x && c.x <= b.x && c.y >= a.y && c.y <= b.y ? !0 : !1;
 }, intersect:function(a, b, c, d) {
-  var e = a.x, f = a.y, g = b.x - a.x;
+  var e = a.x, g = a.y, f = b.x - a.x;
   a = b.y - a.y;
   b = c.x;
-  var l = d.x - c.x;
+  var h = d.x - c.x;
   d = d.y - c.y;
-  var k = Math.sqrt(g * g + a * a), h = Math.sqrt(l * l + d * d);
-  if (g / k === l / h && a / k === d / h) {
+  var l = Math.sqrt(f * f + a * a), k = Math.sqrt(h * h + d * d);
+  if (f / l === h / k && a / l === d / k) {
     return {intersected:!1};
   }
-  c = (g * (c.y - f) + a * (e - b)) / (l * a - d * g);
-  b = (b + l * c - e) / g;
-  return 0 > b || 0 > c || 1 < c ? {intersected:!1} : {intersected:!0, point_x:e + g * b, point_y:f + a * b, distance:b};
+  c = (f * (c.y - g) + a * (e - b)) / (h * a - d * f);
+  b = (b + h * c - e) / f;
+  return 0 > b || 0 > c || 1 < c ? {intersected:!1} : {intersected:!0, point_x:e + f * b, point_y:g + a * b, distance:b};
 }, point_orientation:function(a, b, c) {
   a = (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
   return 0 === a ? gb.math.orientation.colinear : 0 < a ? gb.math.orientation.clockwise : gb.math.orientation.counterclockwise;
@@ -1426,12 +1426,12 @@ oop.define_class({namespace:"gb", name:"sprite_configuration", extend:gb.game_ob
     console.log("loaded: " + a);
     d = c.json.materials.length;
     if (0 < d) {
-      for (var e = d, f = function(a) {
+      for (var e = d, g = function(a) {
         c.set_configuration("materials_configurations", a);
         e--;
         0 === e && b(c);
-      }, g = 0;g < d;++g) {
-        (new gb.material_configuration).serialize(c.json.materials[g].filename, f);
+      }, f = 0;f < d;++f) {
+        (new gb.material_configuration).serialize(c.json.materials[f].filename, g);
       }
     } else {
       b(c);
@@ -1572,8 +1572,8 @@ oop.define_class({namespace:"gb", name:"transition_configuration", extend:gb.con
       b.set_configuration("ws_techniques_configurations", c);
       d--;
       0 === d && a();
-    }, f = 0;f < c;++f) {
-      (new gb.ws_technique_configuration).serialize(b.json.ws_techniques[f].filename, e);
+    }, g = 0;g < c;++g) {
+      (new gb.ws_technique_configuration).serialize(b.json.ws_techniques[g].filename, e);
     }
   } else {
     a();
@@ -1585,8 +1585,8 @@ oop.define_class({namespace:"gb", name:"transition_configuration", extend:gb.con
       b.set_configuration("ss_techniques_configurations", c);
       d--;
       0 === d && a();
-    }, f = 0;f < c;++f) {
-      (new gb.ss_technique_configuration).serialize(b.json.ss_techniques[f].filename, e);
+    }, g = 0;g < c;++g) {
+      (new gb.ss_technique_configuration).serialize(b.json.ss_techniques[g].filename, e);
     }
   } else {
     a();
@@ -1679,19 +1679,19 @@ oop.define_class({namespace:"gb", name:"mesh_constructor", init:function() {
   c.submit();
   return new gb.mesh(a, c, gl.TRIANGLES);
 }, create_grid:function(a, b, c, d) {
-  for (var e = (a + 1) * (b + 1) * 4, f = new gb.vbo((a + 1) * (b + 1) * 4, gl.STATIC_DRAW, gb.vbo.declaration.position_xy), g = 0, l = new gb.vec2, k = 0;k <= a;++k) {
-    l.x = k * c, l.y = 0, f.write_attribute(gb.vbo.attribute.position, g, l), g++, l.x = k * c, l.y = b * d, f.write_attribute(gb.vbo.attribute.position, g, l), g++;
+  for (var e = (a + 1) * (b + 1) * 4, g = new gb.vbo((a + 1) * (b + 1) * 4, gl.STATIC_DRAW, gb.vbo.declaration.position_xy), f = 0, h = new gb.vec2, l = 0;l <= a;++l) {
+    h.x = l * c, h.y = 0, g.write_attribute(gb.vbo.attribute.position, f, h), f++, h.x = l * c, h.y = b * d, g.write_attribute(gb.vbo.attribute.position, f, h), f++;
   }
-  for (k = 0;k <= b;++k) {
-    l.x = 0, l.y = k * d, f.write_attribute(gb.vbo.attribute.position, g, l), g++, l.x = a * c, l.y = k * d, f.write_attribute(gb.vbo.attribute.position, g, l), g++;
+  for (l = 0;l <= b;++l) {
+    h.x = 0, h.y = l * d, g.write_attribute(gb.vbo.attribute.position, f, h), f++, h.x = a * c, h.y = l * d, g.write_attribute(gb.vbo.attribute.position, f, h), f++;
   }
-  f.submit();
+  g.submit();
   a = new gb.ibo(4 * e, gl.STATIC_DRAW);
-  for (k = 0;k < e;++k) {
-    a.write_element(k, k);
+  for (l = 0;l < e;++l) {
+    a.write_element(l, l);
   }
   a.submit();
-  return new gb.mesh(f, a, gl.LINES);
+  return new gb.mesh(g, a, gl.LINES);
 }}});
 var g_cached_parameters = null;
 oop.define_class({namespace:"gb", name:"material_cached_parameters", init:function() {
@@ -1952,9 +1952,9 @@ oop.define_class({namespace:"gb", name:"material", init:function() {
       b.mag_filter = c.mag_filter;
       b.min_filter = c.min_filter;
       a.set_texture(b, c.sampler_index);
-    }, f = 0;f < d;++f) {
-      var g = b.textures_configurations[f];
-      c.get_texture(0 !== g.filename.length ? g.filename : g.technique_name).add_resource_loading_callback(e, g);
+    }, g = 0;g < d;++g) {
+      var f = b.textures_configurations[g];
+      c.get_texture(0 !== f.filename.length ? f.filename : f.technique_name).add_resource_loading_callback(e, f);
     }
   }
 }}});
@@ -2171,9 +2171,9 @@ oop.define_class({namespace:"gb", name:"render_target", init:function(a, b) {
   var d = document.createElement("canvas");
   d.width = this.m_color_attachment_texture.width;
   d.height = this.m_color_attachment_texture.height;
-  var e = d.getContext("2d"), f = e.createImageData(this.m_color_attachment_texture.width, this.m_color_attachment_texture.height);
-  f.data.set(c);
-  e.putImageData(f, 0, 0);
+  var e = d.getContext("2d"), g = e.createImageData(this.m_color_attachment_texture.width, this.m_color_attachment_texture.height);
+  g.data.set(c);
+  e.putImageData(g, 0, 0);
   c = new Image;
   c.src = d.toDataURL();
   d.width = a;
@@ -2234,7 +2234,7 @@ oop.define_class({namespace:"gb", name:"input_context", constants:{source:{mouse
   a = _.indexOf(this.m_listeners, a);
   -1 !== a ? this.m_listeners.splice(a, 1) : console.error("input context doesn't contain this listener");
 }}, static_methods:{}});
-oop.define_class({namespace:"gb", name:"ces_base_component", constants:{type:{undefined:-1, transformation:0, material:1, geometry:2, scene:3, light:4, light_mask:5, convex_hull:6, touch_recognize:7, max:8}}, init:function() {
+oop.define_class({namespace:"gb", name:"ces_base_component", constants:{type:{undefined:-1, transformation:0, material:1, geometry:2, scene:3, light:4, light_mask:5, convex_hull:6, touch_recognize:7, animation:8, max:9}}, init:function() {
   this.m_type = gb.ces_base_component.undefined;
   Object.defineProperty(this, "type", {get:function() {
     return this.m_type;
@@ -2335,8 +2335,8 @@ oop.define_class({namespace:"gb", name:"ces_material_component", extend:gb.ces_b
     e && e.set_custom_shader_uniform(a, b);
   } else {
     for (e in this.m_materials) {
-      for (var f = 0;f < this.m_materials[e].length;++f) {
-        this.m_materials[e][f].set_custom_shader_uniform(a, b);
+      for (var g = 0;g < this.m_materials[e].length;++g) {
+        this.m_materials[e][g].set_custom_shader_uniform(a, b);
       }
     }
   }
@@ -2346,8 +2346,8 @@ oop.define_class({namespace:"gb", name:"ces_material_component", extend:gb.ces_b
     e && e.set_texture(a, b);
   } else {
     for (e in this.m_materials) {
-      for (var f = 0;f < this.m_materials[e].length;++f) {
-        this.m_materials[e][f].set_texture(a, b);
+      for (var g = 0;g < this.m_materials[e].length;++g) {
+        this.m_materials[e][g].set_texture(a, b);
       }
     }
   }
@@ -2448,6 +2448,13 @@ oop.define_class({namespace:"gb", name:"ces_geometry_quad_component", extend:gb.
   b.write_attribute(gb.vbo.attribute.position, 2, new gb.vec2(a.y, a.z));
   b.write_attribute(gb.vbo.attribute.position, 3, new gb.vec2(a.y, a.w));
   b.submit();
+}, update_mesh_texcoord_attributes:function(a, b, c, d) {
+  var e = this.m_mesh.vbo;
+  e.write_attribute(gb.vbo.attribute.texcoord, 0, new gb.vec2(a, b));
+  e.write_attribute(gb.vbo.attribute.texcoord, 1, new gb.vec2(a, d));
+  e.write_attribute(gb.vbo.attribute.texcoord, 2, new gb.vec2(c, b));
+  e.write_attribute(gb.vbo.attribute.texcoord, 3, new gb.vec2(c, d));
+  e.submit();
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ces_light_component", extend:gb.ces_base_component, init:function() {
   this.m_type = gb.ces_base_component.type.light;
@@ -2499,20 +2506,20 @@ oop.define_class({namespace:"gb", name:"ces_light_mask_component", extend:gb.ces
     b.push(e);
     b.push(e + 1E-4);
   }
-  for (var d = [], f = new gb.vec2(0), g = new gb.vec2(gb.math.INT16_MIN), l = new gb.vec2(g), k = gb.math.INT16_MAX, c = 0;c < b.length;++c) {
+  for (var d = [], g = new gb.vec2(0), f = new gb.vec2(gb.math.INT16_MIN), h = new gb.vec2(f), l = gb.math.INT16_MAX, c = 0;c < b.length;++c) {
     e = b[c];
-    f.x = Math.cos(e);
-    f.y = Math.sin(e);
-    var h = a, n = f.add(a), k = gb.math.INT16_MAX;
-    l.x = g.x;
-    l.y = g.y;
-    for (var m = 0;m < this.m_shadow_casters_edges.length;++m) {
-      var p = gb.math.intersect(h, n, this.m_shadow_casters_edges[m].point_01, this.m_shadow_casters_edges[m].point_02);
-      p.intersected && p.distance < k && (k = p.distance, l.x = p.point_x, l.y = p.point_y);
+    g.x = Math.cos(e);
+    g.y = Math.sin(e);
+    var k = a, m = g.add(a), l = gb.math.INT16_MAX;
+    h.x = f.x;
+    h.y = f.y;
+    for (var p = 0;p < this.m_shadow_casters_edges.length;++p) {
+      var n = gb.math.intersect(k, m, this.m_shadow_casters_edges[p].point_01, this.m_shadow_casters_edges[p].point_02);
+      n.intersected && n.distance < l && (l = n.distance, h.x = n.point_x, h.y = n.point_y);
     }
-    l.equals(g) || -1 === d.findIndex(function(a) {
-      return a.point_x === l.x && a.point_y === l.y;
-    }) && d.push({point_x:l.x, point_y:l.y, angle:e});
+    h.equals(f) || -1 === d.findIndex(function(a) {
+      return a.point_x === h.x && a.point_y === h.y;
+    }) && d.push({point_x:h.x, point_y:h.y, angle:e});
   }
   d.sort(function(a, b) {
     return a.angle - b.angle;
@@ -2528,7 +2535,7 @@ oop.define_class({namespace:"gb", name:"ces_light_mask_component", extend:gb.ces
   this.m_vertices[0] = a;
   a = 1;
   for (c = 0;c < d.length;++c) {
-    p = d[c], this.m_vertices[a].x = p.point_x, this.m_vertices[a].y = p.point_y, a++;
+    n = d[c], this.m_vertices[a].x = n.point_x, this.m_vertices[a].y = n.point_y, a++;
   }
   for (c = 1;c < this.m_vertices.length;++c) {
     a = Math.max((c + 1) % this.m_vertices.length, 1), this.m_indices.push(0), this.m_indices.push(c), this.m_indices.push(a);
@@ -2582,6 +2589,30 @@ oop.define_class({namespace:"gb", name:"ces_touch_recognize_component", extend:g
   -1 !== c && this.m_callbacks[a].splice(c, 1);
 }, get_callbacks:function(a) {
   return this.m_callbacks[a];
+}}, static_methods:{}});
+oop.define_class({namespace:"gb", name:"ces_animation_component", extend:gb.ces_base_component, init:function() {
+  this.m_type = gb.ces_base_component.type.animation;
+  this.m_frames = [];
+  this.m_current_animation = "";
+  this.m_current_frame = 0;
+  Object.defineProperty(this, "frames", {get:function() {
+    return this.m_frames[this.m_current_animation] ? this.m_frames[this.m_current_animation] : null;
+  }});
+  Object.defineProperty(this, "current_frame", {get:function() {
+    return this.m_current_frame;
+  }, set:function(a) {
+    this.m_current_frame = a;
+  }});
+  Object.defineProperty(this, "current_animation", {get:function() {
+    return this.m_current_animation;
+  }, set:function(a) {
+    this.m_current_animation = a;
+    this.m_current_frame = 0;
+  }});
+}, release:function() {
+}, methods:{add_animation:function(a, b) {
+  this.m_frames[a] = b;
+  this.current_animation = a;
 }}, static_methods:{}});
 var g_tag = 0;
 oop.define_class({namespace:"gb", name:"ces_entity", init:function() {
@@ -2637,6 +2668,8 @@ oop.define_class({namespace:"gb", name:"ces_entity", init:function() {
     return b.tag === a.tag;
   });
   -1 !== b && (this.m_children[b].remove_scene_component(), this.m_children[b].parent = null, this.m_children.splice(b, 1));
+}, remove_from_parent:function() {
+  this.parent && this.parent.remove_child(this);
 }, add_scene_component:function() {
   var a = this.parent ? this.parent.get_component(gb.ces_base_component.type.scene) : null;
   !this.is_component_exist(gb.ces_base_component.type.scene) && a && this.add_component(a);
@@ -2649,7 +2682,7 @@ oop.define_class({namespace:"gb", name:"ces_entity", init:function() {
   }
   this.remove_component(gb.ces_base_component.type.scene);
 }}, static_methods:{}});
-oop.define_class({namespace:"gb", name:"ces_base_system", constants:{type:{undefined:-1, render:0, deferred_lighting:1, touches:2}}, init:function() {
+oop.define_class({namespace:"gb", name:"ces_base_system", constants:{type:{undefined:-1, render:0, deferred_lighting:1, touches_recognize:2, animation:3}}, init:function() {
   this.m_type = gb.ces_base_system.type.undefined;
   this.m_priority = 0;
   Object.defineProperty(this, "type", {get:function() {
@@ -2676,16 +2709,16 @@ oop.define_class({namespace:"gb", name:"ces_deferred_lighting_system", extend:gb
     b.cleanup();
     var c = this.m_light_casters[a].get_component(gb.ces_base_component.type.light_mask);
     c.cleanup();
-    for (var d = this.m_light_casters[a].get_component(gb.ces_base_component.type.transformation), e = (new gb.mat4).identity(), f = this.m_light_casters[a].parent;f;) {
-      var g = f.get_component(gb.ces_base_component.type.transformation), e = gb.mat4.multiply(e, g.matrix_m), f = f.parent
+    for (var d = this.m_light_casters[a].get_component(gb.ces_base_component.type.transformation), e = (new gb.mat4).identity(), g = this.m_light_casters[a].parent;g;) {
+      var f = g.get_component(gb.ces_base_component.type.transformation), e = gb.mat4.multiply(e, f.matrix_m), g = g.parent
     }
     d = gb.mat4.multiply_vec2(d.position, e);
     for (e = 0;e < this.m_shadow_casters.length;++e) {
-      for (var f = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.convex_hull), g = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.transformation), l = (new gb.mat4).identity(), k = this.m_shadow_casters[e].parent;k;) {
-        var h = k.get_component(gb.ces_base_component.type.transformation), l = gb.mat4.multiply(l, h.matrix_m), k = k.parent
+      for (var g = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.convex_hull), f = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.transformation), h = (new gb.mat4).identity(), l = this.m_shadow_casters[e].parent;l;) {
+        var k = l.get_component(gb.ces_base_component.type.transformation), h = gb.mat4.multiply(h, k.matrix_m), l = l.parent
       }
-      l = gb.mat4.multiply(l, g.matrix_m);
-      c.update_mask_geometry(l, f.oriented_vertices);
+      h = gb.mat4.multiply(h, f.matrix_m);
+      c.update_mask_geometry(h, g.oriented_vertices);
       b.add_shadow_caster(this.m_shadow_casters[e]);
     }
     c.generate_mask_mesh(d);
@@ -2714,8 +2747,8 @@ oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_s
   for (var b = this.m_render_pipeline.ws_render_techniques, c = 0;c < b.length;++c) {
     var d = b[c], e = d.name;
     d.bind();
-    for (var f = 0;f < d.num_passes;++f) {
-      this.draw_recursively_lights(a, e, f), this.draw_recursively(a, e, f);
+    for (var g = 0;g < d.num_passes;++g) {
+      this.draw_recursively_lights(a, e, g), this.draw_recursively(a, e, g);
     }
     d.unbind();
   }
@@ -2724,70 +2757,70 @@ oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_s
 }, draw_recursively:function(a, b, c) {
   var d = a.get_component(gb.ces_base_component.type.scene);
   if (d) {
-    var e = a.get_component(gb.ces_base_component.type.light), f = a.get_component(gb.ces_base_component.type.transformation), g = a.get_component(gb.ces_base_component.type.material), l = a.get_component(gb.ces_base_component.type.geometry);
-    !e && g && l && f && (e = g.get_material(b, c), l = l.mesh, e && e.shader && e.shader.is_commited && l && a.visible && (e.set_custom_shader_uniform(gb.ces_render_system.shadow_color_for_casters, gb.ces_render_system.shadow_color_uniform), g.bind(b, c, e), e.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p), e.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v), d = gb.ces_transformation_component.get_absolute_transformation(a, !1), e.shader.set_mat4(d, gb.shader.uniform_type.mat_m), 
-    l.bind(e.shader.attributes), l.draw(), l.unbind(e.shader.attributes), g.unbind(b, c, e)));
+    var e = a.get_component(gb.ces_base_component.type.light), g = a.get_component(gb.ces_base_component.type.transformation), f = a.get_component(gb.ces_base_component.type.material), h = a.get_component(gb.ces_base_component.type.geometry);
+    !e && f && h && g && (e = f.get_material(b, c), h = h.mesh, e && e.shader && e.shader.is_commited && h && a.visible && (e.set_custom_shader_uniform(gb.ces_render_system.shadow_color_for_casters, gb.ces_render_system.shadow_color_uniform), f.bind(b, c, e), e.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p), e.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v), d = gb.ces_transformation_component.get_absolute_transformation(a, !0), e.shader.set_mat4(d, gb.shader.uniform_type.mat_m), 
+    h.bind(e.shader.attributes), h.draw(), h.unbind(e.shader.attributes), f.unbind(b, c, e)));
     a = a.children;
-    for (g = 0;g < a.length;++g) {
-      this.draw_recursively(a[g], b, c);
+    for (f = 0;f < a.length;++f) {
+      this.draw_recursively(a[f], b, c);
     }
   }
 }, draw_recursively_lights:function(a, b, c) {
   var d = a.get_component(gb.ces_base_component.type.scene);
   if (d) {
-    var e = a.get_component(gb.ces_base_component.type.light), f = a.get_component(gb.ces_base_component.type.light_mask), g = a.get_component(gb.ces_base_component.type.transformation), l = a.get_component(gb.ces_base_component.type.material), k = a.get_component(gb.ces_base_component.type.geometry);
-    if (e && l && k && g) {
-      var h = l.get_material(b, c), n = k.mesh, m = f.mesh;
-      h && a.visible && h.shader && h.shader.is_commited && n && m && (function() {
+    var e = a.get_component(gb.ces_base_component.type.light), g = a.get_component(gb.ces_base_component.type.light_mask), f = a.get_component(gb.ces_base_component.type.transformation), h = a.get_component(gb.ces_base_component.type.material), l = a.get_component(gb.ces_base_component.type.geometry);
+    if (e && h && l && f) {
+      var k = h.get_material(b, c), m = l.mesh, p = g.mesh;
+      k && a.visible && k.shader && k.shader.is_commited && m && p && (function() {
         gl.colorMask(!1, !1, !1, !1);
         gl.depthMask(!1);
-        h.stencil_function = gl.ALWAYS;
-        h.stencil_function_parameter_1 = 1;
-        h.stencil_function_parameter_2 = 255;
-        h.stencil_mask_parameter = 1;
-        h.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
-        h.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform);
-        l.bind(b, c, h);
-        h.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p);
-        h.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v);
-        h.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m);
-        m.bind(h.shader.attributes);
-        m.draw();
-        m.unbind(h.shader.attributes);
-        for (var a = e.shadow_casters, f = 0;f < a.length;++f) {
-          var g = a[f], k = g.get_component(gb.ces_base_component.type.geometry);
-          g.get_component(gb.ces_base_component.type.material).get_material(b, c) && (k = k.mesh, g = gb.ces_transformation_component.get_absolute_transformation(g, !1), h.shader.set_mat4(g, gb.shader.uniform_type.mat_m), k.bind(h.shader.attributes), k.draw(), k.unbind(h.shader.attributes));
+        k.stencil_function = gl.ALWAYS;
+        k.stencil_function_parameter_1 = 1;
+        k.stencil_function_parameter_2 = 255;
+        k.stencil_mask_parameter = 1;
+        k.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
+        k.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform);
+        h.bind(b, c, k);
+        k.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p);
+        k.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v);
+        k.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m);
+        p.bind(k.shader.attributes);
+        p.draw();
+        p.unbind(k.shader.attributes);
+        for (var a = e.shadow_casters, g = 0;g < a.length;++g) {
+          var f = a[g], l = f.get_component(gb.ces_base_component.type.geometry);
+          f.get_component(gb.ces_base_component.type.material).get_material(b, c) && (l = l.mesh, f = gb.ces_transformation_component.get_absolute_transformation(f, !1), k.shader.set_mat4(f, gb.shader.uniform_type.mat_m), l.bind(k.shader.attributes), l.draw(), l.unbind(k.shader.attributes));
         }
         gl.colorMask(!0, !0, !0, !0);
         gl.depthMask(!0);
-        l.unbind(b, c, h);
+        h.unbind(b, c, k);
       }(), function() {
         var d = gb.ces_transformation_component.get_absolute_transformation(a, !0);
-        h.stencil_function = gl.EQUAL;
-        h.stencil_function_parameter_1 = 1;
-        h.stencil_function_parameter_2 = 255;
-        h.stencil_mask_parameter = 0;
-        h.blending_function_source = gl.SRC_ALPHA;
-        h.blending_function_destination = gl.ONE;
-        h.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
-        h.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_fs_flag_uniform);
-        l.bind(b, c, h);
-        h.shader.set_mat4(d, gb.shader.uniform_type.mat_m);
-        n.bind(h.shader.attributes);
-        n.draw();
-        n.unbind(h.shader.attributes);
-        l.unbind(b, c, h);
-      }(), gl.colorMask(!1, !1, !1, !1), gl.depthMask(!1), h.stencil_function = gl.ALWAYS, h.stencil_function_parameter_1 = 0, h.stencil_function_parameter_2 = 255, h.stencil_mask_parameter = 1, h.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_vs_flag_uniform), h.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform), l.bind(b, c, h), h.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m), this.m_screed_quad_mesh.bind(h.shader.attributes), this.m_screed_quad_mesh.draw(), 
-      this.m_screed_quad_mesh.unbind(h.shader.attributes), gl.colorMask(!0, !0, !0, !0), gl.depthMask(!0), l.unbind(b, c, h));
+        k.stencil_function = gl.EQUAL;
+        k.stencil_function_parameter_1 = 1;
+        k.stencil_function_parameter_2 = 255;
+        k.stencil_mask_parameter = 0;
+        k.blending_function_source = gl.SRC_ALPHA;
+        k.blending_function_destination = gl.ONE;
+        k.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
+        k.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_fs_flag_uniform);
+        h.bind(b, c, k);
+        k.shader.set_mat4(d, gb.shader.uniform_type.mat_m);
+        m.bind(k.shader.attributes);
+        m.draw();
+        m.unbind(k.shader.attributes);
+        h.unbind(b, c, k);
+      }(), gl.colorMask(!1, !1, !1, !1), gl.depthMask(!1), k.stencil_function = gl.ALWAYS, k.stencil_function_parameter_1 = 0, k.stencil_function_parameter_2 = 255, k.stencil_mask_parameter = 1, k.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_vs_flag_uniform), k.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform), h.bind(b, c, k), k.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m), this.m_screed_quad_mesh.bind(k.shader.attributes), this.m_screed_quad_mesh.draw(), 
+      this.m_screed_quad_mesh.unbind(k.shader.attributes), gl.colorMask(!0, !0, !0, !0), gl.depthMask(!0), h.unbind(b, c, k));
     }
-    f = a.children;
-    for (g = 0;g < f.length;++g) {
-      this.draw_recursively_lights(f[g], b, c);
+    g = a.children;
+    for (f = 0;f < g.length;++f) {
+      this.draw_recursively_lights(g[f], b, c);
     }
   }
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_system, init:function() {
-  this.m_type = gb.ces_base_system.type.touches;
+  this.m_type = gb.ces_base_system.type.touches_recognize;
   this.m_events = [];
   this.m_captured_entities = [];
 }, release:function() {
@@ -2797,9 +2830,9 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
     var b = this.m_events.pop(), c = this.intersected_entity(a, b.state, b.point);
     if (b.state === gb.input_context.state.released) {
       for (var d = this.m_captured_entities.length, e = 0;e < d;++e) {
-        for (var f = this.m_captured_entities[e], g = f.get_component(gb.ces_base_component.type.touch_recognize), g = g.get_callbacks(b.state), l = g.length, k = 0;k < l;++k) {
-          var h = g[k];
-          h(f, b.state, b.point);
+        for (var g = this.m_captured_entities[e], f = g.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, l = 0;l < h;++l) {
+          var k = f[l];
+          k(g, b.state, b.point);
         }
       }
       this.m_captured_entities = [];
@@ -2807,26 +2840,26 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
     if (c) {
       for (b.state === gb.input_context.state.pressed && (d = this.m_captured_entities.findIndex(function(a) {
         return a === c;
-      }), -1 === d && this.m_captured_entities.push(c)), g = c.get_component(gb.ces_base_component.type.touch_recognize), g = g.get_callbacks(b.state), l = g.length, console.log(l), e = 0;e < l;++e) {
-        h = g[e], d = this.m_captured_entities.findIndex(function(a) {
+      }), -1 === d && this.m_captured_entities.push(c)), f = c.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, e = 0;e < h;++e) {
+        k = f[e], d = this.m_captured_entities.findIndex(function(a) {
           return a === c;
-        }), -1 !== d && h(c, b.state, b.point);
+        }), -1 !== d && k(c, b.state, b.point);
       }
     }
     if (b.state === gb.input_context.state.dragged) {
       for (d = this.m_captured_entities.length, e = 0;e < d;++e) {
-        for (f = this.m_captured_entities[e], g = f.get_component(gb.ces_base_component.type.touch_recognize), g = g.get_callbacks(b.state), l = g.length, k = 0;k < l;++k) {
-          h = g[k], h(f, b.state, b.point);
+        for (g = this.m_captured_entities[e], f = g.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, l = 0;l < h;++l) {
+          k = f[l], k(g, b.state, b.point);
         }
       }
     }
   }
 }, on_feed_end:function() {
 }, intersected_entity:function(a, b, c) {
-  for (var d = null, e = a.children, f = e.length, g = null, l = 0;l < f;++l) {
-    g = e[l], (g = this.intersected_entity(g, b, c)) && (d = g);
+  for (var d = null, e = a.children, g = e.length, f = null, h = 0;h < g;++h) {
+    f = e[h], (f = this.intersected_entity(f, b, c)) && (d = f);
   }
-  (e = a.get_component(gb.ces_base_component.type.touch_recognize)) && !d && e.is_respond_to(b) && a.visible && (f = a.get_component(gb.ces_base_component.type.scene), b = gb.ces_transformation_component.get_absolute_transformation(a, !1), b = gb.mat4.multiply(b, f.camera.matrix_v), f = gb.mat4.multiply_vec2(e.min_bound, b), b = gb.mat4.multiply_vec2(e.max_bound, b), gb.math.intersect_min_max_bound(f, b, c) && (d = a));
+  (e = a.get_component(gb.ces_base_component.type.touch_recognize)) && !d && e.is_respond_to(b) && a.visible && (g = a.get_component(gb.ces_base_component.type.scene), b = gb.ces_transformation_component.get_absolute_transformation(a, !1), b = gb.mat4.multiply(b, g.camera.matrix_v), g = gb.mat4.multiply_vec2(e.min_bound, b), b = gb.mat4.multiply_vec2(e.max_bound, b), gb.math.intersect_min_max_bound(g, b, c) && (d = a));
   return d;
 }, on_mouse_pressed:function(a) {
   this.m_events.push({state:gb.input_context.state.pressed, point:a});
@@ -2836,6 +2869,25 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
   this.m_events.push({state:gb.input_context.state.moved, point:a});
 }, on_mouse_dragged:function(a, b) {
   this.m_events.push({state:gb.input_context.state.dragged, point:a});
+}}, static_methods:{}});
+oop.define_class({namespace:"gb", name:"ces_animation_system", extend:gb.ces_base_system, init:function() {
+  this.m_type = gb.ces_base_system.type.animation;
+}, release:function() {
+}, methods:{on_feed_start:function() {
+}, on_feed:function(a) {
+  this.update_recursively(a);
+}, on_feed_end:function() {
+}, update_recursively:function(a) {
+  var b = a.get_component(gb.ces_base_component.type.geometry), c = a.get_component(gb.ces_base_component.type.animation);
+  if (b && c) {
+    var d = c.frames, e = c.current_frame;
+    e++;
+    d && (c.current_frame = e < d.length - 1 ? e : 0, c = d[c.current_frame], b.update_mesh_texcoord_attributes(c.u_0, c.v_0, c.u_1, c.v_1));
+  }
+  a = a.children;
+  for (b = 0;b < a.length;++b) {
+    this.update_recursively(a[b]);
+  }
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ces_systems_feeder", init:function() {
   this.m_systems = [];
@@ -3013,9 +3065,14 @@ oop.define_class({namespace:"gb", name:"sprite", extend:gb.game_object, init:fun
   a = new gb.ces_geometry_quad_component;
   this.add_component(a);
   Object.defineProperty(this, "size", {get:function() {
-    return this.get_component(gb.ces_base_component.type.geometry).size;
+    var a = this.get_component(gb.ces_base_component.type.geometry);
+    return a instanceof gb.ces_geometry_quad_component ? a.size : this.get_component(gb.ces_base_component.type.transformation).scale;
   }, set:function(a) {
-    this.get_component(gb.ces_base_component.type.geometry).size = a;
+    var c = this.get_component(gb.ces_base_component.type.geometry);
+    c instanceof gb.ces_geometry_quad_component ? c.size = a : this.get_component(gb.ces_base_component.type.transformation).scale = a;
+    if (c = this.get_component(gb.ces_base_component.type.touch_recognize)) {
+      c.bound = new gb.vec4(0, 0, a.x, a.y);
+    }
   }});
   Object.defineProperty(this, "pivot", {get:function() {
     return this.get_component(gb.ces_base_component.type.geometry).pivot;
@@ -3032,6 +3089,22 @@ oop.define_class({namespace:"gb", name:"sprite", extend:gb.game_object, init:fun
       this.add_component(c);
     } else {
       this.remove_component(gb.ces_base_component.type.convex_hull);
+    }
+  }});
+  Object.defineProperty(this, "is_touchable", {get:function() {
+    return this.get_component(gb.ces_base_component.type.touch_recognize) ? !0 : !1;
+  }, set:function(a) {
+    if (a) {
+      if (!this.get_component(gb.ces_base_component.type.touch_recognize)) {
+        a = new gb.ces_touch_recognize_component;
+        var c = this.size;
+        a.bound = new gb.vec4(0, 0, c.x, c.y);
+        a.enable(gb.input_context.state.pressed, !0);
+        a.enable(gb.input_context.state.dragged, !0);
+        this.add_component(a);
+      }
+    } else {
+      this.remove_component(gb.ces_base_component.type.touch_recognize);
     }
   }});
   Object.defineProperty(this, "bound", {configurable:!0, get:function() {
@@ -3052,7 +3125,11 @@ oop.define_class({namespace:"gb", name:"sprite", extend:gb.game_object, init:fun
     return this.m_bound;
   }});
 }, release:function() {
-}, methods:{}, static_methods:{}});
+}, methods:{add_animation:function(a, b) {
+  var c = this.get_component(gb.ces_base_component.type.animation);
+  c || (c = new gb.ces_animation_component, this.add_component(c));
+  c.add_animation(a, b);
+}}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"grid", extend:gb.game_object, constants:{color_uniform:"u_color"}, init:function() {
   var a = new gb.ces_material_component;
   this.add_component(a);
@@ -3123,11 +3200,11 @@ oop.define_class({namespace:"gb", name:"scene_fabricator", init:function() {
     b && b();
   });
   return c;
-}, create_grid:function(a, b, c, d, e, f) {
-  var g = new gb.grid;
-  this.m_game_objects.push(g);
-  g.get_component(gb.ces_base_component.type.geometry).mesh = gb.mesh_constructor.create_grid(b, c, d, e);
-  c = g.bound;
+}, create_grid:function(a, b, c, d, e, g) {
+  var f = new gb.grid;
+  this.m_game_objects.push(f);
+  f.get_component(gb.ces_base_component.type.geometry).mesh = gb.mesh_constructor.create_grid(b, c, d, e);
+  c = f.bound;
   b = [];
   b.push(new gb.vec2(c.x, c.y));
   b.push(new gb.vec2(c.z, c.y));
@@ -3135,13 +3212,13 @@ oop.define_class({namespace:"gb", name:"scene_fabricator", init:function() {
   b.push(new gb.vec2(c.x, c.w));
   c = new gb.ces_convex_hull_component;
   c.generate_convex_hull(b);
-  g.add_component(c);
-  var l = this;
+  f.add_component(c);
+  var h = this;
   this.m_configurations_accessor.get_sprite_configuration(a, function(a) {
-    l.add_materials(g, a.materials_configurations);
-    f && f();
+    h.add_materials(f, a.materials_configurations);
+    g && g();
   });
-  return g;
+  return f;
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"game_loop", init:function() {
   this.m_listeners = [];
@@ -3181,52 +3258,54 @@ oop.define_class({namespace:"gb", name:"game_transition", init:function(a) {
   this.m_guid = a;
   this.m_resources_accessor = this.m_configurations_accessor = null;
   this.m_systems_feeder = new gb.ces_systems_feeder;
-  this.m_input_context = new gb.input_context;
-  this.m_scene = null;
+  this.m_scene = this.m_input_context = null;
   Object.defineProperty(this, "guid", {get:function() {
     return this.m_guid;
   }});
 }, release:function() {
-}, methods:{on_activated:function(a, b, c) {
-  this.m_configurations_accessor = a;
-  this.m_resources_accessor = b;
-  var d = new gb.ces_render_system, e = d.render_pipeline, f = this;
+}, methods:{on_activated:function(a, b, c, d) {
+  this.m_input_context = a;
+  this.m_configurations_accessor = b;
+  this.m_resources_accessor = c;
+  var e = new gb.ces_render_system, g = e.render_pipeline, f = this;
   this.m_configurations_accessor.get_transition_configuration(this.m_guid, function(a) {
     if (null !== a.ws_techniques_configurations) {
       for (var b = 0;b < a.ws_techniques_configurations.length;++b) {
-        var k = a.ws_techniques_configurations[b], h = Math.min(gl.viewport_width, k.screen_width), n = Math.min(gl.viewport_height, k.screen_height), h = new gb.render_technique_ws(h, n, k.technique_name, k.index, k.num_passes), n = new gb.vec4(k.clear_color_r, k.clear_color_g, k.clear_color_b, k.clear_color_a);
-        h.clear_color = n;
-        e.add_ws_render_technique(k.technique_name, k.index, h);
-        f.m_resources_accessor.add_custom_resource(k.technique_name + ".color", h.color_attachment_texture);
-        f.m_resources_accessor.add_custom_resource(k.technique_name + ".depth", h.depth_attachment_texture);
+        var c = a.ws_techniques_configurations[b], m = Math.min(gl.viewport_width, c.screen_width), p = Math.min(gl.viewport_height, c.screen_height), m = new gb.render_technique_ws(m, p, c.technique_name, c.index, c.num_passes), p = new gb.vec4(c.clear_color_r, c.clear_color_g, c.clear_color_b, c.clear_color_a);
+        m.clear_color = p;
+        g.add_ws_render_technique(c.technique_name, c.index, m);
+        f.m_resources_accessor.add_custom_resource(c.technique_name + ".color", m.color_attachment_texture);
+        f.m_resources_accessor.add_custom_resource(c.technique_name + ".depth", m.depth_attachment_texture);
       }
     }
     if (null !== a.ss_techniques_configurations) {
       for (b = 0;b < a.ss_techniques_configurations.length;++b) {
-        var k = a.ss_techniques_configurations[b], h = k.material_configuration, m = gb.material.construct(h);
-        gb.material.set_shader(m, h, f.m_resources_accessor);
-        gb.material.set_textures(m, h, f.m_resources_accessor);
-        h = Math.min(gl.viewport_width, k.screen_width);
-        n = Math.min(gl.viewport_height, k.screen_height);
-        h = new gb.render_technique_ss(h, n, k.technique_name, 0, m);
-        e.add_ss_render_technique(k.technique_name, h);
-        f.m_resources_accessor.add_custom_resource(k.technique_name + ".color", h.color_attachment_texture);
+        var c = a.ss_techniques_configurations[b], m = c.material_configuration, n = gb.material.construct(m);
+        gb.material.set_shader(n, m, f.m_resources_accessor);
+        gb.material.set_textures(n, m, f.m_resources_accessor);
+        m = Math.min(gl.viewport_width, c.screen_width);
+        p = Math.min(gl.viewport_height, c.screen_height);
+        m = new gb.render_technique_ss(m, p, c.technique_name, 0, n);
+        g.add_ss_render_technique(c.technique_name, m);
+        f.m_resources_accessor.add_custom_resource(c.technique_name + ".color", m.color_attachment_texture);
       }
     }
-    h = a.main_technique_configuration.material_configuration;
-    m = gb.material.construct(h);
-    gb.material.set_shader(m, h, f.m_resources_accessor);
-    gb.material.set_textures(m, h, f.m_resources_accessor);
-    e.create_main_render_technique(m);
+    m = a.main_technique_configuration.material_configuration;
+    n = gb.material.construct(m);
+    gb.material.set_shader(n, m, f.m_resources_accessor);
+    gb.material.set_textures(n, m, f.m_resources_accessor);
+    g.create_main_render_technique(n);
     a = new gb.scene_fabricator;
     a.configurations_accessor = f.m_configurations_accessor;
     a.resources_accessor = f.m_resources_accessor;
     f.m_scene = new gb.scene_graph(f);
     f.m_scene.fabricator = a;
-    c(f.m_scene);
+    d(f.m_scene);
     f.m_systems_feeder.root = f.m_scene;
-    f.m_systems_feeder.add_system(d);
+    f.m_systems_feeder.add_system(e);
     a = new gb.ces_deferred_lighting_system;
+    f.m_systems_feeder.add_system(a);
+    a = new gb.ces_animation_system;
     f.m_systems_feeder.add_system(a);
     a = new gb.ces_touches_system;
     f.m_input_context.add_listener(a);
@@ -3234,7 +3313,7 @@ oop.define_class({namespace:"gb", name:"game_transition", init:function(a) {
     loop.add_listener(f.m_systems_feeder);
   });
 }, on_deactivated:function() {
-  var a = this.m_systems_feeder.get_system(gb.ces_base_system.type.touches);
+  var a = this.m_systems_feeder.get_system(gb.ces_base_system.type.touches_recognize);
   this.m_input_context.remove_listener(a);
   this.m_systems_feeder.deallock_systems();
   loop.remove_listener(this.m_systems_feeder);
@@ -3247,6 +3326,7 @@ oop.define_class({namespace:"gb", name:"game_controller", init:function() {
   this.m_transitions = [];
   this.resource_accessor = new gb.resource_accessor;
   this.configuration_accessor = new gb.configuration_accessor;
+  this.m_input_context = new gb.input_context;
 }, release:function() {
 }, methods:{add_transition:function(a) {
   -1 === this.m_transitions.findIndex(function(b) {
@@ -3266,7 +3346,7 @@ oop.define_class({namespace:"gb", name:"game_controller", init:function() {
       this.m_current_transition.on_deactivated();
     }
     this.m_current_transition = this.m_transitions[c];
-    this.m_current_transition.on_activated(this.configuration_accessor, this.resource_accessor, b);
+    this.m_current_transition.on_activated(this.m_input_context, this.configuration_accessor, this.resource_accessor, b);
   }
 }}, static_methods:{get_instance:function() {
   g_game_controller || (g_game_controller = new gb.game_controller);
@@ -3280,11 +3360,11 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
   $("#ui-ss-merge-left").append($('<div id="frame-size">Frame Size</div>'));
   $("#frame-size").append($('<div id="frame-width-slider"><input type="text" id="frame-width-value" readonly value="Width 128 px"></div></p>'));
   $("#frame-size").append($('<div id="frame-height-slider"><input type="text" id="frame-height-value" readonly value="Height 128 px"></div></p>'));
-  $("#ui-ss-merge-left").append($('<div id="images-container">Images</div>'));
+  $("#ui-ss-merge-left").append($('<div id="images-container">Frames</div>'));
   $("#images-container").append($('<ul id="images-list">'));
   $("#images-container").append($("</ul>"));
   $("#ui-ss-merge-left").append($('<div id="drop-zone">Drop Zone</div>'));
-  $("#ui-ss-merge-left").append($('<div id="ss-merge-save-zone"><button id="ss-merge-save-button" type="button">Save</button></div>'));
+  $("#ui-ss-merge-left").append($('<div id="ss-merge-save-zone"><button id="ss-merge-save-button" type="button">Generate</button></div>'));
   $("#frame-width-slider").slider({value:128, min:32, max:1024, step:32, slide:function(a, b) {
     $("#frame-width-value").val("Width " + b.value + " px");
     g_ss_merge_controller.m_frame_width = b.value;
@@ -3296,20 +3376,36 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
   $("#images-list").sortable();
   $("#images-list").disableSelection();
   $("#images-list").sortable({stop:function() {
-    var a = $("#sortable").sortable("serialize", {key:"image-index[]"});
-    console.log(a);
+    for (var a = $("#images-list li").map(function() {
+      return $(this).find("#image-index").text();
+    }), b = [], e = a.length, g = null, f = 0;f < e;++f) {
+      g = g_ss_merge_controller.m_sprites.find(function(b) {
+        return b.tag === a[f];
+      }), b.push(g);
+    }
+    g_ss_merge_controller.m_sprites = b;
+    g_ss_merge_controller.reorder_sprites_positions();
   }});
   var a = document.getElementById("drop-zone");
   a.addEventListener("dragover", this.handle_drag_over, !1);
   a.addEventListener("drop", this.handle_file_select, !1);
   var b = this;
   document.getElementById("ss-merge-save-button").onclick = function() {
-    for (var a = b.m_sprites.length, d = 0, e = 0, f = b.m_frame_height, g = 0;g < a;++g) {
-      e += b.m_frame_width, d += b.m_frame_width, d > gl.viewport_width && (d = 0, f += b.m_frame_height);
+    for (var a = b.m_sprites.length, d = 0, e = 0, g = b.m_frame_height, f = 0;f < a;++f) {
+      e += b.m_frame_width, d += b.m_frame_width, d > gl.viewport_width && (d = 0, g += b.m_frame_height);
     }
     e = Math.min(e, gl.viewport_width);
-    f = Math.min(f, gl.viewport_height);
-    0 < e && 0 < f && (a = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, e, f), window.location.href = a.src.replace("image/png", "image/octet-stream"));
+    g = Math.min(g, gl.viewport_height);
+    if (0 < e && 0 < g) {
+      var a = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, e, g), h = g_ss_merge_controller.create_animation_configuration(e, g);
+      g_ss_merge_scene.fabricator.resources_accessor.get_texture("preview_atlas", a).add_resource_loading_callback(function(a, b) {
+        g_ss_merge_controller.m_preview_sprite ? g_ss_merge_controller.m_preview_sprite.get_component(gb.ces_base_component.type.material).set_texture(a, 0) : (g_ss_merge_controller.m_preview_sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+          a.wrap_mode = gl.CLAMP_TO_EDGE;
+          g_ss_merge_controller.m_preview_sprite.get_component(gb.ces_base_component.type.material).set_texture(a, 0);
+        }), g_ss_merge_scene.add_child(g_ss_merge_controller.m_preview_sprite), g_ss_merge_controller.m_preview_sprite.size = new gb.vec2(256, 256));
+        g_ss_merge_controller.m_preview_sprite.add_animation("preview_animation", h);
+      });
+    }
   };
   g_ss_merge_controller = this;
   new gb.graphics_context;
@@ -3317,7 +3413,7 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
   gb.game_controller.get_instance().add_transition(g_ss_merge_transition);
   this.m_sprites = [];
   this.m_frame_height = this.m_frame_width = 128;
-  this.m_grid = null;
+  this.m_selector = this.m_preview_sprite = this.m_grid = null;
 }, release:function() {
 }, methods:{activate:function() {
   var a = $("#gl_canvas").detach();
@@ -3337,6 +3433,11 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
         a.add_child(b.m_sprites[e]);
       }
     }
+    d = new gb.editor_fabricator;
+    d.scene_fabricator = a.fabricator;
+    b.m_selector = d.create_selector();
+    b.m_selector.size = new gb.vec2(256);
+    a.add_child(b.m_selector.bounding_quad);
   });
 }, deactivate:function() {
   var a = this.m_sprites.length;
@@ -3350,32 +3451,68 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
 }, handle_file_select:function(a) {
   a.stopPropagation();
   a.preventDefault();
-  var b = 0;
   a = a.dataTransfer.files;
-  for (var c = 0;c < a.length;++c) {
-    var d = a[c];
-    if (d.type.match("image.*")) {
-      var e = new FileReader;
-      e.m_filename = d.name;
-      e.onload = function(a) {
+  for (var b = 0;b < a.length;++b) {
+    var c = a[b];
+    if (c.type.match("image.*")) {
+      var d = new FileReader;
+      d.m_filename = c.name;
+      d.onload = function(a) {
         return function(a) {
-          var c = new Image;
-          c.src = a.target.result;
-          g_ss_merge_scene.fabricator.resources_accessor.get_texture(a.target.m_filename, c).add_resource_loading_callback(function(c, d) {
-            var e = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
-              c.wrap_mode = gl.CLAMP_TO_EDGE;
-              e.get_component(gb.ces_base_component.type.material).set_texture(c, 0);
-            });
-            g_ss_merge_scene.add_child(e);
-            b++;
-            var f = '<div id="image-index">Frame ' + b + "</div>", f = '<li class="ui-state-default">' + ['<img id="images-list-cell-image" align="left" src="', a.target.result, '"/>'].join("") + f + '<button id="delete-image-button" type="button">Delete</button></li>';
+          var b = new Image;
+          b.src = a.target.result;
+          g_ss_merge_scene.fabricator.resources_accessor.get_texture(a.target.m_filename, b).add_resource_loading_callback(function(b, c) {
+            for (var d = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+              b.wrap_mode = gl.CLAMP_TO_EDGE;
+              d.get_component(gb.ces_base_component.type.material).set_texture(b, 0);
+            }), e = g_ss_merge_controller.m_sprites.length, f = 0, n = null, q = 0;q < e;++q) {
+              n = g_ss_merge_controller.m_sprites[q], -1 !== n.tag.indexOf(a.target.m_filename) && f++;
+            }
+            e = a.target.m_filename;
+            0 !== f && (e += "(" + f + ")");
+            f = '<div id="image-index">' + e + "</div>";
+            f = '<li class="ui-state-default">' + ['<img id="images-list-cell-image" align="left" src="', a.target.result, '"/>'].join("") + '<button id="delete-image-button" type="button">Delete</button>' + f + "</li>";
             $("#images-list").append($(f));
-            g_ss_merge_controller.m_sprites.push(e);
+            f = $("#images-list").children();
+            f = $(f[f.length - 1]).find("#delete-image-button");
+            $(f).click(function() {
+              var a = $(this).parent().find("#image-index").text();
+              $(this).parent().remove();
+              for (var b = -1, c = null, d = g_ss_merge_controller.m_sprites.length, e = 0;e < d;++e) {
+                if (c = g_ss_merge_controller.m_sprites[e], c.tag === a) {
+                  b = e;
+                  break;
+                }
+              }
+              g_ss_merge_controller.m_sprites.splice(b, 1);
+              g_ss_merge_scene.remove_child(c);
+              c.release();
+              g_ss_merge_controller.reorder_sprites_positions();
+            });
+            d.is_touchable = !0;
+            f = d.get_component(gb.ces_base_component.type.touch_recognize);
+            f.add_callback(gb.input_context.state.pressed, function(a) {
+              if (g_ss_merge_controller.m_selector.target) {
+                var b = g_ss_merge_controller.m_selector.target;
+                g_ss_merge_scene.add_child(b);
+                b.position = g_ss_merge_controller.m_selector.position;
+                b.rotation = g_ss_merge_controller.m_selector.rotation;
+              }
+              g_ss_merge_controller.m_selector.position = a.position;
+              g_ss_merge_controller.m_selector.rotation = a.rotation;
+              g_ss_merge_controller.m_selector.size = a.size;
+            });
+            f.add_callback(gb.input_context.state.dragged, function() {
+              console.log(arguments);
+            });
+            d.tag = e;
+            g_ss_merge_scene.add_child(d);
+            g_ss_merge_controller.m_sprites.push(d);
             g_ss_merge_controller.reorder_sprites_positions();
           });
         };
-      }(d);
-      e.readAsDataURL(d);
+      }(c);
+      d.readAsDataURL(c);
     }
   }
 }, handle_drag_over:function(a) {
@@ -3391,6 +3528,11 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
     b >= gl.viewport_width && (b = 0, c += this.m_frame_height);
     c >= gl.viewport_height && console.error("can't insert image");
   }
+}, create_animation_configuration:function(a, b) {
+  for (var c = [], d = this.m_sprites.length, e = null, g = null, e = null, f = 0;f < d;++f) {
+    e = this.m_sprites[f], g = e.position, e = gb.vec2.add(g, e.size), c.push({u_0:g.x / a, v_0:g.y / b, u_1:e.x / a, v_1:e.y / b});
+  }
+  return c;
 }}, static_methods:{}});
 var g_ss_animation_controller = null, g_ss_animation_scene = null;
 oop.define_class({namespace:"gb", name:"ss_animation_controller", init:function() {
@@ -3417,5 +3559,85 @@ oop.define_class({namespace:"gb", name:"ss_animation_controller", init:function(
 }, deactivate:function() {
   g_ss_animation_scene.remove_child(this.m_grid);
   this.m_grid.get_component(gb.ces_base_component.type.geometry).mesh.release();
+}}, static_methods:{}});
+oop.define_class({namespace:"gb", name:"selector", constants:{corner_type:{left_top:0, right_top:1, left_bottom:2, right_bottom:3, max:4}}, init:function() {
+  this.m_bounding_quad = null;
+  this.m_corners_selectors = [];
+  this.m_target = this.m_center_selector = null;
+  Object.defineProperty(this, "bounding_quad", {get:function() {
+    return this.m_bounding_quad;
+  }, set:function(a) {
+    this.m_bounding_quad = a;
+  }});
+  Object.defineProperty(this, "center_selector", {get:function() {
+    return this.m_center_selector;
+  }, set:function(a) {
+    this.m_center_selector && this.m_center_selector.remove_from_parent();
+    this.m_center_selector = a;
+    this.m_bounding_quad.add_child(this.m_center_selector);
+  }});
+  Object.defineProperty(this, "size", {get:function() {
+    return this.m_bounding_quad.size;
+  }, set:function(a) {
+    this.m_bounding_quad.size = a;
+    a = new gb.vec2(a.x / 2 - this.m_center_selector.size.x / 2, a.y / 2 - this.m_center_selector.size.y / 2);
+    console.log(a);
+    this.m_center_selector.position = a;
+  }});
+  Object.defineProperty(this, "position", {get:function() {
+    return this.m_bounding_quad.position;
+  }, set:function(a) {
+    this.m_bounding_quad.position = a;
+  }});
+  Object.defineProperty(this, "target", {get:function() {
+    return this.m_target;
+  }, set:function(a) {
+    this.m_target = a;
+    this.m_target.remove_from_parent();
+    this.m_target.position = gb.vec2(0);
+    this.m_target.rotation = 0;
+    this.m_bounding_quad.add_child(this.m_target);
+    a = null;
+    for (var b = 0;b < gb.selector.corner_type.max;++b) {
+      if (a = this.m_corners_selectors[b]) {
+        a.remove_from_parent(), this.m_bounding_quad.add_child(a);
+      }
+    }
+    this.m_center_selector.remove_from_parent();
+    this.m_bounding_quad.add_child(this.m_center_selector);
+  }});
+  Object.defineProperty(this, "rotation", {get:function() {
+    return this.m_bounding_quad.rotation;
+  }, set:function(a) {
+    this.m_bounding_quad.rotation = a;
+  }});
+}, release:function() {
+}, methods:{set_corner_selector:function(a, b) {
+  this.m_corners_selectors[b] && this.m_corners_selectors[b].remove_from_parent();
+  this.m_corners_selectors[b] = a;
+  this.m_bounding_quad.add_child(this.m_corners_selectors[b]);
+}}, static_methods:{}});
+oop.define_class({namespace:"gb", name:"editor_fabricator", init:function() {
+  this.m_scene_fabricator = null;
+  Object.defineProperty(this, "scene_fabricator", {get:function() {
+    return this.m_scene_fabricator;
+  }, set:function(a) {
+    this.m_scene_fabricator = a;
+  }});
+}, release:function() {
+}, methods:{create_selector:function() {
+  var a = new gb.selector, b = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
+    b.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .75), "u_color");
+  });
+  a.bounding_quad = b;
+  var c = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
+    c.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, 1), "u_color");
+    var a = new gb.ces_geometry_freeform_component;
+    a.mesh = gb.mesh_constructor.create_circle();
+    c.add_component(a);
+    c.size = new gb.vec2(16);
+  });
+  a.center_selector = c;
+  return a;
 }}, static_methods:{}});
 

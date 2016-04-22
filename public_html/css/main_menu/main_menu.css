@@ -232,3 +232,23 @@
     margin-left: 4px;
     margin-top: 4px;
 }
+
+#image-index {
+    font: italic bold 10px Georgia, serif;
+    color: #66CC33;
+    margin-top: 50px;
+    margin-bottom: 10px;
+    margin-left: 130px;
+    text-align: left;
+}
+
+#delete-image-button {
+    background: black;
+    margin-top: 10px;
+    margin-left: 90px;
+    border: 2px solid;
+    min-width: 80px;
+    border-color: #336633;
+    font: italic bold 16px Georgia, serif;
+    color: #66CC33;
+}

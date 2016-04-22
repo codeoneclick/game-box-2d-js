@@ -12,6 +12,7 @@ oop.define_class({
 		this.m_transitions = [];
 		this.resource_accessor = new gb.resource_accessor();
 		this.configuration_accessor = new gb.configuration_accessor();
+		this.m_input_context = new gb.input_context();
 	},
 
 	release: function() {
@@ -48,7 +49,7 @@ oop.define_class({
 					this.m_current_transition.on_deactivated();
 				}
 				this.m_current_transition = this.m_transitions[index];
-				this.m_current_transition.on_activated(this.configuration_accessor, this.resource_accessor, callback);
+				this.m_current_transition.on_activated(this.m_input_context, this.configuration_accessor, this.resource_accessor, callback);
 			}
 		}
 	},

@@ -40,6 +40,7 @@ oop.define_class({
 	},
 
 	methods: {
+
 		update_mesh_position_attributes: function() {
 			var size = new gb.vec2(this.m_frame.z - this.m_pivot.x, this.m_frame.w - this.m_pivot.y);
 			var position = new gb.vec2(size.x - this.m_frame.z, size.y - this.m_frame.w);
@@ -51,6 +52,16 @@ oop.define_class({
 			vbo.write_attribute(gb.vbo.attribute.position, 2, new gb.vec2(frame.y, frame.z));
 			vbo.write_attribute(gb.vbo.attribute.position, 3, new gb.vec2(frame.y, frame.w));
 			vbo.submit();
+		},
+
+		update_mesh_texcoord_attributes: function(u_0, v_0, u_1, v_1) {
+
+			var vbo = this.m_mesh.vbo;
+			vbo.write_attribute(gb.vbo.attribute.texcoord, 0, new gb.vec2(u_0, v_0));
+            vbo.write_attribute(gb.vbo.attribute.texcoord, 1, new gb.vec2(u_0, v_1));
+            vbo.write_attribute(gb.vbo.attribute.texcoord, 2, new gb.vec2(u_1, v_0));
+            vbo.write_attribute(gb.vbo.attribute.texcoord, 3, new gb.vec2(u_1, v_1));
+            vbo.submit();
 		}
 	},
 

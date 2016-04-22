@@ -9,7 +9,8 @@ oop.define_class({
             undefined: -1,
             render: 0,
             deferred_lighting: 1,
-            touches: 2
+            touches_recognize: 2,
+            animation: 3
         }
     },
     

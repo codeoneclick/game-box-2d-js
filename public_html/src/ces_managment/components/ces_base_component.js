@@ -16,7 +16,8 @@ oop.define_class({
 			light_mask: 5,
 			convex_hull: 6,
 			touch_recognize: 7,
-			max: 8
+			animation: 8,
+			max: 9
 		}
 	},
 

@@ -61,11 +61,13 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/ces_managment/components/ces_light_component.js \
 --js=../public_html/src/ces_managment/components/ces_light_mask_component.js \
 --js=../public_html/src/ces_managment/components/ces_touch_recognize_component.js \
+--js=../public_html/src/ces_managment/components/ces_animation_component.js \
 --js=../public_html/src/ces_managment/ces_entity.js \
 --js=../public_html/src/ces_managment/systems/ces_base_system.js \
 --js=../public_html/src/ces_managment/systems/ces_deferred_lighting_system.js \
 --js=../public_html/src/ces_managment/systems/ces_render_system.js \
 --js=../public_html/src/ces_managment/systems/ces_touches_system.js \
+--js=../public_html/src/ces_managment/systems/ces_animation_system.js \
 --js=../public_html/src/ces_managment/ces_systems_feeder.js \
 --js=../public_html/src/scene_graph_managment/camera.js \
 --js=../public_html/src/scene_graph_managment/game_object.js \
@@ -79,5 +81,7 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/game_states_managment/game_controller.js \
 --js=../public_html/src/ui_managment/ss_merge_controller.js \
 --js=../public_html/src/ui_managment/ss_animation_controller.js \
+--js=../public_html/src/editor_managment/selector.js \
+--js=../public_html/src/editor_managment/editor_fabricator.js \
 --js=!../public_html/src/game_box-min.js \
 --formatting=PRETTY_PRINT
