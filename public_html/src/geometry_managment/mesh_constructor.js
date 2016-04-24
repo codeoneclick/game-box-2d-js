@@ -109,7 +109,7 @@ oop.define_class({
         {
             var num_vertices = (num_rows + 1) * (num_columns + 1) * 4;
             var num_indices = (num_rows + 1) * (num_columns + 1) * 4;
-            
+
             var vbo = new gb.vbo(num_vertices, gl.STATIC_DRAW, gb.vbo.declaration.position_xy);
             var index = 0;
             var vertex_position = new gb.vec2();
@@ -117,29 +117,53 @@ oop.define_class({
             {
                 vertex_position.x = i * rows_gap;
                 vertex_position.y = 0.0;
+                if(i === num_columns) {
+                    vertex_position.x -= 1.0;
+                }
+                if(i === 0) {
+                    vertex_position.x += 1.0;
+                }
                 vbo.write_attribute(gb.vbo.attribute.position, index, vertex_position);
                 index++;
 
                 vertex_position.x = i * rows_gap;
+                if(i === num_columns) {
+                    vertex_position.x -= 1.0;
+                }
+                if(i === 0) {
+                    vertex_position.x += 1.0;
+                }
                 vertex_position.y = num_columns * columns_gap;
                 vbo.write_attribute(gb.vbo.attribute.position, index, vertex_position);
                 index++;
             }
-            
+
             for(var i = 0; i <= num_columns; ++i)
             {
                 vertex_position.x = 0.0;
                 vertex_position.y = i * columns_gap;
+                if(i === num_columns) {
+                    vertex_position.y -= 1.0;
+                }
+                if(i === 0) {
+                    vertex_position.y += 1.0;
+                }
                 vbo.write_attribute(gb.vbo.attribute.position, index, vertex_position);
                 index++;
 
-                vertex_position.x = num_rows * rows_gap;
+                vertex_position.x = num_columns * rows_gap;
                 vertex_position.y = i * columns_gap;
+                if(i === num_columns) {
+                    vertex_position.y -= 1.0;
+                }
+                if(i === 0) {
+                    vertex_position.y += 1.0;
+                }
                 vbo.write_attribute(gb.vbo.attribute.position, index, vertex_position);
                 index++;
             }
             vbo.submit();
-            
+
             var ibo = new gb.ibo(num_indices * 4, gl.STATIC_DRAW);
             for(var i = 0; i < num_indices; ++i)
             {

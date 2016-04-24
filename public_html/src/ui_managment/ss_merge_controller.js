@@ -13,7 +13,7 @@ oop.define_class({
 
         $("#ss-merge-tab").append($("<div id=\"ui-ss-merge-center\"/>"));
         $("#ss-merge-tab").append($("<div id=\"ui-ss-merge-left\"/>"));
-        $("#ui-ss-merge-center").append($("<canvas id=\"gl_canvas\" width=\"1024\" height=\"768\"></canvas>"));
+        $("#ui-ss-merge-center").append($("<canvas id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
         $("#ui-ss-merge-left").append($("<div id=\"frame-size\">Frame Size</div>"));
         $("#frame-size").append($("<div id=\"frame-width-slider\"><input type=\"text\" id=\"frame-width-value\" readonly value=\"Width 128 px\"></div></p>"));
         $("#frame-size").append($("<div id=\"frame-height-slider\"><input type=\"text\" id=\"frame-height-value\" readonly value=\"Height 128 px\"></div></p>"));
@@ -22,7 +22,7 @@ oop.define_class({
         $("#images-container").append($("</ul>"));
         $("#ui-ss-merge-left").append($("<div id=\"drop-zone\">Drop Zone</div>"));
         $("#ui-ss-merge-left").append($("<div id=\"ss-merge-save-zone\"><button id=\"ss-merge-save-button\" type=\"button\">Generate</button></div>"));
-        
+
         $("#frame-width-slider").slider({
             value: 128,
             min: 32,
@@ -151,6 +151,7 @@ oop.define_class({
 
                 self.m_grid = scene.fabricator.create_grid("data/resources/configurations/game_objects/grid.json", 32, 32, 32, 32, function() {
                     self.m_grid.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
+                    self.m_grid.position = new gb.vec2(0.0, -1.0);
                 });
                 scene.add_child(self.m_grid);
 

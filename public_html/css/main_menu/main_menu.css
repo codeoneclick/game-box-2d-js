@@ -1,7 +1,7 @@
 #menu-tabs {
     background: black;
     width: 1420px;
-    height: 812px;
+    border: 0px;
     margin: auto;
 }
 
@@ -62,18 +62,21 @@
     position: absolute;
     background-color: black;
     width: 400px;
-    height: 768px;
+    height: 1024px;
     float:left;
+    border-right: 6px solid #336633;
 }
 
 #ui-ss-merge-center {
     position: absolute;
-    background-color: black;
+    background: black;
     width: 1024px;
-    height: 768px;
+    height: 1024px;
     left: 400px;
     float: left;
-    margin-left: 4px;
+    padding: 5px;
+    padding-left: 15px;
+    overflow: hidden;
 }
 
 #ss-animation-tab {
@@ -161,31 +164,25 @@
 #images-container {
     color: #66CC33;
     font: italic bold 16px Georgia, serif;
-    border: 2px dashed;
-    border-color: #336633;
-    padding: 20px;
+    border: 2px dashed #336633;
+    padding: 5px;
     margin: 5px;
     text-align: center;
 }
 
 #images-list { 
     list-style-type: none; 
-    margin-top: 5px; 
-    width: 90%;
     max-height: 275px;
     overflow: auto;
 }
 
 #images-list li {
     background: black;
-    border: 2px dashed;
-    border-color: #336633;
-    font-size: 1.4em;
+    border: 2px dashed #336633;
     height: 128px;
     margin-left: -35px;
-    margin-right: 10px;
+    margin-right: 5px;
     margin-top: 5px;
-    margin-bottom: 5px;
 }
 
 #images-list li span { 
@@ -229,8 +226,6 @@
 #images-list-cell-image {
     width: 120px;
     height: 120px;
-    margin-left: 4px;
-    margin-top: 4px;
 }
 
 #image-index {
@@ -244,11 +239,10 @@
 
 #delete-image-button {
     background: black;
-    margin-top: 10px;
-    margin-left: 90px;
-    border: 2px solid;
+    margin-top: 5px;
+    margin-left: 135px;
+    border: 2px solid #336633;
     min-width: 80px;
-    border-color: #336633;
     font: italic bold 16px Georgia, serif;
     color: #66CC33;
 }
