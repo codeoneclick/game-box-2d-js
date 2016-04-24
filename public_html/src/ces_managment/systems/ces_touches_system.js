@@ -35,8 +35,8 @@ oop.define_class({
                         var callbacks = touch_recognize_component.get_callbacks(event.state);
                         var callbacks_count = callbacks.length;
                         for (var j = 0; j < callbacks_count; ++j) {
-                            var callback = callbacks[j];
-                            callback(captured_entity, event.state, event.point);
+                            var callback = callbacks[j].callback;
+                            callback(captured_entity, event.state, event.point, callbacks[j].userdata);
                         }
                     }
                     this.m_captured_entities = [];
@@ -57,13 +57,13 @@ oop.define_class({
                     var callbacks = touch_recognize_component.get_callbacks(event.state);
                     var callbacks_count = callbacks.length;
                     for (var i = 0; i < callbacks_count; ++i) {
-                        var callback = callbacks[i];
+                        var callback = callbacks[i].callback;
                         var index = this.m_captured_entities.findIndex(function(analized_entity) {
                             return analized_entity === intersected_entity;
                         });
-                        
+
                         if (index !== -1) {
-                            callback(intersected_entity, event.state, event.point);
+                            callback(intersected_entity, event.state, event.point, callbacks[i].userdata);
                         }
                     }
                 }
@@ -75,13 +75,12 @@ oop.define_class({
                         var callbacks = touch_recognize_component.get_callbacks(event.state);
                         var callbacks_count = callbacks.length;
                         for (var j = 0; j < callbacks_count; ++j) {
-                            var callback = callbacks[j];
-                            callback(captured_entity, event.state, event.point);
+                            var callback = callbacks[j].callback;
+                            callback(captured_entity, event.state, event.point, callbacks[j].userdata);
                         }
                     }
                 }
             }
-
         },
 
         on_feed_end: function() {

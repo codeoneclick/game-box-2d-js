@@ -12,7 +12,7 @@ oop.define_class({
         this.m_bound = new gb.vec4(0.0);
         this.m_min_bound = new gb.vec2(0.0);
         this.m_max_bound = new gb.vec2(0.0);
-        
+
         this.m_responders = [];
         this.m_responders[gb.input_context.state.pressed] = false;
         this.m_responders[gb.input_context.state.released] = false;
@@ -70,15 +70,15 @@ oop.define_class({
             return this.m_responders[state];
         },
 
-        add_callback: function(state, callback)
+        add_callback: function(state, callback, userdata)
         {
-            this.m_callbacks[state].push(callback);
+            this.m_callbacks[state].push({ callback: callback, userdata: userdata });
         },
 
         remove_callback: function(state, callback)
         {
             var index = this.m_callbacks[state].findIndex(function(analized_callback) {
-                return callback === analized_callback;
+                return callback === analized_callback.callback;
             });
             if(index !== -1)
             {

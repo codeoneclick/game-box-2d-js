@@ -4,7 +4,9 @@
         <title>game-box-2d</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
         <link rel="stylesheet" href="libs/jquery.ui-1.11.4/jquery-ui.min.css">
+        <link rel="stylesheet" href="libs/jquery.custom.scrollbar/jquery.custom.scrollbar-min.css">
         <link rel="stylesheet" href="css/main_menu/main_menu.css">
         <script src="libs/jquery-1.12.3/jquery-min.js"></script>
         <script src="libs/jquery.ui-1.11.4/jquery-ui.min.js"></script>
@@ -14,20 +16,14 @@
             html, body {
                 background: white;
                 width: 1424;
-                height: 768;                   
+                height: 768;
                 padding: 0;
                 margin: 0;
-                overflow: hidden;
+                overflow: auto;
             }
         </style>
 
         <script type="text/javascript">
-            
-            $(function() {
-                $( "#resizable" ).resizable({
-                    animate: true
-                });
-             });
 
             var g_game_controller = null;
             var game_logic = null;
@@ -238,7 +234,6 @@
             <div id="ss-split-tab"></div>
             <div id="ss-animation-tab"></div>
         </div>
-        
         <script src="src/game_box-min.js"></script>
     </body>
 </html>

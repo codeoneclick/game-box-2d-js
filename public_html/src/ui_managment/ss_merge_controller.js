@@ -98,6 +98,8 @@ oop.define_class({
                 new_texture.add_resource_loading_callback(function(resource, userdata) {
                     if(!g_ss_merge_controller.m_preview_sprite) {
                         g_ss_merge_controller.m_preview_sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+                            resource.mag_filter = gl.LINEAR;
+                            resource.min_filter = gl.LINEAR;
                             resource.wrap_mode = gl.CLAMP_TO_EDGE;
                             var material_component = g_ss_merge_controller.m_preview_sprite.get_component(gb.ces_base_component.type.material);
                             material_component.set_texture(resource, 0);
@@ -143,11 +145,10 @@ oop.define_class({
 
             var self = this;
             gb.game_controller.get_instance().goto_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json", function(scene) {
-            
                 g_ss_merge_scene = scene;
                 var camera = new gb.camera(gl.viewport_width, gl.viewport_height);
                 scene.camera = camera;
-                    
+
                 self.m_grid = scene.fabricator.create_grid("data/resources/configurations/game_objects/grid.json", 32, 32, 32, 32, function() {
                     self.m_grid.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
                 });
@@ -164,8 +165,6 @@ oop.define_class({
                 var editor_fabricator = new gb.editor_fabricator();
                 editor_fabricator.scene_fabricator = scene.fabricator;
                 self.m_selector = editor_fabricator.create_selector();
-                self.m_selector.size = new gb.vec2(256);
-                scene.add_child(self.m_selector.bounding_quad);
             });
         },
 
@@ -203,6 +202,8 @@ oop.define_class({
                             var new_texture = g_ss_merge_scene.fabricator.resources_accessor.get_texture(data.target.m_filename, image);
                             new_texture.add_resource_loading_callback(function(resource, userdata) {
                                 var sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+                                    resource.mag_filter = gl.LINEAR;
+                                    resource.min_filter = gl.LINEAR;
                                     resource.wrap_mode = gl.CLAMP_TO_EDGE;
                                     var material_component = sprite.get_component(gb.ces_base_component.type.material);
                                     material_component.set_texture(resource, 0);
@@ -253,21 +254,7 @@ oop.define_class({
 
                                 sprite.is_touchable = true;
                                 var touch_recognize_component = sprite.get_component(gb.ces_base_component.type.touch_recognize);
-                                touch_recognize_component.add_callback(gb.input_context.state.pressed, function(entity) {
-                                    if(g_ss_merge_controller.m_selector.target) {
-                                        var target = g_ss_merge_controller.m_selector.target;
-                                        g_ss_merge_scene.add_child(target);
-                                        target.position = g_ss_merge_controller.m_selector.position;
-                                        target.rotation = g_ss_merge_controller.m_selector.rotation;
-                                    }
-                                    g_ss_merge_controller.m_selector.position = entity.position;
-                                    g_ss_merge_controller.m_selector.rotation = entity.rotation;
-                                    g_ss_merge_controller.m_selector.size = entity.size;
-                                });
-
-                                touch_recognize_component.add_callback(gb.input_context.state.dragged, function() {
-                                    console.log(arguments);
-                                });
+                                touch_recognize_component.add_callback(gb.input_context.state.pressed, g_ss_merge_controller.on_sprite_pressed, g_ss_merge_controller);
 
                                 sprite.tag = unique_tag;
                                 g_ss_merge_scene.add_child(sprite);
@@ -319,6 +306,28 @@ oop.define_class({
                     u_1:position_1.x / atlas_width, v_1: position_1.y / atlas_height});
             }
             return frames;
+        },
+
+        on_sprite_pressed: function(entity, state, point, userdata) {
+            var target_touch_recognize_component = null;
+            if(userdata.m_selector.target) {
+                var target = userdata.m_selector.target;
+                g_ss_merge_scene.add_child(target);
+                target.position = userdata.m_selector.position;
+                target.rotation = userdata.m_selector.rotation;
+                target_touch_recognize_component = target.get_component(gb.ces_base_component.type.touch_recognize);
+                target_touch_recognize_component.add_callback(gb.input_context.state.pressed, userdata.on_sprite_pressed, userdata);
+            }
+            userdata.m_selector.position = entity.position;
+            userdata.m_selector.rotation = entity.rotation;
+            userdata.m_selector.size = entity.size;
+            userdata.m_selector.target = entity;
+
+            target_touch_recognize_component = entity.get_component(gb.ces_base_component.type.touch_recognize);
+            target_touch_recognize_component.remove_callback(gb.input_context.state.pressed, userdata.on_sprite_pressed);
+
+            userdata.m_selector.bounding_quad.remove_from_parent();
+            g_ss_merge_scene.add_child(userdata.m_selector.bounding_quad);
         }
     },
 

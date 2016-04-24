@@ -80,6 +80,7 @@ oop.define_class({
 						var size = this.size;
                 		touch_recognize_component.bound = new gb.vec4(0.0, 0.0, size.x, size.y);
                 		touch_recognize_component.enable(gb.input_context.state.pressed, true);
+                		touch_recognize_component.enable(gb.input_context.state.released, true);
                 		touch_recognize_component.enable(gb.input_context.state.dragged, true);
                 		this.add_component(touch_recognize_component);
 					}

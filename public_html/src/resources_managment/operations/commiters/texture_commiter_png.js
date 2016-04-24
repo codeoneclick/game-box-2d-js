@@ -22,7 +22,9 @@ oop.define_class({
 			var handler = gl.createTexture();
 			gl.bindTexture(gl.TEXTURE_2D, handler);
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, data.data);
-			gl.generateMipmap(gl.TEXTURE_2D);
+			if(gb.math.is_pot(data.width) && gb.math.is_pot(data.height)) {
+				gl.generateMipmap(gl.TEXTURE_2D);
+			}
 
 			data.handler = handler;
 			this.m_resource.on_transfering_data_commited(data);

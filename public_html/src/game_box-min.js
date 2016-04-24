@@ -1187,7 +1187,7 @@ oop.define_class({namespace:"gb", name:"texture_commiter_png", extend:gb.resourc
   var b = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, b);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, a.data);
-  gl.generateMipmap(gl.TEXTURE_2D);
+  gb.math.is_pot(a.width) && gb.math.is_pot(a.height) && gl.generateMipmap(gl.TEXTURE_2D);
   a.handler = b;
   this.m_resource.on_transfering_data_commited(a);
   this.m_status = gb.resource_commiter.status.success;
@@ -2580,11 +2580,11 @@ oop.define_class({namespace:"gb", name:"ces_touch_recognize_component", extend:g
   this.m_responders[a] = b;
 }, is_respond_to:function(a) {
   return this.m_responders[a];
-}, add_callback:function(a, b) {
-  this.m_callbacks[a].push(b);
+}, add_callback:function(a, b, c) {
+  this.m_callbacks[a].push({callback:b, userdata:c});
 }, remove_callback:function(a, b) {
   var c = this.m_callbacks[a].findIndex(function(a) {
-    return b === a;
+    return b === a.callback;
   });
   -1 !== c && this.m_callbacks[a].splice(c, 1);
 }, get_callbacks:function(a) {
@@ -2831,8 +2831,8 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
     if (b.state === gb.input_context.state.released) {
       for (var d = this.m_captured_entities.length, e = 0;e < d;++e) {
         for (var g = this.m_captured_entities[e], f = g.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, l = 0;l < h;++l) {
-          var k = f[l];
-          k(g, b.state, b.point);
+          var k = f[l].callback;
+          k(g, b.state, b.point, f[l].userdata);
         }
       }
       this.m_captured_entities = [];
@@ -2841,15 +2841,15 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
       for (b.state === gb.input_context.state.pressed && (d = this.m_captured_entities.findIndex(function(a) {
         return a === c;
       }), -1 === d && this.m_captured_entities.push(c)), f = c.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, e = 0;e < h;++e) {
-        k = f[e], d = this.m_captured_entities.findIndex(function(a) {
+        k = f[e].callback, d = this.m_captured_entities.findIndex(function(a) {
           return a === c;
-        }), -1 !== d && k(c, b.state, b.point);
+        }), -1 !== d && k(c, b.state, b.point, f[e].userdata);
       }
     }
     if (b.state === gb.input_context.state.dragged) {
       for (d = this.m_captured_entities.length, e = 0;e < d;++e) {
         for (g = this.m_captured_entities[e], f = g.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, l = 0;l < h;++l) {
-          k = f[l], k(g, b.state, b.point);
+          k = f[l].callback, k(g, b.state, b.point, f[l].userdata);
         }
       }
     }
@@ -3100,6 +3100,7 @@ oop.define_class({namespace:"gb", name:"sprite", extend:gb.game_object, init:fun
         var c = this.size;
         a.bound = new gb.vec4(0, 0, c.x, c.y);
         a.enable(gb.input_context.state.pressed, !0);
+        a.enable(gb.input_context.state.released, !0);
         a.enable(gb.input_context.state.dragged, !0);
         this.add_component(a);
       }
@@ -3400,6 +3401,8 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
       var a = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, e, g), h = g_ss_merge_controller.create_animation_configuration(e, g);
       g_ss_merge_scene.fabricator.resources_accessor.get_texture("preview_atlas", a).add_resource_loading_callback(function(a, b) {
         g_ss_merge_controller.m_preview_sprite ? g_ss_merge_controller.m_preview_sprite.get_component(gb.ces_base_component.type.material).set_texture(a, 0) : (g_ss_merge_controller.m_preview_sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+          a.mag_filter = gl.LINEAR;
+          a.min_filter = gl.LINEAR;
           a.wrap_mode = gl.CLAMP_TO_EDGE;
           g_ss_merge_controller.m_preview_sprite.get_component(gb.ces_base_component.type.material).set_texture(a, 0);
         }), g_ss_merge_scene.add_child(g_ss_merge_controller.m_preview_sprite), g_ss_merge_controller.m_preview_sprite.size = new gb.vec2(256, 256));
@@ -3436,8 +3439,6 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
     d = new gb.editor_fabricator;
     d.scene_fabricator = a.fabricator;
     b.m_selector = d.create_selector();
-    b.m_selector.size = new gb.vec2(256);
-    a.add_child(b.m_selector.bounding_quad);
   });
 }, deactivate:function() {
   var a = this.m_sprites.length;
@@ -3463,6 +3464,8 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
           b.src = a.target.result;
           g_ss_merge_scene.fabricator.resources_accessor.get_texture(a.target.m_filename, b).add_resource_loading_callback(function(b, c) {
             for (var d = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+              b.mag_filter = gl.LINEAR;
+              b.min_filter = gl.LINEAR;
               b.wrap_mode = gl.CLAMP_TO_EDGE;
               d.get_component(gb.ces_base_component.type.material).set_texture(b, 0);
             }), e = g_ss_merge_controller.m_sprites.length, f = 0, n = null, q = 0;q < e;++q) {
@@ -3490,21 +3493,7 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
               g_ss_merge_controller.reorder_sprites_positions();
             });
             d.is_touchable = !0;
-            f = d.get_component(gb.ces_base_component.type.touch_recognize);
-            f.add_callback(gb.input_context.state.pressed, function(a) {
-              if (g_ss_merge_controller.m_selector.target) {
-                var b = g_ss_merge_controller.m_selector.target;
-                g_ss_merge_scene.add_child(b);
-                b.position = g_ss_merge_controller.m_selector.position;
-                b.rotation = g_ss_merge_controller.m_selector.rotation;
-              }
-              g_ss_merge_controller.m_selector.position = a.position;
-              g_ss_merge_controller.m_selector.rotation = a.rotation;
-              g_ss_merge_controller.m_selector.size = a.size;
-            });
-            f.add_callback(gb.input_context.state.dragged, function() {
-              console.log(arguments);
-            });
+            d.get_component(gb.ces_base_component.type.touch_recognize).add_callback(gb.input_context.state.pressed, g_ss_merge_controller.on_sprite_pressed, g_ss_merge_controller);
             d.tag = e;
             g_ss_merge_scene.add_child(d);
             g_ss_merge_controller.m_sprites.push(d);
@@ -3533,6 +3522,17 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
     e = this.m_sprites[f], g = e.position, e = gb.vec2.add(g, e.size), c.push({u_0:g.x / a, v_0:g.y / b, u_1:e.x / a, v_1:e.y / b});
   }
   return c;
+}, on_sprite_pressed:function(a, b, c, d) {
+  b = null;
+  d.m_selector.target && (b = d.m_selector.target, g_ss_merge_scene.add_child(b), b.position = d.m_selector.position, b.rotation = d.m_selector.rotation, b = b.get_component(gb.ces_base_component.type.touch_recognize), b.add_callback(gb.input_context.state.pressed, d.on_sprite_pressed, d));
+  d.m_selector.position = a.position;
+  d.m_selector.rotation = a.rotation;
+  d.m_selector.size = a.size;
+  d.m_selector.target = a;
+  b = a.get_component(gb.ces_base_component.type.touch_recognize);
+  b.remove_callback(gb.input_context.state.pressed, d.on_sprite_pressed);
+  d.m_selector.bounding_quad.remove_from_parent();
+  g_ss_merge_scene.add_child(d.m_selector.bounding_quad);
 }}, static_methods:{}});
 var g_ss_animation_controller = null, g_ss_animation_scene = null;
 oop.define_class({namespace:"gb", name:"ss_animation_controller", init:function() {
@@ -3563,7 +3563,7 @@ oop.define_class({namespace:"gb", name:"ss_animation_controller", init:function(
 oop.define_class({namespace:"gb", name:"selector", constants:{corner_type:{left_top:0, right_top:1, left_bottom:2, right_bottom:3, max:4}}, init:function() {
   this.m_bounding_quad = null;
   this.m_corners_selectors = [];
-  this.m_target = this.m_center_selector = null;
+  this.m_previous_selector_touch_point = this.m_previous_target_touch_point = this.m_target = this.m_center_selector = null;
   Object.defineProperty(this, "bounding_quad", {get:function() {
     return this.m_bounding_quad;
   }, set:function(a) {
@@ -3575,36 +3575,47 @@ oop.define_class({namespace:"gb", name:"selector", constants:{corner_type:{left_
     this.m_center_selector && this.m_center_selector.remove_from_parent();
     this.m_center_selector = a;
     this.m_bounding_quad.add_child(this.m_center_selector);
+    this.m_center_selector.is_touchable = !0;
+    this.m_center_selector.get_component(gb.ces_base_component.type.touch_recognize).add_callback(gb.input_context.state.dragged, this.on_selector_dragged);
   }});
   Object.defineProperty(this, "size", {get:function() {
     return this.m_bounding_quad.size;
   }, set:function(a) {
     this.m_bounding_quad.size = a;
-    a = new gb.vec2(a.x / 2 - this.m_center_selector.size.x / 2, a.y / 2 - this.m_center_selector.size.y / 2);
-    console.log(a);
-    this.m_center_selector.position = a;
+    var b = new gb.vec2(a.x / 2, a.y / 2);
+    this.m_center_selector.position = b;
+    this.m_corners_selectors[gb.selector.corner_type.left_top].position = new gb.vec2(0, 0);
+    this.m_corners_selectors[gb.selector.corner_type.right_top].position = new gb.vec2(0, a.x);
+    this.m_corners_selectors[gb.selector.corner_type.left_bottom].position = new gb.vec2(a.y, 0);
+    this.m_corners_selectors[gb.selector.corner_type.right_bottom].position = new gb.vec2(a.x, a.y);
   }});
   Object.defineProperty(this, "position", {get:function() {
     return this.m_bounding_quad.position;
   }, set:function(a) {
     this.m_bounding_quad.position = a;
+    console.log("position ");
+    console.log(a);
   }});
   Object.defineProperty(this, "target", {get:function() {
     return this.m_target;
   }, set:function(a) {
+    var b = null;
+    this.m_target && (b = this.m_target.get_component(gb.ces_base_component.type.touch_recognize), b.remove_callback(gb.input_context.state.pressed, this.on_target_pressed), b.remove_callback(gb.input_context.state.dragged, this.on_target_dragged), b.remove_callback(gb.input_context.state.released, this.on_target_released, this));
     this.m_target = a;
     this.m_target.remove_from_parent();
-    this.m_target.position = gb.vec2(0);
+    this.m_target.position = new gb.vec2(0);
     this.m_target.rotation = 0;
     this.m_bounding_quad.add_child(this.m_target);
     a = null;
-    for (var b = 0;b < gb.selector.corner_type.max;++b) {
-      if (a = this.m_corners_selectors[b]) {
-        a.remove_from_parent(), this.m_bounding_quad.add_child(a);
-      }
+    for (b = 0;b < gb.selector.corner_type.max;++b) {
+      a = this.m_corners_selectors[b], a.remove_from_parent(), this.m_bounding_quad.add_child(a);
     }
     this.m_center_selector.remove_from_parent();
     this.m_bounding_quad.add_child(this.m_center_selector);
+    b = this.m_target.get_component(gb.ces_base_component.type.touch_recognize);
+    b.add_callback(gb.input_context.state.pressed, this.on_target_pressed, this);
+    b.add_callback(gb.input_context.state.dragged, this.on_target_dragged, this);
+    b.add_callback(gb.input_context.state.released, this.on_target_released, this);
   }});
   Object.defineProperty(this, "rotation", {get:function() {
     return this.m_bounding_quad.rotation;
@@ -3616,6 +3627,18 @@ oop.define_class({namespace:"gb", name:"selector", constants:{corner_type:{left_
   this.m_corners_selectors[b] && this.m_corners_selectors[b].remove_from_parent();
   this.m_corners_selectors[b] = a;
   this.m_bounding_quad.add_child(this.m_corners_selectors[b]);
+  a.is_touchable = !0;
+  a.get_component(gb.ces_base_component.type.touch_recognize).add_callback(gb.input_context.state.dragged, this.on_selector_dragged);
+}, on_selector_pressed:function() {
+}, on_selector_released:function() {
+}, on_selector_dragged:function() {
+  console.log("selector dragged");
+}, on_target_pressed:function(a, b, c, d) {
+  d.m_previous_target_touch_point = new gb.vec2(c);
+}, on_target_released:function(a, b, c, d) {
+  d.m_previous_target_touch_point = null;
+}, on_target_dragged:function(a, b, c, d) {
+  d.m_previous_target_touch_point && (a = d.m_previous_target_touch_point.sub(c), d.position = d.position.sub(a), d.m_previous_target_touch_point = new gb.vec2(c));
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"editor_fabricator", init:function() {
   this.m_scene_fabricator = null;
@@ -3627,17 +3650,49 @@ oop.define_class({namespace:"gb", name:"editor_fabricator", init:function() {
 }, release:function() {
 }, methods:{create_selector:function() {
   var a = new gb.selector, b = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
-    b.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .75), "u_color");
+    b.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .25), "u_color");
   });
   a.bounding_quad = b;
   var c = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
-    c.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, 1), "u_color");
+    c.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .5), "u_color");
     var a = new gb.ces_geometry_freeform_component;
     a.mesh = gb.mesh_constructor.create_circle();
     c.add_component(a);
-    c.size = new gb.vec2(16);
+    c.size = new gb.vec2(8);
   });
   a.center_selector = c;
+  var d = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
+    d.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .5), "u_color");
+    var a = new gb.ces_geometry_freeform_component;
+    a.mesh = gb.mesh_constructor.create_circle();
+    d.add_component(a);
+    d.size = new gb.vec2(8);
+  });
+  a.set_corner_selector(d, gb.selector.corner_type.left_top);
+  var e = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
+    e.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .5), "u_color");
+    var a = new gb.ces_geometry_freeform_component;
+    a.mesh = gb.mesh_constructor.create_circle();
+    e.add_component(a);
+    e.size = new gb.vec2(8);
+  });
+  a.set_corner_selector(e, gb.selector.corner_type.right_top);
+  var g = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
+    g.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .5), "u_color");
+    var a = new gb.ces_geometry_freeform_component;
+    a.mesh = gb.mesh_constructor.create_circle();
+    g.add_component(a);
+    g.size = new gb.vec2(8);
+  });
+  a.set_corner_selector(g, gb.selector.corner_type.left_bottom);
+  var f = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
+    f.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .5), "u_color");
+    var a = new gb.ces_geometry_freeform_component;
+    a.mesh = gb.mesh_constructor.create_circle();
+    f.add_component(a);
+    f.size = new gb.vec2(8);
+  });
+  a.set_corner_selector(f, gb.selector.corner_type.right_bottom);
   return a;
 }}, static_methods:{}});
 
