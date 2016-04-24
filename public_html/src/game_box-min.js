@@ -3399,6 +3399,7 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
     g = Math.min(g, gl.viewport_height);
     if (0 < e && 0 < g) {
       var a = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, e, g), h = g_ss_merge_controller.create_animation_configuration(e, g);
+      window.location.href = a.src.replace("image/png", "image/octet-stream");
       g_ss_merge_scene.fabricator.resources_accessor.get_texture("preview_atlas", a).add_resource_loading_callback(function(a, b) {
         g_ss_merge_controller.m_preview_sprite ? g_ss_merge_controller.m_preview_sprite.get_component(gb.ces_base_component.type.material).set_texture(a, 0) : (g_ss_merge_controller.m_preview_sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
           a.mag_filter = gl.LINEAR;
