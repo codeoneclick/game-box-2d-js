@@ -25,7 +25,7 @@ oop.define_class({
 
 		Object.defineProperty(this, 'size', {
 			get: function() {
-				return new gb.vec2(this.m_frame.z, this.m_frame.w);
+				return new gb.vec2(this.m_frame.w, this.m_frame.z);
 			},
 			set: function(value) {
 				this.m_frame.w = value.x;

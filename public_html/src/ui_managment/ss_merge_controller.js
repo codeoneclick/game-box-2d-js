@@ -14,9 +14,11 @@ oop.define_class({
         $("#ss-merge-tab").append($("<div id=\"ui-ss-merge-center\"/>"));
         $("#ss-merge-tab").append($("<div id=\"ui-ss-merge-left\"/>"));
         $("#ui-ss-merge-center").append($("<canvas id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
-        $("#ui-ss-merge-left").append($("<div id=\"frame-size\">Frame Size</div>"));
+        $("#ui-ss-merge-left").append($("<div id=\"frame-size\">Frame Settings</div>"));
         $("#frame-size").append($("<div id=\"frame-width-slider\"><input type=\"text\" id=\"frame-width-value\" readonly value=\"Width 128 px\"></div></p>"));
         $("#frame-size").append($("<div id=\"frame-height-slider\"><input type=\"text\" id=\"frame-height-value\" readonly value=\"Height 128 px\"></div></p>"));
+        $("#frame-size").append($("<input type=\"checkbox\" id=\"frame-settings-frame-align\"><label id=\"frame-settings-frame-align-label\" for=\"frame-settings-frame-align\">Align</label>"));
+        $("#frame-size").append($("<input type=\"checkbox\" id=\"frame-settings-frame-proportional\"><label id=\"frame-settings-frame-proportional-label\" for=\"frame-settings-frame-proportional\">Proportional</label>"));      
         $("#ui-ss-merge-left").append($("<div id=\"images-container\">Frames</div>"));
         $("#images-container").append($("<ul id=\"images-list\">"));
         $("#images-container").append($("</ul>"));
@@ -43,6 +45,17 @@ oop.define_class({
                 $( "#frame-height-value" ).val("Height " + ui.value + " px");
                 g_ss_merge_controller.m_frame_height = ui.value;   
             }
+        });
+
+        $("#frame-settings-frame-align").button();
+        $("#frame-settings-frame-proportional").button();
+
+        $('#frame-settings-frame-align').bind('change', function() {
+            g_ss_merge_controller.m_selector.is_align_movement = $(this).is(':checked');
+        });
+
+        $('#frame-settings-frame-proportional').bind('change', function() {
+            g_ss_merge_controller.m_selector.is_proportional_resizing = $(this).is(':checked');
         });
 
         $("#images-list").sortable();
@@ -74,17 +87,18 @@ oop.define_class({
         var save_button = document.getElementById('ss-merge-save-button');
         save_button.onclick = function() {
 
-            var sprites_count = self.m_sprites.length;
-            var offset_x = 0;
+            var sortered_sprites = self.m_sprites.sort(function(sprite_1, sprite_2) {
+                return sprite_2.size.x * sprite_2.size.y - sprite_1.size.x * sprite_1.size.y;
+            });
+            var sprites_count = sortered_sprites.length;
             var image_width = 0;
-            var image_height = self.m_frame_height;
+            var image_height = 0;
             for(var i = 0; i < sprites_count; ++i) {
-                image_width += self.m_frame_width;
-                offset_x += self.m_frame_width;
-                if(offset_x > gl.viewport_width) {
-                    offset_x = 0;
-                    image_height += self.m_frame_height;
-                }
+                var sprite = sortered_sprites[i];
+                var sprite_offset_x = sprite.position.x + sprite.size.x;
+                var sprite_offset_y = sprite.position.y + sprite.size.y;
+                image_width = sprite_offset_x > image_width ? sprite_offset_x : image_width;
+                image_height = sprite_offset_y > image_height ? sprite_offset_y : image_height;
             }
             image_width = Math.min(image_width, gl.viewport_width);
             image_height = Math.min(image_height, gl.viewport_height);
@@ -92,7 +106,7 @@ oop.define_class({
             if(image_width > 0 && image_height > 0) {
                 var image = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0,  image_width, image_height);
                 var frames = g_ss_merge_controller.create_animation_configuration(image_width, image_height);
-                //window.location.href = image.src.replace('image/png', 'image/octet-stream');
+                window.location.href = image.src.replace('image/png', 'image/octet-stream');
 
                 var new_texture = g_ss_merge_scene.fabricator.resources_accessor.get_texture("preview_atlas", image);
                 new_texture.add_resource_loading_callback(function(resource, userdata) {
@@ -130,6 +144,7 @@ oop.define_class({
         this.m_preview_sprite = null;
 
         this.m_selector = null;
+        this.m_frames_container = new gb.frames_container();
     },
 
     release: function() {
@@ -187,7 +202,9 @@ oop.define_class({
                 event.preventDefault();
 
                 var files = event.dataTransfer.files;
-                for(var i = 0; i < files.length; ++i) {
+                var files_count_unprocessed = files.length;
+                var files_count_processed = 0;
+                for(var i = 0; i < files_count_unprocessed; ++i) {
                     var file = files[i];
                     if (!file.type.match('image.*')) {
                         continue;
@@ -208,6 +225,11 @@ oop.define_class({
                                     resource.wrap_mode = gl.CLAMP_TO_EDGE;
                                     var material_component = sprite.get_component(gb.ces_base_component.type.material);
                                     material_component.set_texture(resource, 0);
+                                    sprite.size = new gb.vec2(resource.width, resource.height);
+                                    files_count_processed++;
+                                    if(files_count_processed === files_count_unprocessed) {
+                                        g_ss_merge_controller.reorder_sprites_positions();
+                                    }
                                 });
 
                                 var sprites_count = g_ss_merge_controller.m_sprites.length;
@@ -260,7 +282,6 @@ oop.define_class({
                                 sprite.tag = unique_tag;
                                 g_ss_merge_scene.add_child(sprite);
                                 g_ss_merge_controller.m_sprites.push(sprite);
-                                g_ss_merge_controller.reorder_sprites_positions();
                             });
                         };
                     })(file);
@@ -275,19 +296,19 @@ oop.define_class({
         },
 
         reorder_sprites_positions: function() {
-            var sprites_count = this.m_sprites.length;
-            var x_offset = 0;
-            var y_offset = 0;
+            this.set_selected_sprite(null);
+            this.m_frames_container.reset();
+            var sortered_sprites = this.m_sprites.sort(function(sprite_1, sprite_2) {
+                return sprite_2.size.x * sprite_2.size.y - sprite_1.size.x * sprite_1.size.y;
+            });
+            var sprites_count = sortered_sprites.length;
             for(var i = 0; i < sprites_count; ++i) {
-                var sprite = this.m_sprites[i];
-                sprite.size = new gb.vec2(this.m_frame_width, this.m_frame_height);
-                sprite.position = new gb.vec2(x_offset, y_offset);
-                x_offset += this.m_frame_width;
-                if(x_offset >= gl.viewport_width) {
-                    x_offset = 0;
-                    y_offset += this.m_frame_height;
-                }
-                if(y_offset >= gl.viewport_height) {
+                var sprite = sortered_sprites[i];
+                var sprite_size = sprite.size;
+                var frame = this.m_frames_container.get_frame_parameters(sprite_size.x, sprite_size.y);
+                if(frame) {
+                    sprite.position = new gb.vec2(frame.x, frame.y);
+                } else {
                     console.error("can't insert image");
                 }
             }
@@ -310,25 +331,34 @@ oop.define_class({
         },
 
         on_sprite_pressed: function(entity, state, point, userdata) {
+            userdata.set_selected_sprite(entity);
+        },
+
+        set_selected_sprite: function(sprite) {
+
             var target_touch_recognize_component = null;
-            if(userdata.m_selector.target) {
-                var target = userdata.m_selector.target;
+            if(this.m_selector.target) {
+                var target = this.m_selector.target;
                 g_ss_merge_scene.add_child(target);
-                target.position = userdata.m_selector.position;
-                target.rotation = userdata.m_selector.rotation;
+                target.position = this.m_selector.position;
+                target.rotation = this.m_selector.rotation;
                 target_touch_recognize_component = target.get_component(gb.ces_base_component.type.touch_recognize);
-                target_touch_recognize_component.add_callback(gb.input_context.state.pressed, userdata.on_sprite_pressed, userdata);
+                target_touch_recognize_component.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this);
             }
-            userdata.m_selector.position = entity.position;
-            userdata.m_selector.rotation = entity.rotation;
-            userdata.m_selector.size = entity.size;
-            userdata.m_selector.target = entity;
+            if(sprite) {
+                this.m_selector.position = sprite.position;
+                this.m_selector.rotation = sprite.rotation;
+                this.m_selector.size = sprite.size;
+                this.m_selector.target = sprite;
 
-            target_touch_recognize_component = entity.get_component(gb.ces_base_component.type.touch_recognize);
-            target_touch_recognize_component.remove_callback(gb.input_context.state.pressed, userdata.on_sprite_pressed);
+                target_touch_recognize_component = sprite.get_component(gb.ces_base_component.type.touch_recognize);
+                target_touch_recognize_component.remove_callback(gb.input_context.state.pressed, this.on_sprite_pressed);
 
-            userdata.m_selector.bounding_quad.remove_from_parent();
-            g_ss_merge_scene.add_child(userdata.m_selector.bounding_quad);
+                this.m_selector.bounding_quad.remove_from_parent();
+                g_ss_merge_scene.add_child(this.m_selector.bounding_quad);
+            } else {
+                this.m_selector.target = null;
+            }
         }
     },
 
