@@ -15,8 +15,8 @@ oop.define_class({
         $("#ss-merge-tab").append($("<div id=\"ui-ss-merge-left\"/>"));
         $("#ui-ss-merge-center").append($("<canvas id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
         $("#ui-ss-merge-left").append($("<div id=\"frame-size\">Frame Settings</div>"));
-        $("#frame-size").append($("<div id=\"frame-width-slider\"><input type=\"text\" id=\"frame-width-value\" readonly value=\"Width 128 px\"></div></p>"));
-        $("#frame-size").append($("<div id=\"frame-height-slider\"><input type=\"text\" id=\"frame-height-value\" readonly value=\"Height 128 px\"></div></p>"));
+        $("#frame-size").append($("<div id=\"frame-width-slider\"/>"));
+        $("#frame-size").append($("<div id=\"frame-height-slider\"/>"));
         $("#frame-size").append($("<input type=\"checkbox\" id=\"frame-settings-frame-align\"><label id=\"frame-settings-frame-align-label\" for=\"frame-settings-frame-align\">Align</label>"));
         $("#frame-size").append($("<input type=\"checkbox\" id=\"frame-settings-frame-proportional\"><label id=\"frame-settings-frame-proportional-label\" for=\"frame-settings-frame-proportional\">Proportional</label>"));      
         $("#ui-ss-merge-left").append($("<div id=\"images-container\">Frames</div>"));
@@ -31,7 +31,7 @@ oop.define_class({
             max: 1024,
             step: 32,
             slide: function( event, ui ) {
-                $( "#frame-width-value" ).val("Width " + ui.value + " px");
+                //$( "#frame-width-value" ).val("Width " + ui.value + " px");
                 g_ss_merge_controller.m_frame_width = ui.value;  
             }
         });
@@ -42,7 +42,7 @@ oop.define_class({
             max: 1024,
             step: 32,
             slide: function( event, ui ) {
-                $( "#frame-height-value" ).val("Height " + ui.value + " px");
+                //$( "#frame-height-value" ).val("Height " + ui.value + " px");
                 g_ss_merge_controller.m_frame_height = ui.value;   
             }
         });

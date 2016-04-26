@@ -3383,8 +3383,8 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
   $("#ss-merge-tab").append($('<div id="ui-ss-merge-left"/>'));
   $("#ui-ss-merge-center").append($('<canvas id="gl_canvas" width="1024" height="1024"></canvas>'));
   $("#ui-ss-merge-left").append($('<div id="frame-size">Frame Settings</div>'));
-  $("#frame-size").append($('<div id="frame-width-slider"><input type="text" id="frame-width-value" readonly value="Width 128 px"></div></p>'));
-  $("#frame-size").append($('<div id="frame-height-slider"><input type="text" id="frame-height-value" readonly value="Height 128 px"></div></p>'));
+  $("#frame-size").append($('<div id="frame-width-slider"/>'));
+  $("#frame-size").append($('<div id="frame-height-slider"/>'));
   $("#frame-size").append($('<input type="checkbox" id="frame-settings-frame-align"><label id="frame-settings-frame-align-label" for="frame-settings-frame-align">Align</label>'));
   $("#frame-size").append($('<input type="checkbox" id="frame-settings-frame-proportional"><label id="frame-settings-frame-proportional-label" for="frame-settings-frame-proportional">Proportional</label>'));
   $("#ui-ss-merge-left").append($('<div id="images-container">Frames</div>'));
@@ -3393,11 +3393,9 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", init:function() {
   $("#ui-ss-merge-left").append($('<div id="drop-zone">Drop Zone</div>'));
   $("#ui-ss-merge-left").append($('<div id="ss-merge-save-zone"><button id="ss-merge-save-button" type="button">Generate</button></div>'));
   $("#frame-width-slider").slider({value:128, min:32, max:1024, step:32, slide:function(a, b) {
-    $("#frame-width-value").val("Width " + b.value + " px");
     g_ss_merge_controller.m_frame_width = b.value;
   }});
   $("#frame-height-slider").slider({value:128, min:32, max:1024, step:32, slide:function(a, b) {
-    $("#frame-height-value").val("Height " + b.value + " px");
     g_ss_merge_controller.m_frame_height = b.value;
   }});
   $("#frame-settings-frame-align").button();
