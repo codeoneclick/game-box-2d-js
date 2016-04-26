@@ -3683,12 +3683,26 @@ oop.define_class({namespace:"gb", name:"selector", constants:{corner_type:{left_
   if (d.m_previous_selector_touch_point) {
     b = d.m_previous_selector_touch_point.sub(c);
     d.m_is_proportional_resizing && (b.x = Math.abs(b.x) > Math.abs(b.y) ? b.x : b.y, b.y = Math.abs(b.x) > Math.abs(b.y) ? b.x : b.y);
-    var e = d.position, f = d.size;
-    d.m_is_align_movement && (d.m_summury_delta.x += b.x, d.m_summury_delta.y += b.y, b.x = 0, b.y = 0, 16 < Math.abs(d.m_summury_delta.x) && (b.x = d.position.x - 32 * Math.round((d.position.x - d.m_summury_delta.x) / 32), d.m_summury_delta.x = 0), 16 < Math.abs(d.m_summury_delta.y) && (b.y = d.position.y - 32 * Math.round((d.position.y - d.m_summury_delta.y) / 32), d.m_summury_delta.y = 0));
-    a === d.m_points[gb.selector.corner_type.left_top] ? (f.x += b.x, f.y += b.y, e.x -= b.x, e.y -= b.y) : a === d.m_points[gb.selector.corner_type.right_top] ? (f.x += b.x, f.y -= b.y, e.x -= b.x) : a === d.m_points[gb.selector.corner_type.left_bottom] ? (f.x -= b.x, f.y += b.y, e.y -= b.y) : a === d.m_points[gb.selector.corner_type.right_bottom] && (f.x -= b.x, f.y -= b.y);
-    d.position = e;
-    d.size = f;
-    d.m_target.size = f;
+    var e = new gb.vec2(b), f = d.position, g = d.size;
+    if (d.m_is_align_movement) {
+      d.m_summury_delta.x += b.x;
+      d.m_summury_delta.y += b.y;
+      b.x = 0;
+      b.y = 0;
+      e.x = 0;
+      e.y = 0;
+      if (16 < Math.abs(d.m_summury_delta.x)) {
+        var h = 32 * Math.round((f.x - d.m_summury_delta.x) / 32), k = 32 * Math.round((f.x + g.x - d.m_summury_delta.x) / 32), k = k - f.x;
+        b.x = f.x - h;
+        e.x = g.x - k;
+        d.m_summury_delta.x = 0;
+      }
+      16 < Math.abs(d.m_summury_delta.y) && (h = 32 * Math.round((f.y - d.m_summury_delta.y) / 32), k = 32 * Math.round((f.y + g.y - d.m_summury_delta.y) / 32), k -= f.y, b.y = f.y - h, e.y = g.y - k, d.m_summury_delta.y = 0);
+    }
+    a === d.m_points[gb.selector.corner_type.left_top] ? (g.x += b.x, g.y += b.y, f.x -= b.x, f.y -= b.y) : a === d.m_points[gb.selector.corner_type.right_top] ? (g.x += b.x, g.y -= e.y, f.x -= b.x) : a === d.m_points[gb.selector.corner_type.left_bottom] ? (g.x -= e.x, g.y += b.y, f.y -= b.y) : a === d.m_points[gb.selector.corner_type.right_bottom] && (g.x -= e.x, g.y -= e.y);
+    d.position = f;
+    d.size = g;
+    d.m_target.size = g;
     d.m_previous_selector_touch_point = new gb.vec2(c);
   }
 }, on_target_pressed:function(a, b, c, d) {

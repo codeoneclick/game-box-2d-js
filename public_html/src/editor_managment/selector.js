@@ -169,6 +169,8 @@ oop.define_class({
 					delta.x = Math.abs(delta.x) > Math.abs(delta.y) ? delta.x : delta.y;
 					delta.y = Math.abs(delta.x) > Math.abs(delta.y) ? delta.x : delta.y;
 				}
+
+				var delta_size = new gb.vec2(delta);
 				var current_position = userdata.position;
 				var current_size = userdata.size;
 
@@ -179,14 +181,23 @@ oop.define_class({
 					delta.x = 0;
 					delta.y = 0;
 
+					delta_size.x = 0;
+					delta_size.y = 0;
+
 					if (Math.abs(userdata.m_summury_delta.x) > 16) {
-						var next_position_x = Math.round((userdata.position.x - userdata.m_summury_delta.x) / 32.0) * 32.0;
-						delta.x = userdata.position.x - next_position_x;
+						var next_position_x = Math.round((current_position.x - userdata.m_summury_delta.x) / 32.0) * 32.0;
+						var next_size_x = Math.round((current_position.x + current_size.x - userdata.m_summury_delta.x) / 32.0) * 32.0;
+						next_size_x -= current_position.x;
+						delta.x = current_position.x - next_position_x;
+						delta_size.x = current_size.x - next_size_x;
 						userdata.m_summury_delta.x = 0;
 					}
 					if (Math.abs(userdata.m_summury_delta.y) > 16) {
-						var next_position_y = Math.round((userdata.position.y - userdata.m_summury_delta.y) / 32.0) * 32.0;
-						delta.y = userdata.position.y - next_position_y;
+						var next_position_y = Math.round((current_position.y - userdata.m_summury_delta.y) / 32.0) * 32.0;
+						var next_size_y = Math.round((current_position.y + current_size.y - userdata.m_summury_delta.y) / 32.0) * 32.0;
+						next_size_y -= current_position.y;
+						delta.y = current_position.y - next_position_y;
+						delta_size.y = current_size.y - next_size_y;
 						userdata.m_summury_delta.y = 0;
 					}
 				}
@@ -198,15 +209,15 @@ oop.define_class({
 					current_position.y -= delta.y;
 				} else if (entity === userdata.m_points[gb.selector.corner_type.right_top]) {
 					current_size.x += delta.x;
-					current_size.y -= delta.y;
+					current_size.y -= delta_size.y;
 					current_position.x -= delta.x;
 				} else if(entity === userdata.m_points[gb.selector.corner_type.left_bottom]) {
-					current_size.x -= delta.x;
+					current_size.x -= delta_size.x;
 					current_size.y += delta.y;
 					current_position.y -= delta.y;
 				} else if(entity === userdata.m_points[gb.selector.corner_type.right_bottom]) {
-					current_size.x -= delta.x;
-					current_size.y -= delta.y;
+					current_size.x -= delta_size.x;
+					current_size.y -= delta_size.y;
 				}
 				userdata.position = current_position;
 				userdata.size = current_size;
