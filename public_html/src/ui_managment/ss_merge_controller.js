@@ -26,9 +26,31 @@ oop.define_class({
 
         $("#ss-merge-tab").append($("<div id=\"ui-ss-merge-center\"/>"));
         $("#ss-merge-tab").append($("<div id=\"ui-ss-merge-left\"/>"));
-        $("#ui-ss-merge-center").append($("<canvas id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
+        $("#ui-ss-merge-center").append($("<canvas style=\"width:100%; height:100%;\" id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
 
-        var element = "<div id=" + gb.ss_merge_controller.html_elements.frame_settings + "/>";
+        var element = "<div id=\"play-animation-dialog\" class=\"ui-dialog\" title=\"Animation\"></div>";
+        $("#ui-ss-merge-center").append($(element));
+
+        $("#play-animation-dialog").dialog({
+            autoOpen: false,
+            width: 512,
+            height: 512,
+            modal: true,
+            show: {
+                effect: "blind",
+                duration: 300
+            },
+            hide: {
+                effect: "blind",
+                duration: 300
+            },
+            beforeClose: function(event, ui) {
+               g_ss_merge_controller.m_play_animation_dialog_controller.deactivate();
+               g_ss_merge_controller.activate();
+            },
+        });
+
+        element = "<div id=" + gb.ss_merge_controller.html_elements.frame_settings + "/>";
         $("#ui-ss-merge-left").append($(element));
         element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>movement</p>";
         $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(element));
@@ -55,33 +77,9 @@ oop.define_class({
         element = "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%;\" id=\"" + gb.ss_merge_controller.html_elements.frames_list + "\"></ul>"
         $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(element));
 
-        //$("#ui-ss-merge-left").append($("<div id=\"images-container\">Frames</div>"));
-        //$("#images-container").append($("<ul id=\"images-list\">"));
-        //$("#images-container").append($("</ul>"));
         $("#ui-ss-merge-left").append($("<div id=\"drop-zone\">Drop Zone</div>"));
         $("#ui-ss-merge-left").append($("<div id=\"ss-merge-save-zone\"><button id=\"ss-merge-save-button\" type=\"button\">Generate</button></div>"));
 
-        /*$("#frame-width-slider").slider({
-            value: 128,
-            min: 32,
-            max: 1024,
-            step: 32,
-            slide: function( event, ui ) {
-                //$( "#frame-width-value" ).val("Width " + ui.value + " px");
-                g_ss_merge_controller.m_frame_width = ui.value;  
-            }
-        });
-
-        $("#frame-height-slider").slider({
-            value: 128,
-            min: 32,
-            max: 1024,
-            step: 32,
-            slide: function( event, ui ) {
-                //$( "#frame-height-value" ).val("Height " + ui.value + " px");
-                g_ss_merge_controller.m_frame_height = ui.value;   
-            }
-        });*/
 
         $("#" + gb.ss_merge_controller.html_elements.frame_aligment).buttonset();
         $("#" + gb.ss_merge_controller.html_elements.frame_aligment + " input[type=radio]").change(function() {
@@ -140,9 +138,13 @@ oop.define_class({
             if(image_width > 0 && image_height > 0) {
                 var image = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0,  image_width, image_height);
                 var frames = g_ss_merge_controller.create_animation_configuration(image_width, image_height);
-                window.location.href = image.src.replace('image/png', 'image/octet-stream');
+                $("#play-animation-dialog").dialog("open");
+                $('.ui-dialog :button').blur();
+                g_ss_merge_controller.deactivate();
+                g_ss_merge_controller.m_play_animation_dialog_controller.activate(image, frames);
+                //window.location.href = image.src.replace('image/png', 'image/octet-stream');
 
-                var new_texture = g_ss_merge_scene.fabricator.resources_accessor.get_texture("preview_atlas", image);
+                /*var new_texture = g_ss_merge_scene.fabricator.resources_accessor.get_texture("preview_atlas", image);
                 new_texture.add_resource_loading_callback(function(resource, userdata) {
                     if(!g_ss_merge_controller.m_preview_sprite) {
                         g_ss_merge_controller.m_preview_sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
@@ -159,7 +161,7 @@ oop.define_class({
                         material_component.set_texture(resource, 0);
                     }
                     g_ss_merge_controller.m_preview_sprite.add_animation("preview_animation", frames);
-                });
+                });*/
             }
         };
 
@@ -179,6 +181,8 @@ oop.define_class({
 
         this.m_selector = null;
         this.m_frames_container = new gb.frames_container();
+
+        this.m_play_animation_dialog_controller = new gb.ss_play_animation_dialog_controller();
     },
 
     release: function() {
@@ -259,7 +263,7 @@ oop.define_class({
                                     resource.wrap_mode = gl.CLAMP_TO_EDGE;
                                     var material_component = sprite.get_component(gb.ces_base_component.type.material);
                                     material_component.set_texture(resource, 0);
-                                    sprite.size = new gb.vec2(resource.width, resource.height);
+                                    sprite.size = new gb.vec2(resource.width * 0.5, resource.height * 0.5);
                                     files_count_processed++;
                                     if(files_count_processed === files_count_unprocessed) {
                                         g_ss_merge_controller.reorder_sprites_positions();
@@ -285,8 +289,6 @@ oop.define_class({
                                 element += "<p style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;\" id=\"frame-index\" class=\"ui-widget-header\" style=\"margin:4px;\"><span id=\"delete-icon\" class=\"ui-icon ui-icon-closethick\" style=\"float:right; margin:4px;\"></span>" + unique_tag + "</p>";
                                 element += ['<img style=\"float:left; margin:2px; height:128px; width:128px;\" id="images-list-cell-image" align="left" src="', data.target.result,'"/>'].join(''); 
                                 element += "</li>";
-                                //var frame_tag = "<div id=\"frame-index\">" + unique_tag + "</div>"
-                                //var cell_tag = "<li class=\"ui-state-default\">" + ['<img id="images-list-cell-image" align="left" src="', data.target.result,'"/>'].join('') + "<button id=\"delete-image-button\" type=\"button\">Delete</button>" + frame_tag + "</li>";
                                 $("#" + gb.ss_merge_controller.html_elements.frames_list).append($(element));
 
                                 var cells = $("#" + gb.ss_merge_controller.html_elements.frames_list).children();
@@ -354,12 +356,16 @@ oop.define_class({
 
         create_animation_configuration: function(atlas_width, atlas_height) {
             var frames = [];
-            var sprites_count = this.m_sprites.length;
+            var sortered_sprites = this.m_sprites.sort(function(sprite_1, sprite_2) {
+                return sprite_1.tag.localeCompare(sprite_2.tag, "en", {numeric: true});
+            });
+            var sprites_count = sortered_sprites.length;
             var sprite = null;
             var position_0 = null;
             var position_1 = null;
             for(var i = 0; i < sprites_count; ++i) {
-                sprite = this.m_sprites[i];
+                sprite = sortered_sprites[i];
+                console.log(sprite.tag);
                 position_0 = sprite.position;
                 position_1 = gb.vec2.add(position_0, sprite.size);
                 frames.push({u_0:position_0.x / atlas_width, v_0: position_0.y / atlas_height, 

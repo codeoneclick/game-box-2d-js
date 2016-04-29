@@ -82,6 +82,7 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/bussines_logic_managment/frames_container.js \
 --js=../public_html/src/ui_managment/ss_merge_controller.js \
 --js=../public_html/src/ui_managment/ss_animation_controller.js \
+--js=../public_html/src/ui_managment/ss_play_animation_dialog_controller.js \
 --js=../public_html/src/editor_managment/selector.js \
 --js=../public_html/src/editor_managment/editor_fabricator.js \
 --js=!../public_html/src/game_box-min.js \

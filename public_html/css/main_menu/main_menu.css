@@ -4,6 +4,13 @@
     margin: auto;
 }
 
+.ui-dialog .ui-dialog-titlebar button.ui-button:focus,
+.ui-dialog .ui-dialog-titlebar button.ui-button.ui-state-focus,
+.ui-dialog .ui-dialog-titlebar button.ui-button.ui-state-active,
+.ui-dialog .ui-dialog-titlebar button.ui-button.ui-state-hover  {
+    outline:none;
+}
+
 #ss-merge-tab {
     height: 1024px;
     margin: auto;

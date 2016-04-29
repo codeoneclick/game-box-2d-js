@@ -2595,6 +2595,7 @@ oop.define_class({namespace:"gb", name:"ces_animation_component", extend:gb.ces_
   this.m_frames = [];
   this.m_current_animation = "";
   this.m_current_frame = 0;
+  this.m_current_switch_frame_deltatime = this.m_switch_frame_deltatime = .06;
   Object.defineProperty(this, "frames", {get:function() {
     return this.m_frames[this.m_current_animation] ? this.m_frames[this.m_current_animation] : null;
   }});
@@ -2608,6 +2609,14 @@ oop.define_class({namespace:"gb", name:"ces_animation_component", extend:gb.ces_
   }, set:function(a) {
     this.m_current_animation = a;
     this.m_current_frame = 0;
+  }});
+  Object.defineProperty(this, "switch_frame_deltatime", {get:function() {
+    return this.m_switch_frame_deltatime;
+  }});
+  Object.defineProperty(this, "current_switch_frame_deltatime", {get:function() {
+    return this.m_current_switch_frame_deltatime;
+  }, set:function(a) {
+    this.m_current_switch_frame_deltatime = a;
   }});
 }, release:function() {
 }, methods:{add_animation:function(a, b) {
@@ -2874,19 +2883,19 @@ oop.define_class({namespace:"gb", name:"ces_animation_system", extend:gb.ces_bas
   this.m_type = gb.ces_base_system.type.animation;
 }, release:function() {
 }, methods:{on_feed_start:function() {
-}, on_feed:function(a) {
-  this.update_recursively(a);
+}, on_feed:function(a, b) {
+  this.update_recursively(a, b);
 }, on_feed_end:function() {
-}, update_recursively:function(a) {
-  var b = a.get_component(gb.ces_base_component.type.geometry), c = a.get_component(gb.ces_base_component.type.animation);
-  if (b && c) {
-    var d = c.frames, e = c.current_frame;
-    e++;
-    d && (c.current_frame = e < d.length - 1 ? e : 0, c = d[c.current_frame], b.update_mesh_texcoord_attributes(c.u_0, c.v_0, c.u_1, c.v_1));
+}, update_recursively:function(a, b) {
+  var c = a.get_component(gb.ces_base_component.type.geometry), d = a.get_component(gb.ces_base_component.type.animation);
+  if (c && d && (d.current_switch_frame_deltatime -= b, 0 > d.current_switch_frame_deltatime)) {
+    var e = d.frames, f = (d.current_frame + 1) % e.length;
+    d.current_switch_frame_deltatime = d.switch_frame_deltatime;
+    e && (d.current_frame = f, d = e[d.current_frame], c.update_mesh_texcoord_attributes(d.u_0, d.v_0, d.u_1, d.v_1));
   }
-  a = a.children;
-  for (b = 0;b < a.length;++b) {
-    this.update_recursively(a[b]);
+  c = a.children;
+  for (d = 0;d < c.length;++d) {
+    this.update_recursively(c[d], b);
   }
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ces_systems_feeder", init:function() {
@@ -3223,11 +3232,13 @@ oop.define_class({namespace:"gb", name:"scene_fabricator", init:function() {
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"game_loop", init:function() {
   this.m_listeners = [];
+  this.m_previous_timestamp = Date.now();
 }, release:function() {
 }, methods:{on_update:function() {
-  for (var a = this.m_listeners.length, b = null, c = 0;c < a;++c) {
-    b = this.m_listeners[c], b.on_update(0);
+  for (var a = Date.now(), b = (a - this.m_previous_timestamp) / 1E3, c = this.m_listeners.length, d = null, e = 0;e < c;++e) {
+    d = this.m_listeners[e], d.on_update(b);
   }
+  this.m_previous_timestamp = a;
 }, add_listener:function(a) {
   _.isFunction(a.on_update) ? _.contains(this.m_listeners, a) ? console.error("can't add same listener for game loop") : this.m_listeners.push(a) : console.error("game loop listener doesn't contain on_update method");
 }, remove_listener:function(a) {
@@ -3382,8 +3393,14 @@ oop.define_class({namespace:"gb", name:"ss_merge_controller", constants:{html_el
 frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frame-list-cell"}}, init:function() {
   $("#ss-merge-tab").append($('<div id="ui-ss-merge-center"/>'));
   $("#ss-merge-tab").append($('<div id="ui-ss-merge-left"/>'));
-  $("#ui-ss-merge-center").append($('<canvas id="gl_canvas" width="1024" height="1024"></canvas>'));
-  var a = "<div id=" + gb.ss_merge_controller.html_elements.frame_settings + "/>";
+  $("#ui-ss-merge-center").append($('<canvas style="width:100%; height:100%;" id="gl_canvas" width="1024" height="1024"></canvas>'));
+  var a = '<div id="play-animation-dialog" class="ui-dialog" title="Animation"></div>';
+  $("#ui-ss-merge-center").append($(a));
+  $("#play-animation-dialog").dialog({autoOpen:!1, width:512, height:512, modal:!0, show:{effect:"blind", duration:300}, hide:{effect:"blind", duration:300}, beforeClose:function(a, b) {
+    g_ss_merge_controller.m_play_animation_dialog_controller.deactivate();
+    g_ss_merge_controller.activate();
+  }});
+  a = "<div id=" + gb.ss_merge_controller.html_elements.frame_settings + "/>";
   $("#ui-ss-merge-left").append($(a));
   a = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-arrowthick-1-e" style="float:left; margin:4px;"></span>movement</p>';
   $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(a));
@@ -3442,19 +3459,7 @@ frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frame-list-cell"}
     }
     e = Math.min(e, gl.viewport_width);
     f = Math.min(f, gl.viewport_height);
-    if (0 < e && 0 < f) {
-      var a = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, e, f), l = g_ss_merge_controller.create_animation_configuration(e, f);
-      window.location.href = a.src.replace("image/png", "image/octet-stream");
-      g_ss_merge_scene.fabricator.resources_accessor.get_texture("preview_atlas", a).add_resource_loading_callback(function(a, b) {
-        g_ss_merge_controller.m_preview_sprite ? g_ss_merge_controller.m_preview_sprite.get_component(gb.ces_base_component.type.material).set_texture(a, 0) : (g_ss_merge_controller.m_preview_sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
-          a.mag_filter = gl.LINEAR;
-          a.min_filter = gl.LINEAR;
-          a.wrap_mode = gl.CLAMP_TO_EDGE;
-          g_ss_merge_controller.m_preview_sprite.get_component(gb.ces_base_component.type.material).set_texture(a, 0);
-        }), g_ss_merge_scene.add_child(g_ss_merge_controller.m_preview_sprite), g_ss_merge_controller.m_preview_sprite.size = new gb.vec2(256, 256));
-        g_ss_merge_controller.m_preview_sprite.add_animation("preview_animation", l);
-      });
-    }
+    0 < e && 0 < f && (a = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, e, f), e = g_ss_merge_controller.create_animation_configuration(e, f), $("#play-animation-dialog").dialog("open"), $(".ui-dialog :button").blur(), g_ss_merge_controller.deactivate(), g_ss_merge_controller.m_play_animation_dialog_controller.activate(a, e));
   };
   g_ss_merge_controller = this;
   new gb.graphics_context;
@@ -3464,6 +3469,7 @@ frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frame-list-cell"}
   this.m_frame_height = this.m_frame_width = 128;
   this.m_selector = this.m_preview_sprite = this.m_grid = null;
   this.m_frames_container = new gb.frames_container;
+  this.m_play_animation_dialog_controller = new gb.ss_play_animation_dialog_controller;
 }, release:function() {
 }, methods:{activate:function() {
   var a = $("#gl_canvas").detach();
@@ -3516,7 +3522,7 @@ frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frame-list-cell"}
               d.min_filter = gl.LINEAR;
               d.wrap_mode = gl.CLAMP_TO_EDGE;
               f.get_component(gb.ces_base_component.type.material).set_texture(d, 0);
-              f.size = new gb.vec2(d.width, d.height);
+              f.size = new gb.vec2(.5 * d.width, .5 * d.height);
               c++;
               c === b && g_ss_merge_controller.reorder_sprites_positions();
             }), g = g_ss_merge_controller.m_sprites.length, k = 0, r = null, q = 0;q < g;++q) {
@@ -3569,8 +3575,10 @@ frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frame-list-cell"}
     (e = this.m_frames_container.get_frame_parameters(e.x, e.y)) ? d.position = new gb.vec2(e.x, e.y) : console.error("can't insert image");
   }
 }, create_animation_configuration:function(a, b) {
-  for (var c = [], d = this.m_sprites.length, e = null, f = null, e = null, g = 0;g < d;++g) {
-    e = this.m_sprites[g], f = e.position, e = gb.vec2.add(f, e.size), c.push({u_0:f.x / a, v_0:f.y / b, u_1:e.x / a, v_1:e.y / b});
+  for (var c = [], d = this.m_sprites.sort(function(a, b) {
+    return a.tag.localeCompare(b.tag, "en", {numeric:!0});
+  }), e = d.length, f = null, g = null, f = null, h = 0;h < e;++h) {
+    f = d[h], console.log(f.tag), g = f.position, f = gb.vec2.add(g, f.size), c.push({u_0:g.x / a, v_0:g.y / b, u_1:f.x / a, v_1:f.y / b});
   }
   return c;
 }, on_sprite_pressed:function(a, b, c, d) {
@@ -3605,6 +3613,43 @@ oop.define_class({namespace:"gb", name:"ss_animation_controller", init:function(
 }, deactivate:function() {
   g_ss_animation_scene.remove_child(this.m_grid);
   this.m_grid.get_component(gb.ces_base_component.type.geometry).mesh.release();
+}}, static_methods:{}});
+var g_ss_play_animation_dialog_controller = null;
+oop.define_class({namespace:"gb", name:"ss_play_animation_dialog_controller", constants:{html_elements:{play_animation_dialog:"play-animation-dialog"}}, init:function() {
+  g_ss_play_animation_dialog_controller = this;
+  this.m_transition = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.play.animation.dialog.json");
+  gb.game_controller.get_instance().add_transition(this.m_transition);
+}, release:function() {
+}, methods:{activate:function(a, b) {
+  var c = $("#gl_canvas").detach();
+  $("#" + gb.ss_play_animation_dialog_controller.html_elements.play_animation_dialog).append(c);
+  this.m_scene = null;
+  var d = this;
+  gb.game_controller.get_instance().goto_transition("data/resources/configurations/transitions/transition.spritesheets.play.animation.dialog.json", function(c) {
+    d.m_scene = c;
+    var f = new gb.camera(gl.viewport_width, gl.viewport_height);
+    c.camera = f;
+    c.fabricator.resources_accessor.get_texture("animation_atlas", a).add_resource_loading_callback(function(a, d) {
+      var f = c.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+        a.mag_filter = gl.LINEAR;
+        a.min_filter = gl.LINEAR;
+        a.wrap_mode = gl.CLAMP_TO_EDGE;
+        f.get_component(gb.ces_base_component.type.material).set_texture(a, 0);
+        c.add_child(f);
+        f.size = new gb.vec2(1024, 1024);
+        f.add_animation("animation", b);
+      });
+    });
+  });
+}, deactivate:function() {
+  var a = this.m_scene.children, b = a.length;
+  if (0 !== b) {
+    for (var c = 0;c < b;++c) {
+      var d = a[c];
+      d.get_component(gb.ces_base_component.type.geometry).mesh.release();
+      this.m_scene.remove_child(d);
+    }
+  }
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"selector", constants:{corner_type:{left_top:0, right_top:1, left_bottom:2, right_bottom:3, center:4, max:5}}, init:function() {
   this.m_bounding_quad = null;

@@ -7,6 +7,7 @@ oop.define_class({
 
     init: function() {
         this.m_listeners = [];
+        this.m_previous_timestamp = Date.now();
     },
 
     release: function() {
@@ -16,12 +17,16 @@ oop.define_class({
     methods: {
         on_update: function() {
 
+            var current_timestamp = Date.now();
+            var deltatime = (current_timestamp - this.m_previous_timestamp) / 1000;
+
             var listeners_count = this.m_listeners.length;
             var listener = null;
             for (var i = 0; i < listeners_count; ++i) {
                 listener = this.m_listeners[i];
-                listener.on_update(0.0);
+                listener.on_update(deltatime);
             }
+            this.m_previous_timestamp = current_timestamp;
         },
 
         add_listener: function(listener) {
