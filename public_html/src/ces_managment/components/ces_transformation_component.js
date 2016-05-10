@@ -28,23 +28,23 @@ oop.define_class({
 
                 Object.defineProperty(value, 'x', {
                     set: function(value) {
-                        self.m_position.m_x = value;
+                        self.m_position.m_data[0] = value;
                         self.m_matrix_t.translate(self.m_position.x, self.m_position.y, 0.0);
                         self.m_is_matrix_m_computed = false;
                     },
                     get: function() {
-                        return self.m_position.m_x;
+                        return self.m_position.m_data[0];
                     }
                 });
 
                 Object.defineProperty(value, 'y', {
                     set: function(value) {
-                        self.m_position.m_y = value;
+                        self.m_position.m_data[1] = value;
                         self.m_matrix_t.translate(self.m_position.x, self.m_position.y, 0.0);
                         self.m_is_matrix_m_computed = false;
                     },
                     get: function() {
-                        return self.m_position.m_y;
+                        return self.m_position.m_data[1];
                     }
                 });
 

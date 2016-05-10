@@ -285,8 +285,8 @@ oop.define_class({
                                     unique_tag += "(" + same_images_count + ")"
                                 }
                                 
-                                var element = "<li class=\"ui-state-default\" style=\"height: 160px; margin:8px\">";
-                                element += "<p style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;\" id=\"frame-index\" class=\"ui-widget-header\" style=\"margin:4px;\"><span id=\"delete-icon\" class=\"ui-icon ui-icon-closethick\" style=\"float:right; margin:4px;\"></span>" + unique_tag + "</p>";
+                                var element = "<li class=\"ui-state-default\" style=\"height: 160px; margin: 8px; background: none;\">";
+                                element += "<p align=\"center\" style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;\" id=\"frame-index\" class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-circle-arrow-e\" style=\"float:left; margin:4px;\"></span><span id=\"delete-icon\" class=\"ui-icon ui-icon-trash\" style=\"float:right; margin:4px;\"></span>" + "   " + unique_tag + "</p>";
                                 element += ['<img style=\"float:left; margin:2px; height:128px; width:128px;\" id="images-list-cell-image" align="left" src="', data.target.result,'"/>'].join(''); 
                                 element += "</li>";
                                 $("#" + gb.ss_merge_controller.html_elements.frames_list).append($(element));

@@ -87,122 +87,121 @@ function guid() {
   return a() + a() + "-" + a() + "-" + a() + "-" + a() + "-" + a() + a() + a();
 }
 ;oop.define_class({namespace:"gb", name:"vec2", init:function() {
-  arguments[0] instanceof gb.vec2 ? (this.m_x = arguments[0].x, this.m_y = arguments[0].y) : 1 === arguments.length ? (this.m_x = arguments[0], this.m_y = arguments[0]) : 2 === arguments.length ? (this.m_x = arguments[0], this.m_y = arguments[1]) : this.m_y = this.m_x = 0;
+  this.m_data = new Float32Array(2);
+  arguments[0] instanceof gb.vec2 ? (this.m_data[0] = arguments[0].x, this.m_data[1] = arguments[0].y) : 1 === arguments.length ? (this.m_data[0] = arguments[0], this.m_data[1] = arguments[0]) : 2 === arguments.length ? (this.m_data[0] = arguments[0], this.m_data[1] = arguments[1]) : (this.m_data[0] = 0, this.m_data[1] = 0);
   Object.defineProperty(this, "x", {configurable:!0, get:function() {
-    return this.m_x;
+    return this.m_data[0];
   }, set:function(a) {
-    this.m_x = a;
+    this.m_data[0] = a;
   }});
   Object.defineProperty(this, "y", {configurable:!0, get:function() {
-    return this.m_y;
+    return this.m_data[1];
   }, set:function(a) {
-    this.m_y = a;
+    this.m_data[1] = a;
   }});
 }, release:function() {
 }, methods:{add:function(a) {
-  this.m_x += a.m_x;
-  this.m_y += a.m_y;
+  this.m_data[0] += a.m_data[0];
+  this.m_data[1] += a.m_data[1];
   return this;
 }, add_scalar:function(a) {
-  this.m_x += a;
-  this.m_y += a;
+  this.m_data[0] += a;
+  this.m_data[1] += a;
   return this;
 }, sub:function(a) {
-  this.m_x -= a.m_x;
-  this.m_y -= a.m_y;
+  this.m_data[0] -= a.m_data[0];
+  this.m_data[1] -= a.m_data[1];
   return this;
 }, sub_scalar:function(a) {
-  this.m_x -= a;
-  this.m_y -= a;
+  this.m_data[0] -= a;
+  this.m_data[1] -= a;
   return this;
 }, multiply:function(a) {
-  this.m_x *= a.m_x;
-  this.m_y *= a.m_y;
+  this.m_data[0] *= a.m_data[0];
+  this.m_data[1] *= a.m_data[1];
   return this;
 }, multiply_scalar:function(a) {
-  this.m_x *= a;
-  this.m_y *= a;
+  this.m_data[0] *= a;
+  this.m_data[1] *= a;
   return this;
 }, divide:function(a) {
-  this.m_x /= a.m_x;
-  this.m_y /= a.m_y;
+  this.m_data[0] /= a.m_data[0];
+  this.m_data[1] /= a.m_data[1];
   return this;
 }, divide_scalar:function(a) {
-  this.m_x /= a;
-  this.m_y /= a;
+  this.m_data[0] /= a;
+  this.m_data[1] /= a;
   return this;
 }, clamp:function(a, b) {
-  this.m_x = Math.max(a.m_x, Math.min(b.m_x, this.m_x));
-  this.m_y = Math.max(a.m_y, Math.min(b.m_y, this.m_y));
+  this.m_data[0] = Math.max(a.m_data[0], Math.min(b.m_data[0], this.m_data[0]));
+  this.m_data[1] = Math.max(a.m_data[1], Math.min(b.m_data[1], this.m_data[1]));
   return this;
 }, dot:function(a) {
-  return this.m_x * a.m_x + this.m_y * a.m_y;
+  return this.m_data[0] * a.m_data[0] + this.m_data[1] * a.m_data[1];
 }, length:function() {
-  return Math.sqrt(this.m_x * this.m_x + this.m_y * this.m_y);
+  return Math.sqrt(this.m_data[0] * this.m_data[0] + this.m_data[1] * this.m_data[1]);
 }, normalize:function() {
   return this.divide_scalar(this.length());
 }, angle:function() {
-  var a = Math.atan2(this.m_y, this.m_x);
+  var a = Math.atan2(this.m_data[1], this.m_data[0]);
   0 > a && (a += 2 * Math.PI);
   return a;
 }, distance_to:function(a) {
-  var b = this.m_x - a.m_x;
-  a = this.m_y - a.m_y;
+  var b = this.m_data[0] - a.m_data[0];
+  a = this.m_data[1] - a.m_data[1];
   return Math.sqrt(b * b + a * a);
 }, lerp:function(a, b) {
-  this.m_x += (a.m_x - this.m_x) * b;
-  this.m_y += (a.m_y - this.m_y) * b;
+  this.m_data[0] += (a.m_data[0] - this.m_data[0]) * b;
+  this.m_data[1] += (a.m_data[1] - this.m_data[1]) * b;
   return this;
 }, equals:function(a) {
-  return a.m_x === this.m_x && a.m_y === this.m_y;
+  return a.m_data[0] === this.m_data[0] && a.m_data[1] === this.m_data[1];
 }, min:function(a) {
-  this.m_x = Math.min(this.m_x, a.m_x);
-  this.m_y = Math.min(this.m_y, a.m_y);
+  this.m_data[0] = Math.min(this.m_data[0], a.m_data[0]);
+  this.m_data[1] = Math.min(this.m_data[1], a.m_data[1]);
   return this;
 }, max:function(a) {
-  this.m_x = Math.max(this.m_x, a.m_x);
-  this.m_y = Math.max(this.m_y, a.m_y);
+  this.m_data[0] = Math.max(this.m_data[0], a.m_data[0]);
+  this.m_data[1] = Math.max(this.m_data[1], a.m_data[1]);
   return this;
 }, to_array:function() {
-  var a = [];
-  a.push(this.m_x);
-  a.push(this.m_y);
-  return a;
+  return this.m_data;
 }}, static_methods:{add:function(a, b) {
-  return new gb.vec2(a.m_x + b.m_x, a.m_y + b.m_y);
+  return new gb.vec2(a.m_data[0] + b.m_data[0], a.m_data[1] + b.m_data[1]);
 }, sub:function(a, b) {
-  return new gb.vec2(a.m_x - b.m_x, a.m_y - b.m_y);
+  return new gb.vec2(a.m_data[0] - b.m_data[0], a.m_data[1] - b.m_data[1]);
 }, lerp:function(a, b, c) {
   return gb.vec2.sub(b, a).multiply_scalar(c).add(a);
 }, equals:function(a, b) {
-  return a.m_x === b.m_x && a.m_y === b.m_y;
+  return a.m_data[0] === b.m_data[0] && a.m_data[1] === b.m_data[1];
 }, min:function(a, b) {
   var c = new gb.vec2(0);
-  c.m_x = Math.min(a.m_x, b.m_x);
-  c.m_y = Math.min(a.m_y, b.m_y);
+  c.m_data[0] = Math.min(a.m_data[0], b.m_data[0]);
+  c.m_data[1] = Math.min(a.m_data[1], b.m_data[1]);
   return c;
 }, max:function(a, b) {
   var c = new gb.vec2(0);
-  c.m_x = Math.max(a.m_x, b.m_x);
-  c.m_y = Math.max(a.m_y, b.m_y);
+  c.m_data[0] = Math.max(a.m_data[0], b.m_data[0]);
+  c.m_data[1] = Math.max(a.m_data[1], b.m_data[1]);
   return c;
 }}});
 oop.define_class({namespace:"gb", name:"vec3", init:function() {
-  arguments[0] instanceof gb.vec3 ? (this.m_x = arguments[0].x, this.m_y = arguments[0].y, this.m_z = arguments[0].z) : 1 === arguments.length ? (this.m_x = arguments[0], this.m_y = arguments[0], this.m_z = arguments[0]) : 3 === arguments.length ? (this.m_x = arguments[0], this.m_y = arguments[1], this.m_z = arguments[2]) : this.m_z = this.m_y = this.m_x = 0;
+  this.m_data = new Float32Array(3);
+  arguments[0] instanceof gb.vec3 ? (this.m_data[0] = arguments[0].x, this.m_data[1] = arguments[0].y, this.m_data[2] = arguments[0].z) : 1 === arguments.length ? (this.m_data[0] = arguments[0], this.m_data[1] = arguments[0], this.m_data[2] = arguments[0]) : 3 === arguments.length ? (this.m_data[0] = arguments[0], this.m_data[1] = arguments[1], this.m_data[2] = arguments[2]) : (this.m_data[0] = 0, this.m_data[1] = 0, this.m_data[2] = 0);
   Object.defineProperty(this, "x", {get:function() {
-    return this.m_x;
+    return this.m_data[0];
   }, set:function(a) {
-    this.m_x = a;
+    this.m_data[0] = a;
   }});
   Object.defineProperty(this, "y", {get:function() {
-    return this.m_y;
+    return this.m_data[1];
   }, set:function(a) {
-    this.m_y = a;
+    this.m_data[1] = a;
   }});
   Object.defineProperty(this, "z", {get:function() {
-    return this.m_z;
+    return this.m_data[2];
   }, set:function(a) {
-    this.m_z = a;
+    this.m_data[2] = a;
   }});
 }, release:function() {
 }, methods:{add:function(a) {
@@ -289,11 +288,7 @@ oop.define_class({namespace:"gb", name:"vec3", init:function() {
 }, equals:function(a) {
   return a.x === this.x && a.y === this.y && a.z === this.z;
 }, to_array:function() {
-  var a = [];
-  a[0] = this.x;
-  a[1] = this.y;
-  a[2] = this.z;
-  return a;
+  return this.m_data;
 }}, static_methods:{add:function(a, b) {
   return new gb.vec3(a.x + b.x, a.y + b.y, a.z + b.z);
 }, sub:function(a, b) {
@@ -302,26 +297,28 @@ oop.define_class({namespace:"gb", name:"vec3", init:function() {
   return new gb.vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 }}});
 oop.define_class({namespace:"gb", name:"vec4", init:function() {
-  arguments[0] instanceof gb.vec4 ? (this.m_x = arguments[0].x, this.m_y = arguments[0].y, this.m_z = arguments[0].z, this.m_w = arguments[0].w) : 1 === arguments.length ? (this.m_x = arguments[0], this.m_y = arguments[0], this.m_z = arguments[0], this.m_w = arguments[0]) : 4 === arguments.length ? (this.m_x = arguments[0], this.m_y = arguments[1], this.m_z = arguments[2], this.m_w = arguments[3]) : this.m_w = this.m_z = this.m_y = this.m_x = 0;
+  this.m_data = new Float32Array(4);
+  arguments[0] instanceof gb.vec4 ? (this.m_data[0] = arguments[0].x, this.m_data[1] = arguments[0].y, this.m_data[2] = arguments[0].z, this.m_data[3] = arguments[0].w) : 1 === arguments.length ? (this.m_data[0] = arguments[0], this.m_data[1] = arguments[0], this.m_data[2] = arguments[0], this.m_data[3] = arguments[0]) : 4 === arguments.length ? (this.m_data[0] = arguments[0], this.m_data[1] = arguments[1], this.m_data[2] = arguments[2], this.m_data[3] = arguments[3]) : (this.m_data[0] = 0, this.m_data[1] = 
+  0, this.m_data[2] = 0, this.m_data[3] = 0);
   Object.defineProperty(this, "x", {get:function() {
-    return this.m_x;
+    return this.m_data[0];
   }, set:function(a) {
-    this.m_x = a;
+    this.m_data[0] = a;
   }});
   Object.defineProperty(this, "y", {get:function() {
-    return this.m_y;
+    return this.m_data[1];
   }, set:function(a) {
-    this.m_y = a;
+    this.m_data[1] = a;
   }});
   Object.defineProperty(this, "z", {get:function() {
-    return this.m_z;
+    return this.m_data[2];
   }, set:function(a) {
-    this.m_z = a;
+    this.m_data[2] = a;
   }});
   Object.defineProperty(this, "w", {get:function() {
-    return this.m_w;
+    return this.m_data[3];
   }, set:function(a) {
-    this.m_w = a;
+    this.m_data[3] = a;
   }});
 }, release:function() {
 }, methods:{add:function(a) {
@@ -420,15 +417,10 @@ oop.define_class({namespace:"gb", name:"vec4", init:function() {
 }, equals:function(a) {
   return a.x === this.x && a.y === this.y && a.z === this.z && a.w === this.w;
 }, to_array:function() {
-  var a = [];
-  a.push(this.x);
-  a.push(this.y);
-  a.push(this.z);
-  a.push(this.w);
-  return a;
+  return this.m_data;
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"mat4", init:function() {
-  this.m_elements = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+  this.m_elements = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
 }, release:function() {
 }, methods:{identity:function() {
   this.m_elements[0] = 1;
@@ -2255,18 +2247,18 @@ oop.define_class({namespace:"gb", name:"ces_transformation_component", extend:gb
   Object.defineProperty(this, "position", {set:function(b) {
     a.m_position = b;
     Object.defineProperty(b, "x", {set:function(b) {
-      a.m_position.m_x = b;
+      a.m_position.m_data[0] = b;
       a.m_matrix_t.translate(a.m_position.x, a.m_position.y, 0);
       a.m_is_matrix_m_computed = !1;
     }, get:function() {
-      return a.m_position.m_x;
+      return a.m_position.m_data[0];
     }});
     Object.defineProperty(b, "y", {set:function(b) {
-      a.m_position.m_y = b;
+      a.m_position.m_data[1] = b;
       a.m_matrix_t.translate(a.m_position.x, a.m_position.y, 0);
       a.m_is_matrix_m_computed = !1;
     }, get:function() {
-      return a.m_position.m_y;
+      return a.m_position.m_data[1];
     }});
     a.m_matrix_t.translate(a.m_position.x, a.m_position.y, 0);
     a.m_is_matrix_m_computed = !1;
@@ -3530,8 +3522,8 @@ frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frame-list-cell"}
             }
             g = a.target.m_filename;
             0 !== k && (g += "(" + k + ")");
-            k = '<li class="ui-state-default" style="height: 160px; margin:8px">' + ('<p style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;" id="frame-index" class="ui-widget-header" style="margin:4px;"><span id="delete-icon" class="ui-icon ui-icon-closethick" style="float:right; margin:4px;"></span>' + g + "</p>") + ['<img style="float:left; margin:2px; height:128px; width:128px;" id="images-list-cell-image" align="left" src="', a.target.result, 
-            '"/>'].join("");
+            k = '<li class="ui-state-default" style="height: 160px; margin: 8px; background: none;">' + ('<p align="center" style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;" id="frame-index" class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-circle-arrow-e" style="float:left; margin:4px;"></span><span id="delete-icon" class="ui-icon ui-icon-trash" style="float:right; margin:4px;"></span>   ' + g + "</p>") + ['<img style="float:left; margin:2px; height:128px; width:128px;" id="images-list-cell-image" align="left" src="', 
+            a.target.result, '"/>'].join("");
             k += "</li>";
             $("#" + gb.ss_merge_controller.html_elements.frames_list).append($(k));
             k = $("#" + gb.ss_merge_controller.html_elements.frames_list).children();

@@ -7,11 +7,10 @@ oop.define_class({
     name: "mat4",
 
     init: function() {
-        this.m_elements = [1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-        ];
+        this.m_elements = new Float32Array([1, 0, 0, 0,
+                                            0, 1, 0, 0,
+                                            0, 0, 1, 0,
+                                            0, 0, 0, 1]);
     },
 
     release: function() {

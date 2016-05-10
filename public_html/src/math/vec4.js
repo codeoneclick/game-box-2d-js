@@ -7,61 +7,62 @@ oop.define_class({
     name: "vec4",
 
     init: function() {
+        this.m_data = new Float32Array(4);
         if (arguments[0] instanceof gb.vec4) {
-            this.m_x = arguments[0].x;
-            this.m_y = arguments[0].y;
-            this.m_z = arguments[0].z;
-            this.m_w = arguments[0].w;
+            this.m_data[0] = arguments[0].x;
+            this.m_data[1] = arguments[0].y;
+            this.m_data[2] = arguments[0].z;
+            this.m_data[3] = arguments[0].w;
         } else if (arguments.length === 1) {
-            this.m_x = arguments[0];
-            this.m_y = arguments[0];
-            this.m_z = arguments[0];
-            this.m_w = arguments[0];
+            this.m_data[0] = arguments[0];
+            this.m_data[1] = arguments[0];
+            this.m_data[2] = arguments[0];
+            this.m_data[3] = arguments[0];
         } else if (arguments.length === 4) {
-            this.m_x = arguments[0];
-            this.m_y = arguments[1];
-            this.m_z = arguments[2];
-            this.m_w = arguments[3];
+            this.m_data[0] = arguments[0];
+            this.m_data[1] = arguments[1];
+            this.m_data[2] = arguments[2];
+            this.m_data[3] = arguments[3];
         } else {
-            this.m_x = 0;
-            this.m_y = 0;
-            this.m_z = 0;
-            this.m_w = 0;
+            this.m_data[0] = 0;
+            this.m_data[1] = 0;
+            this.m_data[2] = 0;
+            this.m_data[3] = 0;
         }
 
         Object.defineProperty(this, 'x', {
             get: function() {
-                return this.m_x;
+                return this.m_data[0];
             },
             set: function(value) {
-                this.m_x = value;
+                this.m_data[0] = value;
             }
         });
 
         Object.defineProperty(this, 'y', {
             get: function() {
-                return this.m_y;
+                return this.m_data[1];
             },
             set: function(value) {
-                this.m_y = value;
+                this.m_data[1] = value;
             }
         });
 
         Object.defineProperty(this, 'z', {
             get: function() {
-                return this.m_z;
+                return this.m_data[2];
             },
             set: function(value) {
-                this.m_z = value;
+                this.m_data[2] = value;
             }
         });
 
         Object.defineProperty(this, 'w', {
             get: function() {
-                return this.m_w;
+                return this.m_data[3];
             },
             set: function(value) {
-                this.m_w = value;
+                this.m_data[3] = value;
             }
         });
     },
@@ -205,12 +206,7 @@ oop.define_class({
         },
 
         to_array: function() {
-            var array = [];
-            array.push(this.x);
-            array.push(this.y);
-            array.push(this.z);
-            array.push(this.w);
-            return array;
+            return this.m_data;
         }
     },
     static_methods: {

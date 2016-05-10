@@ -40,7 +40,7 @@ oop.define_class({
                     var current_frame = (animation_component.current_frame + 1) % frames_count;
                     animation_component.current_switch_frame_deltatime = animation_component.switch_frame_deltatime;
                     if(frames) {
-                        animation_component.current_frame = current_frame; 
+                        animation_component.current_frame = current_frame;
                         var frame = frames[animation_component.current_frame];
                         geometry_component.update_mesh_texcoord_attributes(frame.u_0, frame.v_0, frame.u_1, frame.v_1);
                     }

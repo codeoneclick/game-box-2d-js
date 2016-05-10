@@ -19,9 +19,9 @@
 }
 
 #ui-ss-merge-left {
-    border: 1px solid;
+    border: 0px;
     position: absolute;
-    margin-left: -2px;
+    margin-left: -6px;
     width: 400px;
     height: 1024px;
     float:left;
