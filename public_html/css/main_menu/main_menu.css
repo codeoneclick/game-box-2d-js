@@ -11,14 +11,14 @@
     outline:none;
 }
 
-#ss-merge-tab {
+#ss-merge-tab-container {
     height: 1024px;
     margin: auto;
     width: 1424px;
     padding: 0px;
 }
 
-#ui-ss-merge-left {
+#ss-merge-tab-left-panel {
     border: 0px;
     position: absolute;
     margin-left: -6px;
@@ -27,7 +27,7 @@
     float:left;
 }
 
-#ui-ss-merge-center {
+#ss-merge-tab-right-panel {
     background: black;
     position: absolute;
     width: 1024px;

@@ -3381,41 +3381,53 @@ oop.define_class({namespace:"gb", name:"frames_container", init:function() {
   this.m_chunks.push({x:0, y:0, width:1024, height:1024});
 }}, static_methods:{}});
 var g_ss_merge_controller = null, g_ss_merge_transition = null, g_ss_merge_scene = null;
-oop.define_class({namespace:"gb", name:"ss_merge_controller", constants:{html_elements:{frame_settings:"ss-merge-frame-settings", frame_aligment:"ss-merge-frame-settings-aligment", frame_aligment_freeform:"ss-merge-frame-settings-aligment-freeform", frame_aligment_snaptogrid:"ss-merge-frame-settings-aligment-snaptogrid", frame_resizing:"ss-merge-frame-settings-resizing", frame_resizing_freeform:"ss-merge-frame-settings-resizing-freeform", frame_resizing_aspectratio:"ss-merge-frame-settings-resizing-apectratio", 
-frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frame-list-cell"}}, init:function() {
-  $("#ss-merge-tab").append($('<div id="ui-ss-merge-center"/>'));
-  $("#ss-merge-tab").append($('<div id="ui-ss-merge-left"/>'));
-  $("#ui-ss-merge-center").append($('<canvas style="width:100%; height:100%;" id="gl_canvas" width="1024" height="1024"></canvas>'));
-  var a = '<div id="play-animation-dialog" class="ui-dialog" title="Animation"></div>';
-  $("#ui-ss-merge-center").append($(a));
-  $("#play-animation-dialog").dialog({autoOpen:!1, width:512, height:512, modal:!0, show:{effect:"blind", duration:300}, hide:{effect:"blind", duration:300}, beforeClose:function(a, b) {
-    g_ss_merge_controller.m_play_animation_dialog_controller.deactivate();
-    g_ss_merge_controller.activate();
+oop.define_class({namespace:"gb", name:"ss_merge_controller", constants:{html_elements:{tab_container:"ss-merge-tab-container", tab_left_panel:"ss-merge-tab-left-panel", tab_right_panel:"ss-merge-tab-right-panel", import_container:"ss-merge-import-container", import_size_drop_down_box:"ss-merge-size-drop-down-box", import_drop_zone:"ss-merge-drop-zone", import_add_image_button:"ss-merge-add_image_button", frames_container:"ss-merge-frames-container", frames_sort_button:"ss-merge-frames-sort-button", 
+frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frames-list-cell", editing_container:"ss-merge-editing-container", editing_move_resize_label:"ss-merge-editing-move-resize-label", editing_move_resize_radio_button:"ss-merge-editing-move-resize-radio-button", editing_spread_button:"ss-merge-editing-spread-button", export_container:"ss-merge-export-container", export_animation_preview_button:"ss-merge-export-animation-preview_button", export_save_atlas_button:"ss-merge-export-atlas-button", 
+export_save_frames_button:"ss-merge-export-save-frames-button", animation_preview_dialog:"ss-merge-preview-dialog"}}, init:function() {
+  var a = gb.ss_merge_controller.html_elements, b = this, c = null;
+  $("#" + a.tab_container).append($("<div id=" + a.tab_left_panel + "/>"));
+  $("#" + a.tab_container).append($("<div id=" + a.tab_right_panel + "/>"));
+  $("#" + a.tab_right_panel).append($('<canvas style="width:100%; height:100%;" id="gl_canvas" width="1024" height="1024"></canvas>'));
+  c = "<div id=" + a.import_container + "/>";
+  $("#" + a.tab_left_panel).append($(c));
+  c = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-arrowthick-1-e" style="float:left; margin:4px;"></span>import</p>';
+  $("#" + a.import_container).append($(c));
+  c = '<p><label for="' + a.import_size_drop_down_box + '"> size:</label><input id=' + a.import_size_drop_down_box + 'name="import_size_value"></p>';
+  $("#" + a.import_container).append($(c));
+  $("#" + a.import_size_drop_down_box).spinner();
+  c = document.getElementById("drop-zone");
+  c.addEventListener("dragover", this.handle_drag_over, !1);
+  c.addEventListener("drop", this.handle_file_select, !1);
+  c = "<div id=" + a.animation_preview_dialog + ' class="ui-dialog" title="Animation"></div>';
+  $("#" + a.tab_right_panel).append($(c));
+  $("#" + a.animation_preview_dialog).dialog({autoOpen:!1, width:512, height:512, modal:!0, show:{effect:"blind", duration:300}, hide:{effect:"blind", duration:300}, beforeClose:function(a, c) {
+    b.m_play_animation_dialog_controller.deactivate();
+    b.activate();
   }});
-  a = "<div id=" + gb.ss_merge_controller.html_elements.frame_settings + "/>";
-  $("#ui-ss-merge-left").append($(a));
-  a = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-arrowthick-1-e" style="float:left; margin:4px;"></span>movement</p>';
-  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(a));
-  a = '<div style="margin:4px;" id=' + gb.ss_merge_controller.html_elements.frame_aligment + ">";
-  a += '<input type="radio" id=' + gb.ss_merge_controller.html_elements.frame_aligment_freeform + ' name="' + gb.ss_merge_controller.html_elements.frame_aligment + '" checked="checked">';
-  a += "<label for=" + gb.ss_merge_controller.html_elements.frame_aligment_freeform + ">free form</label>";
-  a += '<input type="radio" id=' + gb.ss_merge_controller.html_elements.frame_aligment_snaptogrid + ' name="' + gb.ss_merge_controller.html_elements.frame_aligment + '">';
-  a += "<label for=" + gb.ss_merge_controller.html_elements.frame_aligment_snaptogrid + ">snap to grid</label>";
-  a += "</div>";
-  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(a));
-  a = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-arrowthick-2-se-nw" style="float:left; margin:4px;"></span>resizing</p>';
-  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(a));
-  a = '<div style="margin:4px;" id=' + gb.ss_merge_controller.html_elements.frame_resizing + ">";
-  a += '<input type="radio" id=' + gb.ss_merge_controller.html_elements.frame_resizing_freeform + ' name="' + gb.ss_merge_controller.html_elements.frame_resizing + '" checked="checked">';
-  a += "<label for=" + gb.ss_merge_controller.html_elements.frame_resizing_freeform + ">free form</label>";
-  a += '<input type="radio" id=' + gb.ss_merge_controller.html_elements.frame_resizing_aspectratio + ' name="' + gb.ss_merge_controller.html_elements.frame_resizing + '">';
-  a += "<label for=" + gb.ss_merge_controller.html_elements.frame_resizing_aspectratio + ">aspect ratio</label>";
-  a += "</div>";
-  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(a));
-  a = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-note" style="float:left; margin:4px;"></span>frames</p>';
-  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(a));
-  a = '<ul style="list-style-type:none; height:340px; overflow:auto; margin-left:-10%;" id="' + gb.ss_merge_controller.html_elements.frames_list + '"></ul>';
-  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(a));
+  c = "<div id=" + gb.ss_merge_controller.html_elements.frame_settings + "/>";
+  $("#ui-ss-merge-left").append($(c));
+  c = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-arrowthick-1-e" style="float:left; margin:4px;"></span>movement</p>';
+  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(c));
+  c = '<div style="margin:4px;" id=' + gb.ss_merge_controller.html_elements.frame_aligment + ">";
+  c += '<input type="radio" id=' + gb.ss_merge_controller.html_elements.frame_aligment_freeform + ' name="' + gb.ss_merge_controller.html_elements.frame_aligment + '" checked="checked">';
+  c += "<label for=" + gb.ss_merge_controller.html_elements.frame_aligment_freeform + ">free form</label>";
+  c += '<input type="radio" id=' + gb.ss_merge_controller.html_elements.frame_aligment_snaptogrid + ' name="' + gb.ss_merge_controller.html_elements.frame_aligment + '">';
+  c += "<label for=" + gb.ss_merge_controller.html_elements.frame_aligment_snaptogrid + ">snap to grid</label>";
+  c += "</div>";
+  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(c));
+  c = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-arrowthick-2-se-nw" style="float:left; margin:4px;"></span>resizing</p>';
+  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(c));
+  c = '<div style="margin:4px;" id=' + gb.ss_merge_controller.html_elements.frame_resizing + ">";
+  c += '<input type="radio" id=' + gb.ss_merge_controller.html_elements.frame_resizing_freeform + ' name="' + gb.ss_merge_controller.html_elements.frame_resizing + '" checked="checked">';
+  c += "<label for=" + gb.ss_merge_controller.html_elements.frame_resizing_freeform + ">free form</label>";
+  c += '<input type="radio" id=' + gb.ss_merge_controller.html_elements.frame_resizing_aspectratio + ' name="' + gb.ss_merge_controller.html_elements.frame_resizing + '">';
+  c += "<label for=" + gb.ss_merge_controller.html_elements.frame_resizing_aspectratio + ">aspect ratio</label>";
+  c += "</div>";
+  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(c));
+  c = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-note" style="float:left; margin:4px;"></span>frames</p>';
+  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(c));
+  c = '<ul style="list-style-type:none; height:340px; overflow:auto; margin-left:-10%;" id="' + gb.ss_merge_controller.html_elements.frames_list + '"></ul>';
+  $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(c));
   $("#ui-ss-merge-left").append($('<div id="drop-zone">Drop Zone</div>'));
   $("#ui-ss-merge-left").append($('<div id="ss-merge-save-zone"><button id="ss-merge-save-button" type="button">Generate</button></div>'));
   $("#" + gb.ss_merge_controller.html_elements.frame_aligment).buttonset();
@@ -3431,27 +3443,27 @@ frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frame-list-cell"}
   $("#" + gb.ss_merge_controller.html_elements.frames_list).sortable({stop:function() {
     for (var a = $("#" + gb.ss_merge_controller.html_elements.frames_list + " li").map(function() {
       return $(this).find("#frame-index").text();
-    }), b = [], e = a.length, f = null, g = 0;g < e;++g) {
-      f = g_ss_merge_controller.m_sprites.find(function(b) {
-        return b.tag === a[g];
-      }), b.push(f);
+    }), b = [], c = a.length, g = null, h = 0;h < c;++h) {
+      g = g_ss_merge_controller.m_sprites.find(function(b) {
+        return b.tag === a[h];
+      }), b.push(g);
     }
     g_ss_merge_controller.m_sprites = b;
     g_ss_merge_controller.reorder_sprites_positions();
   }});
-  a = document.getElementById("drop-zone");
-  a.addEventListener("dragover", this.handle_drag_over, !1);
-  a.addEventListener("drop", this.handle_file_select, !1);
-  var b = this;
+  c = document.getElementById("drop-zone");
+  c.addEventListener("dragover", this.handle_drag_over, !1);
+  c.addEventListener("drop", this.handle_file_select, !1);
+  b = this;
   document.getElementById("ss-merge-save-button").onclick = function() {
     for (var a = b.m_sprites.sort(function(a, b) {
       return b.size.x * b.size.y - a.size.x * a.size.y;
-    }), d = a.length, e = 0, f = 0, g = 0;g < d;++g) {
-      var h = a[g], k = h.position.x + h.size.x, h = h.position.y + h.size.y, e = k > e ? k : e, f = h > f ? h : f
+    }), c = a.length, f = 0, g = 0, h = 0;h < c;++h) {
+      var k = a[h], l = k.position.x + k.size.x, k = k.position.y + k.size.y, f = l > f ? l : f, g = k > g ? k : g
     }
-    e = Math.min(e, gl.viewport_width);
-    f = Math.min(f, gl.viewport_height);
-    0 < e && 0 < f && (a = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, e, f), e = g_ss_merge_controller.create_animation_configuration(e, f), $("#play-animation-dialog").dialog("open"), $(".ui-dialog :button").blur(), g_ss_merge_controller.deactivate(), g_ss_merge_controller.m_play_animation_dialog_controller.activate(a, e));
+    f = Math.min(f, gl.viewport_width);
+    g = Math.min(g, gl.viewport_height);
+    0 < f && 0 < g && (a = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, f, g), f = g_ss_merge_controller.create_animation_configuration(f, g), $("#play-animation-dialog").dialog("open"), $(".ui-dialog :button").blur(), g_ss_merge_controller.deactivate(), g_ss_merge_controller.m_play_animation_dialog_controller.activate(a, f));
   };
   g_ss_merge_controller = this;
   new gb.graphics_context;

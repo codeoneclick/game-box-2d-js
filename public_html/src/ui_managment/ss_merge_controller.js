@@ -10,28 +10,67 @@ oop.define_class({
     name: "ss_merge_controller",
     constants: {
         html_elements: {
-            frame_settings: "ss-merge-frame-settings",
+            tab_container: "ss-merge-tab-container",
+            tab_left_panel: "ss-merge-tab-left-panel",
+            tab_right_panel: "ss-merge-tab-right-panel",
+            import_container: "ss-merge-import-container",
+            import_size_drop_down_box: "ss-merge-size-drop-down-box",
+            import_drop_zone: "ss-merge-drop-zone",
+            import_add_image_button: "ss-merge-add_image_button",
+            frames_container: "ss-merge-frames-container",
+            frames_sort_button: "ss-merge-frames-sort-button",
+            frames_list: "ss-merge-frames-list",
+            frames_list_cell: "ss-merge-frames-list-cell",
+            editing_container: "ss-merge-editing-container",
+            editing_move_resize_label: "ss-merge-editing-move-resize-label",
+            editing_move_resize_radio_button: "ss-merge-editing-move-resize-radio-button",
+            editing_spread_button: "ss-merge-editing-spread-button",
+            export_container: "ss-merge-export-container",
+            export_animation_preview_button: "ss-merge-export-animation-preview_button",
+            export_save_atlas_button: "ss-merge-export-atlas-button",
+            export_save_frames_button: "ss-merge-export-save-frames-button",
+            animation_preview_dialog: "ss-merge-preview-dialog"
+
+            /*frame_settings: "ss-merge-frame-settings",
             frame_aligment: "ss-merge-frame-settings-aligment",
             frame_aligment_freeform: "ss-merge-frame-settings-aligment-freeform",
             frame_aligment_snaptogrid: "ss-merge-frame-settings-aligment-snaptogrid",
             frame_resizing: "ss-merge-frame-settings-resizing",
             frame_resizing_freeform: "ss-merge-frame-settings-resizing-freeform",
-            frame_resizing_aspectratio: "ss-merge-frame-settings-resizing-apectratio",
-            frames_list: "ss-merge-frames-list",
-            frames_list_cell: "ss-merge-frame-list-cell"
+            frame_resizing_aspectratio: "ss-merge-frame-settings-resizing-apectratio",*/
+            
         }
     },
 
     init: function() {
 
-        $("#ss-merge-tab").append($("<div id=\"ui-ss-merge-center\"/>"));
-        $("#ss-merge-tab").append($("<div id=\"ui-ss-merge-left\"/>"));
-        $("#ui-ss-merge-center").append($("<canvas style=\"width:100%; height:100%;\" id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
+        var ui = gb.ss_merge_controller.html_elements;
+        var ui_j = function(element_name) {
+            return "#" + ui[element_name];
+        };
+        var self = this;
+        var element = null;
 
-        var element = "<div id=\"play-animation-dialog\" class=\"ui-dialog\" title=\"Animation\"></div>";
-        $("#ui-ss-merge-center").append($(element));
+        $(ui_j('tab_container')).append($("<div id=" + ui.tab_left_panel + "/>"));
+        $(ui_j('tab_container')).append($("<div id=" + ui.tab_right_panel + "/>"));
+        $(ui_j('tab_right_panel')).append($("<canvas style=\"width:100%; height:100%;\" id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
 
-        $("#play-animation-dialog").dialog({
+        element = "<div id=" + ui.import_container + "/>";
+        $(ui_j('tab_left_panel')).append($(element));
+        element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>import</p>";
+        $(ui_j('import_container')).append($(element));
+        element = "<p><label for=\"" + ui.import_size_drop_down_box + "\"> size:</label><input id=" + ui.import_size_drop_down_box + "name=\"import_size_value\"></p>";
+        $(ui_j('import_container')).append($(element));
+        $(ui_j('import_size_drop_down_box')).spinner();        
+
+        var drop_zone = document.getElementById('drop-zone');
+        drop_zone.addEventListener('dragover', this.handle_drag_over, false);
+        drop_zone.addEventListener('drop', this.handle_file_select, false);
+
+        var element = "<div id=" + ui.animation_preview_dialog + " class=\"ui-dialog\" title=\"Animation\"></div>";
+        $(ui_j('tab_right_panel')).append($(element));
+
+        $(ui_j('animation_preview_dialog')).dialog({
             autoOpen: false,
             width: 512,
             height: 512,
@@ -45,8 +84,8 @@ oop.define_class({
                 duration: 300
             },
             beforeClose: function(event, ui) {
-               g_ss_merge_controller.m_play_animation_dialog_controller.deactivate();
-               g_ss_merge_controller.activate();
+               self.m_play_animation_dialog_controller.deactivate();
+               self.activate();
             },
         });
 
