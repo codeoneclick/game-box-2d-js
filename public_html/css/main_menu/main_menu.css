@@ -11,11 +11,16 @@
     outline:none;
 }
 
+.ui-container {
+    padding: 2%;
+}
+
 #ss-merge-tab-container {
     height: 1024px;
     margin: auto;
     width: 1424px;
     padding: 0px;
+    background: black;
 }
 
 #ss-merge-tab-left-panel {
@@ -37,6 +42,17 @@
     padding: 1px;
     margin-left: 8px;
     overflow: hidden;
+}
+
+#ss-merge-drop-zone {
+    border: 2px dashed;
+    margin: 5px;
+    min-width: 80px;
+    min-height: 80px; 
+    border-color: white;
+    font: italic bold 16px Georgia, serif;
+    color: lightgray;
+    padding: 10px;
 }
 
 #ss-animation-tab {
@@ -130,17 +146,7 @@
     position: absolute; 
 }
 
-#drop-zone {
-    border: 2px dashed;
-    margin: 5px;
-	min-width: 80px;
-	min-height: 80px; 
-    border-color: #336633;
-    font: italic bold 16px Georgia, serif;
-    color: #66CC33;
-    text-align: center;
-    padding-top: 40px;
-}
+
 
 #ss-merge-save-zone {
     border: 2px dashed;

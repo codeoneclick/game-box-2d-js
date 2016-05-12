@@ -24,52 +24,112 @@ oop.define_class({
             editing_container: "ss-merge-editing-container",
             editing_move_resize_label: "ss-merge-editing-move-resize-label",
             editing_move_resize_radio_button: "ss-merge-editing-move-resize-radio-button",
+            editing_move_resize_freeform_button: "ss-merge-editing-move-resize-freeform-button",
+            editing_move_resize_snaptogrid_button: "ss-merge-editing-move-resize-snaptogrid-button",
             editing_spread_button: "ss-merge-editing-spread-button",
             export_container: "ss-merge-export-container",
             export_animation_preview_button: "ss-merge-export-animation-preview_button",
             export_save_atlas_button: "ss-merge-export-atlas-button",
             export_save_frames_button: "ss-merge-export-save-frames-button",
             animation_preview_dialog: "ss-merge-preview-dialog"
-
-            /*frame_settings: "ss-merge-frame-settings",
-            frame_aligment: "ss-merge-frame-settings-aligment",
-            frame_aligment_freeform: "ss-merge-frame-settings-aligment-freeform",
-            frame_aligment_snaptogrid: "ss-merge-frame-settings-aligment-snaptogrid",
-            frame_resizing: "ss-merge-frame-settings-resizing",
-            frame_resizing_freeform: "ss-merge-frame-settings-resizing-freeform",
-            frame_resizing_aspectratio: "ss-merge-frame-settings-resizing-apectratio",*/
-            
         }
     },
 
     init: function() {
-
+        g_ss_merge_controller = this;
         var ui = gb.ss_merge_controller.html_elements;
         var ui_j = function(element_name) {
-            return "#" + ui[element_name];
+            return '#' + ui[element_name];
         };
-        var self = this;
         var element = null;
 
-        $(ui_j('tab_container')).append($("<div id=" + ui.tab_left_panel + "/>"));
-        $(ui_j('tab_container')).append($("<div id=" + ui.tab_right_panel + "/>"));
+        $(ui_j('tab_container')).append($("<div id=" + ui.tab_left_panel + " style=\"background:black;\"/>"));
+        $(ui_j('tab_container')).append($("<div id=" + ui.tab_right_panel + " style=\"background:black;\"/>"));
         $(ui_j('tab_right_panel')).append($("<canvas style=\"width:100%; height:100%;\" id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
 
         element = "<div id=" + ui.import_container + "/>";
         $(ui_j('tab_left_panel')).append($(element));
         element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>import</p>";
         $(ui_j('import_container')).append($(element));
-        element = "<p><label for=\"" + ui.import_size_drop_down_box + "\"> size:</label><input id=" + ui.import_size_drop_down_box + "name=\"import_size_value\"></p>";
+        element = "<p style=\"margin-left:2%;\"><label for=\"" + ui.import_size_drop_down_box + "\"> size </label><input id=" + ui.import_size_drop_down_box + " name=\"value\"></p>";
         $(ui_j('import_container')).append($(element));
-        $(ui_j('import_size_drop_down_box')).spinner();        
+        $(ui_j('import_size_drop_down_box')).spinner();
+        element = "<div id=" + ui.import_drop_zone + "></div>";
+        $(ui_j('import_container')).append(element);
+        element = "<button id=" + ui.import_add_image_button + ">add image...</button>";
+        $(ui_j('import_drop_zone')).append(element);
+        $(ui_j('import_add_image_button')).button();
+        element = "<label style=\"float:right; margin-top:8%; margin-right:16%\">or drop here...</label>";
+        $(ui_j('import_drop_zone')).append(element);
+        var drop_zone = document.getElementById(ui.import_drop_zone);
+        drop_zone.addEventListener("dragover", this.handle_drag_over, false);
+        drop_zone.addEventListener("drop", this.handle_file_select, false);
 
-        var drop_zone = document.getElementById('drop-zone');
-        drop_zone.addEventListener('dragover', this.handle_drag_over, false);
-        drop_zone.addEventListener('drop', this.handle_file_select, false);
+        element = "<div id=" + ui.frames_container + "/>";
+        $(ui_j('tab_left_panel')).append($(element));
+        element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>frames</p>";
+        $(ui_j('frames_container')).append($(element));
+        element = "<button id=" + ui.frames_sort_button + " style=\"margin:2%;\">sort by name</button>";
+        $(ui_j('frames_container')).append(element);
+        $(ui_j('frames_sort_button')).button();
+        element = "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%;\" id=\"" + ui.frames_list + "\"></ul>"
+        $(ui_j('frames_container')).append($(element));
+        $(ui_j('frames_list')).sortable();
+        $(ui_j('frames_list')).disableSelection();
+
+        $(ui_j('frames_list')).sortable({
+            stop: function() {
+                var tags = $(ui_j('frames_list') + " li").map(function() { 
+                    return $(this).find("#frame-index").text(); });
+                var sprites = [];
+                var tags_count = tags.length;
+                var sprite = null;
+                for(var i = 0; i < tags_count; ++i) {
+                    sprite = gb.ss_merge_controller.self().m_sprites.find(function(analized_sprite) {
+                        return analized_sprite.tag === tags[i];
+                    });
+                    sprites.push(sprite);
+                }
+                gb.ss_merge_controller.self().m_sprites = sprites;
+                gb.ss_merge_controller.self().reorder_sprites_positions();
+            }
+        });
+
+        element = "<div id=" + ui.editing_container + "/>";
+        $(ui_j('tab_left_panel')).append($(element));
+        element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>editing</p>";
+        $(ui_j('editing_container')).append($(element));
+        element = "<div style=\"margin:2%;\" id=" + ui.editing_move_resize_radio_button + ">";
+        element += "<input type=\"radio\" id=" + ui.editing_move_resize_freeform_button + " name=\"" + ui.editing_move_resize_radio_button + "\" checked=\"checked\">";
+        element += "<label for=" + ui.editing_move_resize_freeform_button + ">free form</label>";
+        element += "<input type=\"radio\" id=" + ui.editing_move_resize_snaptogrid_button + " name=\"" + ui.editing_move_resize_radio_button + "\">";
+        element += "<label for=" + ui.editing_move_resize_snaptogrid_button + ">snap to grid</label>";
+        element += "</div>";
+        $(ui_j('editing_container')).append($(element));
+        $(ui_j('editing_move_resize_radio_button')).buttonset();
+        $(ui_j('editing_move_resize_radio_button') + " input[type=radio]").change(function() {
+             gb.ss_merge_controller.self().m_selector.is_align_movement = this.id === ui.editing_move_resize_snaptogrid_button;
+        });
+        element = "<button id=" + ui.editing_spread_button + " style=\"margin:2%;\">spread</button>";
+        $(ui_j('editing_container')).append(element);
+        $(ui_j('editing_spread_button')).button();
+
+        element = "<div id=" + ui.export_container + "/>";
+        $(ui_j('tab_left_panel')).append($(element));
+        element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>export</p>";
+        $(ui_j('export_container')).append($(element));
+        element = "<button id=" + ui.export_animation_preview_button + " style=\"margin:2%;\">preview</button><br>";
+        $(ui_j('export_container')).append(element);
+        $(ui_j('export_animation_preview_button')).button();
+        element = "<button id=" + ui.export_save_atlas_button + " style=\"margin:2%;\">save atlas</button><br>";
+        $(ui_j('export_container')).append(element);
+        $(ui_j('export_save_atlas_button')).button();
+        element = "<button id=" + ui.export_save_frames_button + " style=\"margin:2%;\">save frames</button>";
+        $(ui_j('export_container')).append(element);
+        $(ui_j('export_save_frames_button')).button();
 
         var element = "<div id=" + ui.animation_preview_dialog + " class=\"ui-dialog\" title=\"Animation\"></div>";
         $(ui_j('tab_right_panel')).append($(element));
-
         $(ui_j('animation_preview_dialog')).dialog({
             autoOpen: false,
             width: 512,
@@ -84,77 +144,14 @@ oop.define_class({
                 duration: 300
             },
             beforeClose: function(event, ui) {
-               self.m_play_animation_dialog_controller.deactivate();
-               self.activate();
+               gb.ss_merge_controller.self().m_play_animation_dialog_controller.deactivate();
+               gb.ss_merge_controller.self().activate();
             },
         });
 
-        element = "<div id=" + gb.ss_merge_controller.html_elements.frame_settings + "/>";
-        $("#ui-ss-merge-left").append($(element));
-        element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>movement</p>";
-        $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(element));
-        element = "<div style=\"margin:4px;\" id=" + gb.ss_merge_controller.html_elements.frame_aligment + ">";
-        element += "<input type=\"radio\" id=" + gb.ss_merge_controller.html_elements.frame_aligment_freeform + " name=\"" + gb.ss_merge_controller.html_elements.frame_aligment + "\" checked=\"checked\">";
-        element += "<label for=" + gb.ss_merge_controller.html_elements.frame_aligment_freeform + ">free form</label>";
-        element += "<input type=\"radio\" id=" + gb.ss_merge_controller.html_elements.frame_aligment_snaptogrid + " name=\"" + gb.ss_merge_controller.html_elements.frame_aligment + "\">";
-        element += "<label for=" + gb.ss_merge_controller.html_elements.frame_aligment_snaptogrid + ">snap to grid</label>";
-        element += "</div>";
-        $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(element));
-
-        element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-2-se-nw\" style=\"float:left; margin:4px;\"></span>resizing</p>";
-        $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(element));
-        element = "<div style=\"margin:4px;\" id=" + gb.ss_merge_controller.html_elements.frame_resizing + ">";
-        element += "<input type=\"radio\" id=" + gb.ss_merge_controller.html_elements.frame_resizing_freeform +  " name=\"" + gb.ss_merge_controller.html_elements.frame_resizing + "\" checked=\"checked\">";
-        element += "<label for=" + gb.ss_merge_controller.html_elements.frame_resizing_freeform + ">free form</label>";
-        element += "<input type=\"radio\" id=" + gb.ss_merge_controller.html_elements.frame_resizing_aspectratio + " name=\"" + gb.ss_merge_controller.html_elements.frame_resizing + "\">";
-        element += "<label for=" + gb.ss_merge_controller.html_elements.frame_resizing_aspectratio + ">aspect ratio</label>";
-        element += "</div>";
-        $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(element));
         
-        element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:4px;\"></span>frames</p>";
-        $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(element));
-        element = "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%;\" id=\"" + gb.ss_merge_controller.html_elements.frames_list + "\"></ul>"
-        $("#" + gb.ss_merge_controller.html_elements.frame_settings).append($(element));
 
-        $("#ui-ss-merge-left").append($("<div id=\"drop-zone\">Drop Zone</div>"));
-        $("#ui-ss-merge-left").append($("<div id=\"ss-merge-save-zone\"><button id=\"ss-merge-save-button\" type=\"button\">Generate</button></div>"));
-
-
-        $("#" + gb.ss_merge_controller.html_elements.frame_aligment).buttonset();
-        $("#" + gb.ss_merge_controller.html_elements.frame_aligment + " input[type=radio]").change(function() {
-             g_ss_merge_controller.m_selector.is_align_movement = this.id === gb.ss_merge_controller.html_elements.frame_aligment_snaptogrid;
-        });
-        $("#" + gb.ss_merge_controller.html_elements.frame_resizing).buttonset();
-        $("#" + gb.ss_merge_controller.html_elements.frame_aligment + " input[type=radio]").change(function() {
-             g_ss_merge_controller.m_selector.is_align_movement = this.id === gb.ss_merge_controller.html_elements.frame_aligment_snaptogrid;
-        });
-
-        $("#" + gb.ss_merge_controller.html_elements.frames_list).sortable();
-        $("#" + gb.ss_merge_controller.html_elements.frames_list).disableSelection();
-
-        $("#" + gb.ss_merge_controller.html_elements.frames_list).sortable({
-            stop: function() {
-                var tags = $("#" + gb.ss_merge_controller.html_elements.frames_list + " li").map(function() { 
-                    return $(this).find("#frame-index").text(); });
-                var sprites = [];
-                var tags_count = tags.length;
-                var sprite = null;
-                for(var i = 0; i < tags_count; ++i) {
-                    sprite = g_ss_merge_controller.m_sprites.find(function(analized_sprite) {
-                        return analized_sprite.tag === tags[i];
-                    });
-                    sprites.push(sprite);
-                }
-                g_ss_merge_controller.m_sprites = sprites;
-                g_ss_merge_controller.reorder_sprites_positions();
-            }
-        });
-
-        var drop_zone = document.getElementById('drop-zone');
-        drop_zone.addEventListener('dragover', this.handle_drag_over, false);
-        drop_zone.addEventListener('drop', this.handle_file_select, false);
-
-        var self = this;
+        /*var self = this;
         var save_button = document.getElementById('ss-merge-save-button');
         save_button.onclick = function() {
 
@@ -181,9 +178,9 @@ oop.define_class({
                 $('.ui-dialog :button').blur();
                 g_ss_merge_controller.deactivate();
                 g_ss_merge_controller.m_play_animation_dialog_controller.activate(image, frames);
-                //window.location.href = image.src.replace('image/png', 'image/octet-stream');
+                window.location.href = image.src.replace('image/png', 'image/octet-stream');
 
-                /*var new_texture = g_ss_merge_scene.fabricator.resources_accessor.get_texture("preview_atlas", image);
+                var new_texture = g_ss_merge_scene.fabricator.resources_accessor.get_texture("preview_atlas", image);
                 new_texture.add_resource_loading_callback(function(resource, userdata) {
                     if(!g_ss_merge_controller.m_preview_sprite) {
                         g_ss_merge_controller.m_preview_sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
@@ -200,11 +197,9 @@ oop.define_class({
                         material_component.set_texture(resource, 0);
                     }
                     g_ss_merge_controller.m_preview_sprite.add_animation("preview_animation", frames);
-                });*/
+                });
             }
-        };
-
-        g_ss_merge_controller = this;
+        };*/
 
         var gl_context = new gb.graphics_context();
 
@@ -231,33 +226,35 @@ oop.define_class({
     methods: {
 
         activate: function() {
+            var ui = gb.ss_merge_controller.html_elements;
+            var ui_j = function(element_name) {
+                return '#' + ui[element_name];
+            };
+            var gl_canvas = $('#gl_canvas').detach();
+            $(ui_j('tab_right_panel')).append(gl_canvas);
 
-            var gl_canvas = $("#gl_canvas").detach();
-            $("#ui-ss-merge-center").append(gl_canvas);
-
-            var self = this;
             gb.game_controller.get_instance().goto_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json", function(scene) {
                 g_ss_merge_scene = scene;
                 var camera = new gb.camera(gl.viewport_width, gl.viewport_height);
                 scene.camera = camera;
 
-                self.m_grid = scene.fabricator.create_grid("data/resources/configurations/game_objects/grid.json", 32, 32, 32, 32, function() {
-                    self.m_grid.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
-                    self.m_grid.position = new gb.vec2(0.0, -1.0);
+                gb.ss_merge_controller.self().m_grid = scene.fabricator.create_grid("data/resources/configurations/game_objects/grid.json", 32, 32, 32, 32, function() {
+                    gb.ss_merge_controller.self().m_grid.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
+                    gb.ss_merge_controller.self().m_grid.position = new gb.vec2(0.0, -1.0);
                 });
-                scene.add_child(self.m_grid);
+                scene.add_child(gb.ss_merge_controller.self().m_grid);
 
-                var sprites_count = self.m_sprites.length;
+                var sprites_count = gb.ss_merge_controller.self().m_sprites.length;
                 if(sprites_count !== 0) {
                     for(var i = 0; i < sprites_count; ++i) {
-                        var sprite = self.m_sprites[i];
+                        var sprite = gb.ss_merge_controller.self().m_sprites[i];
                         scene.add_child(sprite);
                     }
                 }
 
                 var editor_fabricator = new gb.editor_fabricator();
                 editor_fabricator.scene_fabricator = scene.fabricator;
-                self.m_selector = editor_fabricator.create_selector();
+                gb.ss_merge_controller.self().m_selector = editor_fabricator.create_selector();
             });
         },
 
@@ -305,15 +302,15 @@ oop.define_class({
                                     sprite.size = new gb.vec2(resource.width * 0.5, resource.height * 0.5);
                                     files_count_processed++;
                                     if(files_count_processed === files_count_unprocessed) {
-                                        g_ss_merge_controller.reorder_sprites_positions();
+                                        gb.ss_merge_controller.self().reorder_sprites_positions();
                                     }
                                 });
 
-                                var sprites_count = g_ss_merge_controller.m_sprites.length;
+                                var sprites_count = gb.ss_merge_controller.self().m_sprites.length;
                                 var same_images_count = 0;
                                 var analized_sprite = null;
                                 for(var i = 0; i < sprites_count; ++i) {
-                                    analized_sprite = g_ss_merge_controller.m_sprites[i];
+                                    analized_sprite = gb.ss_merge_controller.self().m_sprites[i];
                                     if(analized_sprite.tag.indexOf(data.target.m_filename) !== -1) {
                                         same_images_count++;
                                     }
@@ -325,7 +322,7 @@ oop.define_class({
                                 }
                                 
                                 var element = "<li class=\"ui-state-default\" style=\"height: 160px; margin: 8px; background: none;\">";
-                                element += "<p align=\"center\" style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;\" id=\"frame-index\" class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-circle-arrow-e\" style=\"float:left; margin:4px;\"></span><span id=\"delete-icon\" class=\"ui-icon ui-icon-trash\" style=\"float:right; margin:4px;\"></span>" + "   " + unique_tag + "</p>";
+                                element += "<p align=\"center\" style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;\" id=\"frame-index\" class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-circle-arrow-e\" style=\"float:left; margin:4px;\"></span><span id=\"delete-icon\" class=\"ui-icon ui-icon-trash\" style=\"float:right; margin:4px;\"></span>" + unique_tag + "</p>";
                                 element += ['<img style=\"float:left; margin:2px; height:128px; width:128px;\" id="images-list-cell-image" align="left" src="', data.target.result,'"/>'].join(''); 
                                 element += "</li>";
                                 $("#" + gb.ss_merge_controller.html_elements.frames_list).append($(element));
@@ -340,27 +337,27 @@ oop.define_class({
 
                                     var sprite_index = -1;
                                     var sprite = null;
-                                    var sprites_count = g_ss_merge_controller.m_sprites.length;
+                                    var sprites_count = gb.ss_merge_controller.self().m_sprites.length;
                                     for(var i = 0; i < sprites_count; ++i) {
-                                        sprite = g_ss_merge_controller.m_sprites[i];
+                                        sprite = gb.ss_merge_controller.self().m_sprites[i];
                                         if(sprite.tag === frame_tag) {
                                             sprite_index = i;
                                             break;
                                         }
                                     }
-                                    g_ss_merge_controller.m_sprites.splice(sprite_index, 1);
+                                    gb.ss_merge_controller.self().m_sprites.splice(sprite_index, 1);
                                     g_ss_merge_scene.remove_child(sprite);
                                     sprite.release();
-                                    g_ss_merge_controller.reorder_sprites_positions();
+                                    gb.ss_merge_controller.self().reorder_sprites_positions();
                                 });
 
                                 sprite.is_touchable = true;
                                 var touch_recognize_component = sprite.get_component(gb.ces_base_component.type.touch_recognize);
-                                touch_recognize_component.add_callback(gb.input_context.state.pressed, g_ss_merge_controller.on_sprite_pressed, g_ss_merge_controller);
+                                touch_recognize_component.add_callback(gb.input_context.state.pressed, gb.ss_merge_controller.self().on_sprite_pressed, gb.ss_merge_controller.self());
 
                                 sprite.tag = unique_tag;
                                 g_ss_merge_scene.add_child(sprite);
-                                g_ss_merge_controller.m_sprites.push(sprite);
+                                gb.ss_merge_controller.self().m_sprites.push(sprite);
                             });
                         };
                     })(file);
@@ -380,6 +377,7 @@ oop.define_class({
             var sortered_sprites = this.m_sprites.sort(function(sprite_1, sprite_2) {
                 return sprite_2.size.x * sprite_2.size.y - sprite_1.size.x * sprite_1.size.y;
             });
+            console.log(sortered_sprites);
             var sprites_count = sortered_sprites.length;
             for(var i = 0; i < sprites_count; ++i) {
                 var sprite = sortered_sprites[i];
@@ -446,6 +444,8 @@ oop.define_class({
     },
 
     static_methods: {
-
+        self: function() {
+            return g_ss_merge_controller;
+        }
     }
 });
