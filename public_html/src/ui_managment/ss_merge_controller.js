@@ -51,9 +51,17 @@ oop.define_class({
         $(ui_j('tab_left_panel')).append($(element));
         element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>import</p>";
         $(ui_j('import_container')).append($(element));
-        element = "<p style=\"margin-left:2%;\"><label for=\"" + ui.import_size_drop_down_box + "\"> size </label><input id=" + ui.import_size_drop_down_box + " name=\"value\"></p>";
+        element = "<p style=\"margin-left:2%;\"><label for=\"" + ui.import_size_drop_down_box + "\"> size </label><input id=" + ui.import_size_drop_down_box + " name=\"value\" value=\"1.0\"></p>";
         $(ui_j('import_container')).append($(element));
-        $(ui_j('import_size_drop_down_box')).spinner();
+        $(ui_j('import_size_drop_down_box')).spinner({
+                                                min: 0.1,
+                                                max: 1.0,
+                                                step: 0.1,
+                                                start: 1.0,
+                                                spin: function( event, ui ) {
+                                                    console.log(ui.value);
+                                                 }});
+
         element = "<div id=" + ui.import_drop_zone + "></div>";
         $(ui_j('import_container')).append(element);
         element = "<button id=" + ui.import_add_image_button + ">add image...</button>";
@@ -150,7 +158,6 @@ oop.define_class({
         });
 
         
-
         /*var self = this;
         var save_button = document.getElementById('ss-merge-save-button');
         save_button.onclick = function() {

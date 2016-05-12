@@ -3395,9 +3395,11 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   $(b("tab_left_panel")).append($(c));
   c = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-arrowthick-1-e" style="float:left; margin:4px;"></span>import</p>';
   $(b("import_container")).append($(c));
-  c = '<p style="margin-left:2%;"><label for="' + a.import_size_drop_down_box + '"> size </label><input id=' + a.import_size_drop_down_box + ' name="value"></p>';
+  c = '<p style="margin-left:2%;"><label for="' + a.import_size_drop_down_box + '"> size </label><input id=' + a.import_size_drop_down_box + ' name="value" value="1.0"></p>';
   $(b("import_container")).append($(c));
-  $(b("import_size_drop_down_box")).spinner();
+  $(b("import_size_drop_down_box")).spinner({min:.1, max:1, step:.1, start:1, spin:function(a, b) {
+    console.log(b.value);
+  }});
   c = "<div id=" + a.import_drop_zone + "></div>";
   $(b("import_container")).append(c);
   c = "<button id=" + a.import_add_image_button + ">add image...</button>";
@@ -3793,51 +3795,51 @@ oop.define_class({namespace:"gb", name:"editor_fabricator", init:function() {
   });
   a.bounding_quad = b;
   var c = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
-    c.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .5), "u_color");
+    c.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(1, 0, 0, .5), "u_color");
     var a = new gb.ces_geometry_freeform_component;
     a.mesh = gb.mesh_constructor.create_circle();
     c.add_component(a);
-    c.size = new gb.vec2(12);
+    c.size = new gb.vec2(8);
     var a = c.get_component(gb.ces_base_component.type.touch_recognize), b = c.size;
     a.bound = new gb.vec4(-.5 * b.x, -.5 * b.y, .5 * b.x, .5 * b.y);
   });
   a.set_interactive_point(c, gb.selector.corner_type.center);
   var d = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
-    d.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .5), "u_color");
+    d.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(1, 0, 0, .5), "u_color");
     var a = new gb.ces_geometry_freeform_component;
     a.mesh = gb.mesh_constructor.create_circle();
     d.add_component(a);
-    d.size = new gb.vec2(12);
+    d.size = new gb.vec2(8);
     var a = d.get_component(gb.ces_base_component.type.touch_recognize), b = d.size;
     a.bound = new gb.vec4(-.5 * b.x, -.5 * b.y, .5 * b.x, .5 * b.y);
   });
   a.set_interactive_point(d, gb.selector.corner_type.left_top);
   var e = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
-    e.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .5), "u_color");
+    e.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(1, 0, 0, .5), "u_color");
     var a = new gb.ces_geometry_freeform_component;
     a.mesh = gb.mesh_constructor.create_circle();
     e.add_component(a);
-    e.size = new gb.vec2(12);
+    e.size = new gb.vec2(8);
     var a = e.get_component(gb.ces_base_component.type.touch_recognize), b = e.size;
     a.bound = new gb.vec4(-.5 * b.x, -.5 * b.y, .5 * b.x, .5 * b.y);
   });
   a.set_interactive_point(e, gb.selector.corner_type.right_top);
   var f = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
-    f.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .5), "u_color");
+    f.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(1, 0, 0, .5), "u_color");
     var a = new gb.ces_geometry_freeform_component;
     a.mesh = gb.mesh_constructor.create_circle();
     f.add_component(a);
-    f.size = new gb.vec2(12);
+    f.size = new gb.vec2(8);
     var a = f.get_component(gb.ces_base_component.type.touch_recognize), b = f.size;
     a.bound = new gb.vec4(-.5 * b.x, -.5 * b.y, .5 * b.x, .5 * b.y);
   });
   a.set_interactive_point(f, gb.selector.corner_type.left_bottom);
   var g = this.m_scene_fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function() {
-    g.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .5), "u_color");
+    g.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(1, 0, 0, .5), "u_color");
     var a = new gb.ces_geometry_freeform_component;
     a.mesh = gb.mesh_constructor.create_circle();
     g.add_component(a);
-    g.size = new gb.vec2(12);
+    g.size = new gb.vec2(8);
     var a = g.get_component(gb.ces_base_component.type.touch_recognize), b = g.size;
     a.bound = new gb.vec4(-.5 * b.x, -.5 * b.y, .5 * b.x, .5 * b.y);
   });
