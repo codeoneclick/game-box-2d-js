@@ -37,10 +37,9 @@ oop.define_class({
 
     init: function() {
         g_ss_merge_controller = this;
-        var ui = gb.ss_merge_controller.html_elements;
-        var ui_j = function(element_name) {
-            return '#' + ui[element_name];
-        };
+        var ui = gb.ss_merge_controller.ui();
+        var ui_j = gb.ss_merge_controller.ui_j;
+        var self = gb.ss_merge_controller.self();
         var element = null;
 
         $(ui_j('tab_container')).append($("<div id=" + ui.tab_left_panel + " style=\"background:black;\"/>"));
@@ -93,13 +92,13 @@ oop.define_class({
                 var tags_count = tags.length;
                 var sprite = null;
                 for(var i = 0; i < tags_count; ++i) {
-                    sprite = gb.ss_merge_controller.self().m_sprites.find(function(analized_sprite) {
+                    sprite = self.m_sprites.find(function(analized_sprite) {
                         return analized_sprite.tag === tags[i];
                     });
                     sprites.push(sprite);
                 }
-                gb.ss_merge_controller.self().m_sprites = sprites;
-                gb.ss_merge_controller.self().reorder_sprites_positions();
+                self.m_sprites = sprites;
+                self.reorder_sprites_positions();
             }
         });
 
@@ -116,7 +115,7 @@ oop.define_class({
         $(ui_j('editing_container')).append($(element));
         $(ui_j('editing_move_resize_radio_button')).buttonset();
         $(ui_j('editing_move_resize_radio_button') + " input[type=radio]").change(function() {
-             gb.ss_merge_controller.self().m_selector.is_align_movement = this.id === ui.editing_move_resize_snaptogrid_button;
+             self.m_selector.is_align_movement = this.id === ui.editing_move_resize_snaptogrid_button;
         });
         element = "<button id=" + ui.editing_spread_button + " style=\"margin:2%;\">spread</button>";
         $(ui_j('editing_container')).append(element);
@@ -152,8 +151,8 @@ oop.define_class({
                 duration: 300
             },
             beforeClose: function(event, ui) {
-               gb.ss_merge_controller.self().m_play_animation_dialog_controller.deactivate();
-               gb.ss_merge_controller.self().activate();
+               self.m_play_animation_dialog_controller.deactivate();
+               self.activate();
             },
         });
 
@@ -453,6 +452,12 @@ oop.define_class({
     static_methods: {
         self: function() {
             return g_ss_merge_controller;
+        },
+        ui: function() {
+            return gb.ss_merge_controller.html_elements;
+        },
+        ui_j: function(element_name) {
+            return '#' + gb.ss_merge_controller.ui()[element_name];
         }
     }
 });
