@@ -1,5 +1,5 @@
 #menu-tabs {
-    width: 1435px;
+    width: 1420px;
     border: 0px;
     margin: auto;
 }
@@ -15,10 +15,15 @@
     padding: 2%;
 }
 
+.ui-tabs .ui-tabs-nav {
+    margin: 0px;
+    padding: 0px;
+}
+
 #ss-merge-tab-container {
+    width: 1420px;
     height: 1024px;
-    margin: auto;
-    width: 1424px;
+    margin: 0px;
     padding: 0px;
     background: black;
 }
@@ -26,7 +31,8 @@
 #ss-merge-tab-left-panel {
     border: 0px;
     position: absolute;
-    margin-left: -6px;
+    margin-left: -3px;
+    margin-top: -4px;
     width: 400px;
     height: 1024px;
     float:left;
@@ -39,8 +45,7 @@
     height: 1024px;
     left: 400px;
     float: left;
-    padding: 1px;
-    margin-left: 8px;
+    margin-top: -3px;
     overflow: hidden;
 }
 
@@ -129,7 +134,7 @@
 
 #images-list { 
     list-style-type: none; 
-    max-height: 275px;
+    max-height: 280px;
     overflow: auto;
 }
 

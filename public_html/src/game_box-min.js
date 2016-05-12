@@ -3383,7 +3383,7 @@ oop.define_class({namespace:"gb", name:"frames_container", init:function() {
 var g_ss_merge_controller = null, g_ss_merge_transition = null, g_ss_merge_scene = null;
 oop.define_class({namespace:"gb", name:"ss_merge_controller", constants:{html_elements:{tab_container:"ss-merge-tab-container", tab_left_panel:"ss-merge-tab-left-panel", tab_right_panel:"ss-merge-tab-right-panel", import_container:"ss-merge-import-container", import_size_drop_down_box:"ss-merge-size-drop-down-box", import_drop_zone:"ss-merge-drop-zone", import_add_image_button:"ss-merge-add_image_button", frames_container:"ss-merge-frames-container", frames_sort_button:"ss-merge-frames-sort-button", 
 frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frames-list-cell", editing_container:"ss-merge-editing-container", editing_move_resize_label:"ss-merge-editing-move-resize-label", editing_move_resize_radio_button:"ss-merge-editing-move-resize-radio-button", editing_move_resize_freeform_button:"ss-merge-editing-move-resize-freeform-button", editing_move_resize_snaptogrid_button:"ss-merge-editing-move-resize-snaptogrid-button", editing_spread_button:"ss-merge-editing-spread-button", export_container:"ss-merge-export-container", 
-export_animation_preview_button:"ss-merge-export-animation-preview_button", export_save_atlas_button:"ss-merge-export-atlas-button", export_save_frames_button:"ss-merge-export-save-frames-button", animation_preview_dialog:"ss-merge-preview-dialog"}}, init:function() {
+export_animation_preview_button:"ss-merge-export-animation-preview_button", export_save_atlas_button:"ss-merge-export-atlas-button", export_save_frames_button:"ss-merge-export-save-frames-button", animation_preview_dialog:"ss-merge-animation-preview-dialog"}}, init:function() {
   g_ss_merge_controller = this;
   var a = gb.ss_merge_controller.ui(), b = gb.ss_merge_controller.ui_j, c = gb.ss_merge_controller.self(), d = null;
   $(b("tab_container")).append($("<div id=" + a.tab_left_panel + ' style="background:black;"/>'));
@@ -3391,7 +3391,7 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   $(b("tab_right_panel")).append($('<canvas style="width:100%; height:100%;" id="gl_canvas" width="1024" height="1024"></canvas>'));
   d = "<div id=" + a.import_container + "/>";
   $(b("tab_left_panel")).append($(d));
-  d = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-arrowthick-1-e" style="float:left; margin:4px;"></span>import</p>';
+  d = '<p class="ui-widget-header" style="margin:0px;"><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>import</p>';
   $(b("import_container")).append($(d));
   d = '<p style="margin-left:2%;"><label for="' + a.import_size_drop_down_box + '"> size </label><input id=' + a.import_size_drop_down_box + ' name="value" value="1.0"></p>';
   $(b("import_container")).append($(d));
@@ -3410,13 +3410,15 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   d.addEventListener("drop", this.handle_file_select, !1);
   d = "<div id=" + a.frames_container + "/>";
   $(b("tab_left_panel")).append($(d));
-  d = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-arrowthick-1-e" style="float:left; margin:4px;"></span>frames</p>';
+  d = '<p class="ui-widget-header" style="margin:0px;"><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>frames</p>';
   $(b("frames_container")).append($(d));
   d = "<button id=" + a.frames_sort_button + ' style="margin:2%;">sort by name</button>';
   $(b("frames_container")).append(d);
   $(b("frames_sort_button")).button();
+  $(b("frames_sort_button")).button("disable");
   d = '<ul style="list-style-type:none; height:340px; overflow:auto; margin-left:-10%;" id="' + a.frames_list + '"></ul>';
   $(b("frames_container")).append($(d));
+  $(b("frames_list")).height(0);
   $(b("frames_list")).sortable();
   $(b("frames_list")).disableSelection();
   $(b("frames_list")).sortable({stop:function() {
@@ -3432,7 +3434,7 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   }});
   d = "<div id=" + a.editing_container + "/>";
   $(b("tab_left_panel")).append($(d));
-  d = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-arrowthick-1-e" style="float:left; margin:4px;"></span>editing</p>';
+  d = '<p class="ui-widget-header" style="margin:0px;"><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>editing</p>';
   $(b("editing_container")).append($(d));
   d = '<div style="margin:2%;" id=' + a.editing_move_resize_radio_button + ">";
   d += '<input type="radio" id=' + a.editing_move_resize_freeform_button + ' name="' + a.editing_move_resize_radio_button + '" checked="checked">';
@@ -3450,11 +3452,21 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   $(b("editing_spread_button")).button();
   d = "<div id=" + a.export_container + "/>";
   $(b("tab_left_panel")).append($(d));
-  d = '<p class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-arrowthick-1-e" style="float:left; margin:4px;"></span>export</p>';
+  d = '<p class="ui-widget-header" style="margin:0px;"><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>export</p>';
   $(b("export_container")).append($(d));
   d = "<button id=" + a.export_animation_preview_button + ' style="margin:2%;">preview</button><br>';
   $(b("export_container")).append(d);
   $(b("export_animation_preview_button")).button();
+  $(b("export_animation_preview_button")).on("click", function() {
+    var a = c.calculate_atlas_size();
+    if (0 < a.width && 0 < a.height) {
+      var d = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, a.width, a.height), a = c.create_animation_configuration(a.width, a.height);
+      $(b("animation_preview_dialog")).dialog("open");
+      $(".ui-dialog :button").blur();
+      c.deactivate();
+      c.m_play_animation_dialog_controller.activate(d, a);
+    }
+  });
   d = "<button id=" + a.export_save_atlas_button + ' style="margin:2%;">save atlas</button><br>';
   $(b("export_container")).append(d);
   $(b("export_save_atlas_button")).button();
@@ -3508,6 +3520,13 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   }
   g_ss_merge_scene.remove_child(this.m_grid);
   this.m_grid.get_component(gb.ces_base_component.type.geometry).mesh.release();
+}, calculate_atlas_size:function() {
+  for (var a = this.m_sprites.sort(function(a, b) {
+    return b.size.x * b.size.y - a.size.x * a.size.y;
+  }), b = a.length, c = 0, d = 0, e = 0;e < b;++e) {
+    var f = a[e], g = f.position.x + f.size.x, f = f.position.y + f.size.y, c = g > c ? g : c, d = f > d ? f : d
+  }
+  return {width:Math.min(c, gl.viewport_width), height:Math.min(d, gl.viewport_height)};
 }, handle_file_select:function(a) {
   a.stopPropagation();
   a.preventDefault();
@@ -3573,19 +3592,20 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
 }, reorder_sprites_positions:function() {
   this.set_selected_sprite(null);
   this.m_frames_container.reset();
-  var a = this.m_sprites.sort(function(a, b) {
+  for (var a = this.m_sprites.sort(function(a, b) {
     return b.size.x * b.size.y - a.size.x * a.size.y;
-  });
-  console.log(a);
-  for (var b = a.length, c = 0;c < b;++c) {
+  }), b = a.length, c = 0;c < b;++c) {
     var d = a[c], e = d.size;
     (e = this.m_frames_container.get_frame_parameters(e.x, e.y)) ? d.position = new gb.vec2(e.x, e.y) : console.error("can't insert image");
   }
+  a = gb.ss_merge_controller.ui_j;
+  $(a("frames_list")).height(0 < b ? 1 == b ? 170 : 340 : 0);
+  $(a("frames_sort_button")).button(1 < b ? "enable" : "disable");
 }, create_animation_configuration:function(a, b) {
   for (var c = [], d = this.m_sprites.sort(function(a, b) {
     return a.tag.localeCompare(b.tag, "en", {numeric:!0});
   }), e = d.length, f = null, g = null, f = null, h = 0;h < e;++h) {
-    f = d[h], console.log(f.tag), g = f.position, f = gb.vec2.add(g, f.size), c.push({u_0:g.x / a, v_0:g.y / b, u_1:f.x / a, v_1:f.y / b});
+    f = d[h], g = f.position, f = gb.vec2.add(g, f.size), c.push({u_0:g.x / a, v_0:g.y / b, u_1:f.x / a, v_1:f.y / b});
   }
   return c;
 }, on_sprite_pressed:function(a, b, c, d) {
@@ -3628,7 +3648,7 @@ oop.define_class({namespace:"gb", name:"ss_animation_controller", init:function(
   this.m_grid.get_component(gb.ces_base_component.type.geometry).mesh.release();
 }}, static_methods:{}});
 var g_ss_play_animation_dialog_controller = null;
-oop.define_class({namespace:"gb", name:"ss_play_animation_dialog_controller", constants:{html_elements:{play_animation_dialog:"play-animation-dialog"}}, init:function() {
+oop.define_class({namespace:"gb", name:"ss_play_animation_dialog_controller", constants:{html_elements:{play_animation_dialog:"ss-merge-animation-preview-dialog"}}, init:function() {
   g_ss_play_animation_dialog_controller = this;
   this.m_transition = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.play.animation.dialog.json");
   gb.game_controller.get_instance().add_transition(this.m_transition);

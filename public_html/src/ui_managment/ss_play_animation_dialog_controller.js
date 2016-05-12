@@ -8,7 +8,7 @@ oop.define_class({
     name: "ss_play_animation_dialog_controller",
     constants: {
         html_elements: {
-            play_animation_dialog: "play-animation-dialog"
+            play_animation_dialog: "ss-merge-animation-preview-dialog"
         }
     },
    

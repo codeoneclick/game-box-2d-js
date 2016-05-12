@@ -31,7 +31,7 @@ oop.define_class({
             export_animation_preview_button: "ss-merge-export-animation-preview_button",
             export_save_atlas_button: "ss-merge-export-atlas-button",
             export_save_frames_button: "ss-merge-export-save-frames-button",
-            animation_preview_dialog: "ss-merge-preview-dialog"
+            animation_preview_dialog: "ss-merge-animation-preview-dialog"
         }
     },
 
@@ -48,7 +48,7 @@ oop.define_class({
 
         element = "<div id=" + ui.import_container + "/>";
         $(ui_j('tab_left_panel')).append($(element));
-        element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>import</p>";
+        element = "<p class=\"ui-widget-header\" style=\"margin:0px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>import</p>";
         $(ui_j('import_container')).append($(element));
         element = "<p style=\"margin-left:2%;\"><label for=\"" + ui.import_size_drop_down_box + "\"> size </label><input id=" + ui.import_size_drop_down_box + " name=\"value\" value=\"1.0\"></p>";
         $(ui_j('import_container')).append($(element));
@@ -60,7 +60,6 @@ oop.define_class({
                                                 spin: function( event, ui ) {
                                                     console.log(ui.value);
                                                  }});
-
         element = "<div id=" + ui.import_drop_zone + "></div>";
         $(ui_j('import_container')).append(element);
         element = "<button id=" + ui.import_add_image_button + ">add image...</button>";
@@ -74,19 +73,20 @@ oop.define_class({
 
         element = "<div id=" + ui.frames_container + "/>";
         $(ui_j('tab_left_panel')).append($(element));
-        element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>frames</p>";
+        element = "<p class=\"ui-widget-header\" style=\"margin:0px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>frames</p>";
         $(ui_j('frames_container')).append($(element));
         element = "<button id=" + ui.frames_sort_button + " style=\"margin:2%;\">sort by name</button>";
         $(ui_j('frames_container')).append(element);
         $(ui_j('frames_sort_button')).button();
+        $(ui_j('frames_sort_button')).button('disable');
         element = "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%;\" id=\"" + ui.frames_list + "\"></ul>"
         $(ui_j('frames_container')).append($(element));
+        $(ui_j('frames_list')).height(0);
         $(ui_j('frames_list')).sortable();
         $(ui_j('frames_list')).disableSelection();
-
         $(ui_j('frames_list')).sortable({
             stop: function() {
-                var tags = $(ui_j('frames_list') + " li").map(function() { 
+                var tags = $(ui_j('frames_list') + " li").map(function() {
                     return $(this).find("#frame-index").text(); });
                 var sprites = [];
                 var tags_count = tags.length;
@@ -104,7 +104,7 @@ oop.define_class({
 
         element = "<div id=" + ui.editing_container + "/>";
         $(ui_j('tab_left_panel')).append($(element));
-        element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>editing</p>";
+        element = "<p class=\"ui-widget-header\" style=\"margin:0px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>editing</p>";
         $(ui_j('editing_container')).append($(element));
         element = "<div style=\"margin:2%;\" id=" + ui.editing_move_resize_radio_button + ">";
         element += "<input type=\"radio\" id=" + ui.editing_move_resize_freeform_button + " name=\"" + ui.editing_move_resize_radio_button + "\" checked=\"checked\">";
@@ -123,11 +123,22 @@ oop.define_class({
 
         element = "<div id=" + ui.export_container + "/>";
         $(ui_j('tab_left_panel')).append($(element));
-        element = "<p class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-arrowthick-1-e\" style=\"float:left; margin:4px;\"></span>export</p>";
+        element = "<p class=\"ui-widget-header\" style=\"margin:0px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>export</p>";
         $(ui_j('export_container')).append($(element));
         element = "<button id=" + ui.export_animation_preview_button + " style=\"margin:2%;\">preview</button><br>";
         $(ui_j('export_container')).append(element);
         $(ui_j('export_animation_preview_button')).button();
+        $(ui_j('export_animation_preview_button')).on('click', function() {
+            var atlas_size = self.calculate_atlas_size();
+            if(atlas_size.width > 0 && atlas_size.height > 0) {
+                var atlas = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0,  atlas_size.width, atlas_size.height);
+                var frames = self.create_animation_configuration(atlas_size.width, atlas_size.height);
+                $(ui_j('animation_preview_dialog')).dialog('open');
+                $('.ui-dialog :button').blur();
+                self.deactivate();
+                self.m_play_animation_dialog_controller.activate(atlas, frames);
+            }
+        });
         element = "<button id=" + ui.export_save_atlas_button + " style=\"margin:2%;\">save atlas</button><br>";
         $(ui_j('export_container')).append(element);
         $(ui_j('export_save_atlas_button')).button();
@@ -155,8 +166,6 @@ oop.define_class({
                self.activate();
             },
         });
-
-        
         /*var self = this;
         var save_button = document.getElementById('ss-merge-save-button');
         save_button.onclick = function() {
@@ -277,6 +286,24 @@ oop.define_class({
             geometry_component.mesh.release();
         },
 
+        calculate_atlas_size: function() {
+            var sortered_sprites = this.m_sprites.sort(function(sprite_1, sprite_2) {
+                return sprite_2.size.x * sprite_2.size.y - sprite_1.size.x * sprite_1.size.y;
+            });
+            var sprites_count = sortered_sprites.length;
+            var atlas_width = 0;
+            var atlas_height = 0;
+            for(var i = 0; i < sprites_count; ++i) {
+                var sprite = sortered_sprites[i];
+                var sprite_offset_x = sprite.position.x + sprite.size.x;
+                var sprite_offset_y = sprite.position.y + sprite.size.y;
+                atlas_width = sprite_offset_x > atlas_width ? sprite_offset_x : atlas_width;
+                atlas_height = sprite_offset_y > atlas_height ? sprite_offset_y : atlas_height;
+            }
+            return { width: Math.min(atlas_width, gl.viewport_width),
+                     height: Math.min(atlas_height, gl.viewport_height) }
+        },
+
         handle_file_select: function(event) {
                 event.stopPropagation();
                 event.preventDefault();
@@ -383,7 +410,6 @@ oop.define_class({
             var sortered_sprites = this.m_sprites.sort(function(sprite_1, sprite_2) {
                 return sprite_2.size.x * sprite_2.size.y - sprite_1.size.x * sprite_1.size.y;
             });
-            console.log(sortered_sprites);
             var sprites_count = sortered_sprites.length;
             for(var i = 0; i < sprites_count; ++i) {
                 var sprite = sortered_sprites[i];
@@ -395,6 +421,9 @@ oop.define_class({
                     console.error("can't insert image");
                 }
             }
+            var ui_j = gb.ss_merge_controller.ui_j;
+            $(ui_j('frames_list')).height(sprites_count > 0 ? sprites_count == 1 ? 170 : 340 : 0);
+            $(ui_j('frames_sort_button')).button(sprites_count > 1 ? 'enable' : 'disable');
         },
 
         create_animation_configuration: function(atlas_width, atlas_height) {
@@ -408,7 +437,6 @@ oop.define_class({
             var position_1 = null;
             for(var i = 0; i < sprites_count; ++i) {
                 sprite = sortered_sprites[i];
-                console.log(sprite.tag);
                 position_0 = sprite.position;
                 position_1 = gb.vec2.add(position_0, sprite.size);
                 frames.push({u_0:position_0.x / atlas_width, v_0: position_0.y / atlas_height, 
