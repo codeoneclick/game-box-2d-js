@@ -3458,6 +3458,7 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   $(b("export_container")).append(d);
   $(b("export_animation_preview_button")).button();
   $(b("export_animation_preview_button")).on("click", function() {
+    c.set_selected_sprite(null);
     var a = c.calculate_atlas_size();
     if (0 < a.width && 0 < a.height) {
       var d = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, a.width, a.height), a = c.create_animation_configuration(a.width, a.height);
@@ -3611,7 +3612,9 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
 }, on_sprite_pressed:function(a, b, c, d) {
   d.set_selected_sprite(a);
 }, set_selected_sprite:function(a) {
-  var b = null;
+  var b = gb.ss_merge_controller.ui_j, c = this.m_sprites.indexOf(a);
+  -1 !== c && $(b("frames_list")).animate({scrollTop:140 * c}, 2E3);
+  b = null;
   this.m_selector.target && (b = this.m_selector.target, g_ss_merge_scene.add_child(b), b.position = this.m_selector.position, b.rotation = this.m_selector.rotation, b = b.get_component(gb.ces_base_component.type.touch_recognize), b.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this));
   a ? (this.m_selector.position = a.position, this.m_selector.rotation = a.rotation, this.m_selector.size = a.size, this.m_selector.target = a, b = a.get_component(gb.ces_base_component.type.touch_recognize), b.remove_callback(gb.input_context.state.pressed, this.on_sprite_pressed), this.m_selector.bounding_quad.remove_from_parent(), g_ss_merge_scene.add_child(this.m_selector.bounding_quad)) : this.m_selector.target = null;
 }}, static_methods:{self:function() {

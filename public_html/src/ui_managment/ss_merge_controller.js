@@ -129,6 +129,7 @@ oop.define_class({
         $(ui_j('export_container')).append(element);
         $(ui_j('export_animation_preview_button')).button();
         $(ui_j('export_animation_preview_button')).on('click', function() {
+            self.set_selected_sprite(null);
             var atlas_size = self.calculate_atlas_size();
             if(atlas_size.width > 0 && atlas_size.height > 0) {
                 var atlas = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0,  atlas_size.width, atlas_size.height);
@@ -450,6 +451,12 @@ oop.define_class({
         },
 
         set_selected_sprite: function(sprite) {
+
+            var ui_j = gb.ss_merge_controller.ui_j;
+            var sprite_index = this.m_sprites.indexOf(sprite);
+            if(sprite_index !== -1) {
+                $(ui_j('frames_list')).animate({scrollTop:sprite_index * 140}, 2000);
+            }
 
             var target_touch_recognize_component = null;
             if(this.m_selector.target) {
