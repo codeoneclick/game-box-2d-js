@@ -86,19 +86,7 @@ oop.define_class({
         $(ui_j('frames_list')).disableSelection();
         $(ui_j('frames_list')).sortable({
             stop: function() {
-                var tags = $(ui_j('frames_list') + " li").map(function() {
-                    return $(this).find("#frame-index").text(); });
-                var sprites = [];
-                var tags_count = tags.length;
-                var sprite = null;
-                for(var i = 0; i < tags_count; ++i) {
-                    sprite = self.m_sprites.find(function(analized_sprite) {
-                        return analized_sprite.tag === tags[i];
-                    });
-                    sprites.push(sprite);
-                }
-                self.m_sprites = sprites;
-                self.reorder_sprites_positions();
+                self.sort_sprites_as_in_table();
             }
         });
 
@@ -337,6 +325,7 @@ oop.define_class({
                                     files_count_processed++;
                                     if(files_count_processed === files_count_unprocessed) {
                                         gb.ss_merge_controller.self().reorder_sprites_positions();
+                                        gb.ss_merge_controller.self().sort_sprites_as_in_table();
                                     }
                                 });
 
@@ -355,7 +344,7 @@ oop.define_class({
                                     unique_tag += "(" + same_images_count + ")"
                                 }
                                 
-                                var element = "<li class=\"ui-state-default\" style=\"height: 160px; margin: 8px; background: none;\">";
+                                var element = "<li class=\"ui-state-default\" id=" + unique_tag + " style=\"height: 160px; margin: 8px; background: none;\">";
                                 element += "<p align=\"center\" style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;\" id=\"frame-index\" class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-circle-arrow-e\" style=\"float:left; margin:4px;\"></span><span id=\"delete-icon\" class=\"ui-icon ui-icon-trash\" style=\"float:right; margin:4px;\"></span>" + unique_tag + "</p>";
                                 element += ['<img style=\"float:left; margin:2px; height:128px; width:128px;\" id="images-list-cell-image" align="left" src="', data.target.result,'"/>'].join(''); 
                                 element += "</li>";
@@ -451,11 +440,17 @@ oop.define_class({
         },
 
         set_selected_sprite: function(sprite) {
-
             var ui_j = gb.ss_merge_controller.ui_j;
             var sprite_index = this.m_sprites.indexOf(sprite);
-            if(sprite_index !== -1) {
-                $(ui_j('frames_list')).animate({scrollTop:sprite_index * 140}, 2000);
+            var sprites_count = this.m_sprites.length;
+            for(var i = 0; i < sprites_count; ++i) {
+                if(i === sprite_index) {
+                    $(ui_j('frames_list')).animate({scrollTop:sprite_index * 170}, 1000, 'swing', function() {
+                        $(ui_j('frames_list') + ' li').eq(sprite_index).first().animate({backgroundColor: "#f58400"});
+                    });
+                } else {
+                    $(ui_j('frames_list') + ' li').eq(i).first().css({'background-color': 'black'});
+                }
             }
 
             var target_touch_recognize_component = null;
@@ -481,6 +476,23 @@ oop.define_class({
             } else {
                 this.m_selector.target = null;
             }
+        },
+
+        sort_sprites_as_in_table: function() {
+            var self = gb.ss_merge_controller.self();
+            var ui_j = gb.ss_merge_controller.ui_j;
+            var tags = $(ui_j('frames_list') + " li").map(function() {
+                    return $(this).find("#frame-index").text(); });
+            var sprites = [];
+            var tags_count = tags.length;
+            var sprite = null;
+            for(var i = 0; i < tags_count; ++i) {
+                sprite = self.m_sprites.find(function(analized_sprite) {
+                    return analized_sprite.tag === tags[i];
+                });
+                sprites.push(sprite);
+            }
+            self.m_sprites = sprites;
         }
     },
 

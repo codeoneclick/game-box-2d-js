@@ -3422,15 +3422,7 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   $(b("frames_list")).sortable();
   $(b("frames_list")).disableSelection();
   $(b("frames_list")).sortable({stop:function() {
-    for (var a = $(b("frames_list") + " li").map(function() {
-      return $(this).find("#frame-index").text();
-    }), d = [], g = a.length, h = null, k = 0;k < g;++k) {
-      h = c.m_sprites.find(function(b) {
-        return b.tag === a[k];
-      }), d.push(h);
-    }
-    c.m_sprites = d;
-    c.reorder_sprites_positions();
+    c.sort_sprites_as_in_table();
   }});
   d = "<div id=" + a.editing_container + "/>";
   $(b("tab_left_panel")).append($(d));
@@ -3549,14 +3541,14 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
               f.get_component(gb.ces_base_component.type.material).set_texture(d, 0);
               f.size = new gb.vec2(.5 * d.width, .5 * d.height);
               c++;
-              c === b && gb.ss_merge_controller.self().reorder_sprites_positions();
+              c === b && (gb.ss_merge_controller.self().reorder_sprites_positions(), gb.ss_merge_controller.self().sort_sprites_as_in_table());
             }), g = gb.ss_merge_controller.self().m_sprites.length, k = 0, r = null, q = 0;q < g;++q) {
               r = gb.ss_merge_controller.self().m_sprites[q], -1 !== r.tag.indexOf(a.target.m_filename) && k++;
             }
             g = a.target.m_filename;
             0 !== k && (g += "(" + k + ")");
-            k = '<li class="ui-state-default" style="height: 160px; margin: 8px; background: none;">' + ('<p align="center" style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;" id="frame-index" class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-circle-arrow-e" style="float:left; margin:4px;"></span><span id="delete-icon" class="ui-icon ui-icon-trash" style="float:right; margin:4px;"></span>' + g + "</p>") + ['<img style="float:left; margin:2px; height:128px; width:128px;" id="images-list-cell-image" align="left" src="', 
-            a.target.result, '"/>'].join("");
+            k = '<li class="ui-state-default" id=' + g + ' style="height: 160px; margin: 8px; background: none;">' + ('<p align="center" style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;" id="frame-index" class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-circle-arrow-e" style="float:left; margin:4px;"></span><span id="delete-icon" class="ui-icon ui-icon-trash" style="float:right; margin:4px;"></span>' + g + "</p>");
+            k += ['<img style="float:left; margin:2px; height:128px; width:128px;" id="images-list-cell-image" align="left" src="', a.target.result, '"/>'].join("");
             k += "</li>";
             $("#" + gb.ss_merge_controller.html_elements.frames_list).append($(k));
             k = $("#" + gb.ss_merge_controller.html_elements.frames_list).children();
@@ -3613,10 +3605,25 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   d.set_selected_sprite(a);
 }, set_selected_sprite:function(a) {
   var b = gb.ss_merge_controller.ui_j, c = this.m_sprites.indexOf(a);
-  -1 !== c && $(b("frames_list")).animate({scrollTop:140 * c}, 2E3);
-  b = null;
-  this.m_selector.target && (b = this.m_selector.target, g_ss_merge_scene.add_child(b), b.position = this.m_selector.position, b.rotation = this.m_selector.rotation, b = b.get_component(gb.ces_base_component.type.touch_recognize), b.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this));
-  a ? (this.m_selector.position = a.position, this.m_selector.rotation = a.rotation, this.m_selector.size = a.size, this.m_selector.target = a, b = a.get_component(gb.ces_base_component.type.touch_recognize), b.remove_callback(gb.input_context.state.pressed, this.on_sprite_pressed), this.m_selector.bounding_quad.remove_from_parent(), g_ss_merge_scene.add_child(this.m_selector.bounding_quad)) : this.m_selector.target = null;
+  if (-1 !== c) {
+    for (var d = this.m_sprites.length, e = 0;e < d;++e) {
+      e === c ? $(b("frames_list")).animate({scrollTop:170 * c}, 1E3, "swing", function() {
+        $(b("frames_list") + " li").eq(c).first().animate({backgroundColor:"#f58400"});
+      }) : $(b("frames_list") + " li").eq(e).first().css({"background-color":"black"});
+    }
+  }
+  d = null;
+  this.m_selector.target && (d = this.m_selector.target, g_ss_merge_scene.add_child(d), d.position = this.m_selector.position, d.rotation = this.m_selector.rotation, d = d.get_component(gb.ces_base_component.type.touch_recognize), d.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this));
+  a ? (this.m_selector.position = a.position, this.m_selector.rotation = a.rotation, this.m_selector.size = a.size, this.m_selector.target = a, d = a.get_component(gb.ces_base_component.type.touch_recognize), d.remove_callback(gb.input_context.state.pressed, this.on_sprite_pressed), this.m_selector.bounding_quad.remove_from_parent(), g_ss_merge_scene.add_child(this.m_selector.bounding_quad)) : this.m_selector.target = null;
+}, sort_sprites_as_in_table:function() {
+  for (var a = gb.ss_merge_controller.self(), b = gb.ss_merge_controller.ui_j, c = $(b("frames_list") + " li").map(function() {
+    return $(this).find("#frame-index").text();
+  }), b = [], d = c.length, e = null, f = 0;f < d;++f) {
+    e = a.m_sprites.find(function(a) {
+      return a.tag === c[f];
+    }), b.push(e);
+  }
+  a.m_sprites = b;
 }}, static_methods:{self:function() {
   return g_ss_merge_controller;
 }, ui:function() {
