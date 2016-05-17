@@ -345,7 +345,7 @@ oop.define_class({
                                 }
                                 
                                 var element = "<li class=\"ui-state-default\" id=" + unique_tag + " style=\"height: 160px; margin: 8px; background: none;\">";
-                                element += "<p align=\"center\" style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;\" id=\"frame-index\" class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-circle-arrow-e\" style=\"float:left; margin:4px;\"></span><span id=\"delete-icon\" class=\"ui-icon ui-icon-trash\" style=\"float:right; margin:4px;\"></span>" + unique_tag + "</p>";
+                                element += "<p align=\"center\" style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;\" id=\"frame-index\" class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-circle-arrow-e\" style=\"float:left; margin:4px;\"></span><span id=\"delete-icon\" class=\"ui-icon ui-icon-trash\" style=\"float:right; margin:4px;\"></span>" + unique_tag + "</p>";
                                 element += ['<img style=\"float:left; margin:2px; height:128px; width:128px;\" id="images-list-cell-image" align="left" src="', data.target.result,'"/>'].join(''); 
                                 element += "</li>";
                                 $("#" + gb.ss_merge_controller.html_elements.frames_list).append($(element));
@@ -445,11 +445,12 @@ oop.define_class({
             var sprites_count = this.m_sprites.length;
             for(var i = 0; i < sprites_count; ++i) {
                 if(i === sprite_index) {
-                    $(ui_j('frames_list')).animate({scrollTop:sprite_index * 170}, 1000, 'swing', function() {
-                        $(ui_j('frames_list') + ' li').eq(sprite_index).first().animate({backgroundColor: "#f58400"});
+                    $(ui_j('frames_list')).animate({scrollTop: sprite_index * 170}, 'fast', 'swing', function() {
+                        console.log($(ui_j('frames_list') + ' li').eq(sprite_index).find('p'));
+                        $(ui_j('frames_list') + ' li').eq(sprite_index).find('p').animate({backgroundColor: "#f58400"});
                     });
                 } else {
-                    $(ui_j('frames_list') + ' li').eq(i).first().css({'background-color': 'black'});
+                    $(ui_j('frames_list') + ' li').eq(i).find('p').css({'background': 'black'});
                 }
             }
 

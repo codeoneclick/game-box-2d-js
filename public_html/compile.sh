@@ -80,6 +80,7 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/game_states_managment/game_transition.js \
 --js=../public_html/src/game_states_managment/game_controller.js \
 --js=../public_html/src/bussines_logic_managment/frames_container.js \
+--js=../public_html/src/bussines_logic_managment/max_rects_pack_algorithm.js \
 --js=../public_html/src/ui_managment/ss_merge_controller.js \
 --js=../public_html/src/ui_managment/ss_animation_controller.js \
 --js=../public_html/src/ui_managment/ss_play_animation_dialog_controller.js \

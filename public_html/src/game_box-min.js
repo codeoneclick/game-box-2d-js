@@ -3547,7 +3547,8 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
             }
             g = a.target.m_filename;
             0 !== k && (g += "(" + k + ")");
-            k = '<li class="ui-state-default" id=' + g + ' style="height: 160px; margin: 8px; background: none;">' + ('<p align="center" style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%;" id="frame-index" class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-circle-arrow-e" style="float:left; margin:4px;"></span><span id="delete-icon" class="ui-icon ui-icon-trash" style="float:right; margin:4px;"></span>' + g + "</p>");
+            k = '<li class="ui-state-default" id=' + g + ' style="height: 160px; margin: 8px; background: none;">' + ('<p align="center" style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;" id="frame-index" class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-circle-arrow-e" style="float:left; margin:4px;"></span><span id="delete-icon" class="ui-icon ui-icon-trash" style="float:right; margin:4px;"></span>' + 
+            g + "</p>");
             k += ['<img style="float:left; margin:2px; height:128px; width:128px;" id="images-list-cell-image" align="left" src="', a.target.result, '"/>'].join("");
             k += "</li>";
             $("#" + gb.ss_merge_controller.html_elements.frames_list).append($(k));
@@ -3604,13 +3605,11 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
 }, on_sprite_pressed:function(a, b, c, d) {
   d.set_selected_sprite(a);
 }, set_selected_sprite:function(a) {
-  var b = gb.ss_merge_controller.ui_j, c = this.m_sprites.indexOf(a);
-  if (-1 !== c) {
-    for (var d = this.m_sprites.length, e = 0;e < d;++e) {
-      e === c ? $(b("frames_list")).animate({scrollTop:170 * c}, 1E3, "swing", function() {
-        $(b("frames_list") + " li").eq(c).first().animate({backgroundColor:"#f58400"});
-      }) : $(b("frames_list") + " li").eq(e).first().css({"background-color":"black"});
-    }
+  for (var b = gb.ss_merge_controller.ui_j, c = this.m_sprites.indexOf(a), d = this.m_sprites.length, e = 0;e < d;++e) {
+    e === c ? $(b("frames_list")).animate({scrollTop:170 * c}, "fast", "swing", function() {
+      console.log($(b("frames_list") + " li").eq(c).find("p"));
+      $(b("frames_list") + " li").eq(c).find("p").animate({backgroundColor:"#f58400"});
+    }) : $(b("frames_list") + " li").eq(e).find("p").css({background:"black"});
   }
   d = null;
   this.m_selector.target && (d = this.m_selector.target, g_ss_merge_scene.add_child(d), d.position = this.m_selector.position, d.rotation = this.m_selector.rotation, d = d.get_component(gb.ces_base_component.type.touch_recognize), d.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this));
@@ -3679,7 +3678,7 @@ oop.define_class({namespace:"gb", name:"ss_play_animation_dialog_controller", co
         a.wrap_mode = gl.CLAMP_TO_EDGE;
         f.get_component(gb.ces_base_component.type.material).set_texture(a, 0);
         c.add_child(f);
-        f.size = new gb.vec2(1024, 1024);
+        f.size = new gb.vec2(128, 128);
         f.add_animation("animation", b);
       });
     });
