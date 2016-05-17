@@ -13,7 +13,7 @@ oop.define_class({
         this.m_width = 0;
         this.m_height = 0;
         this.m_setted_wrap_mode = 0;
-        this.m_presseted_wrap_mode = gl.REPEAT;
+        this.m_presseted_wrap_mode = gl.CLAMP_TO_EDGE;
         this.m_setted_mag_filter = 0;
         this.m_presetted_mag_filter = gl.NEAREST;
         this.m_setted_min_filter = 0;

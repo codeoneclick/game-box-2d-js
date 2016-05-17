@@ -131,6 +131,13 @@ oop.define_class({
         element = "<button id=" + ui.export_save_atlas_button + " style=\"margin:2%;\">save atlas</button><br>";
         $(ui_j('export_container')).append(element);
         $(ui_j('export_save_atlas_button')).button();
+        $(ui_j('export_save_atlas_button')).on('click', function() {
+            var atlas_size = self.calculate_atlas_size();
+            if(atlas_size.width > 0 && atlas_size.height > 0) {
+                var atlas = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0,  atlas_size.width, atlas_size.height);
+                window.location.href = atlas.src.replace('image/png', 'image/octet-stream');
+            }
+        });
         element = "<button id=" + ui.export_save_frames_button + " style=\"margin:2%;\">save frames</button>";
         $(ui_j('export_container')).append(element);
         $(ui_j('export_save_frames_button')).button();
@@ -445,7 +452,7 @@ oop.define_class({
             var sprites_count = this.m_sprites.length;
             for(var i = 0; i < sprites_count; ++i) {
                 if(i === sprite_index) {
-                    $(ui_j('frames_list')).animate({scrollTop: sprite_index * 170}, 'fast', 'swing', function() {
+                    $(ui_j('frames_list')).animate({scrollTop: sprite_index * 170}, 'slow', 'swing', function() {
                         console.log($(ui_j('frames_list') + ' li').eq(sprite_index).find('p'));
                         $(ui_j('frames_list') + ' li').eq(sprite_index).find('p').animate({backgroundColor: "#f58400"});
                     });

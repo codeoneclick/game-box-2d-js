@@ -44,8 +44,10 @@ oop.define_class({
                         resource.wrap_mode = gl.CLAMP_TO_EDGE;
                         var material_component = sprite.get_component(gb.ces_base_component.type.material);
                         material_component.set_texture(resource, 0);
+                        console.log(resource);
+                        console.log(frames);
                         scene.add_child(sprite);
-                        sprite.size = new gb.vec2(1024, 1024);
+                        sprite.size = new gb.vec2(256, 256);
                         sprite.add_animation("animation", frames);
                     });
                 });
