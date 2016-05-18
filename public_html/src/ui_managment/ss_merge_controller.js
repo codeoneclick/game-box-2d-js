@@ -15,6 +15,7 @@ oop.define_class({
             tab_right_panel: "ss-merge-tab-right-panel",
             import_container: "ss-merge-import-container",
             import_size_drop_down_box: "ss-merge-size-drop-down-box",
+            import_size_drop_down_box_button: "ss-merge-size-drop-down-box-button",
             import_drop_zone: "ss-merge-drop-zone",
             import_add_image_button: "ss-merge-add_image_button",
             frames_container: "ss-merge-frames-container",
@@ -26,6 +27,8 @@ oop.define_class({
             editing_move_resize_radio_button: "ss-merge-editing-move-resize-radio-button",
             editing_move_resize_freeform_button: "ss-merge-editing-move-resize-freeform-button",
             editing_move_resize_snaptogrid_button: "ss-merge-editing-move-resize-snaptogrid-button",
+            editing_pack_algorithm_drop_down_box: "ss-merge-editing-pack-algorithm-drop-down-box",
+            editing_pack_algorithm_drop_down_box_button: "ss-merge-editing-pack-algorithm-drop-down-box-button",
             editing_spread_button: "ss-merge-editing-spread-button",
             export_container: "ss-merge-export-container",
             export_animation_preview_button: "ss-merge-export-animation-preview_button",
@@ -50,16 +53,21 @@ oop.define_class({
         $(ui_j('tab_left_panel')).append($(element));
         element = "<p class=\"ui-widget-header\" style=\"margin:0px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>import</p>";
         $(ui_j('import_container')).append($(element));
-        element = "<p style=\"margin-left:2%;\"><label for=\"" + ui.import_size_drop_down_box + "\"> size </label><input id=" + ui.import_size_drop_down_box + " name=\"value\" value=\"1.0\"></p>";
+        element = "<div title=\"changed size of imported images\" style=\"width:75%; margin:2%;\"><select id=" + ui.import_size_drop_down_box + ">";
+        element += "<option>image scale - 10%</option>";
+        element += "<option>image scale - 20%</option>";
+        element += "<option>image scale - 30%</option>";
+        element += "<option>image scale - 40%</option>";
+        element += "<option>image scale - 50%</option>";
+        element += "<option>image scale - 60%</option>";
+        element += "<option>image scale - 70%</option>";
+        element += "<option>image scale - 80%</option>";
+        element += "<option>image scale - 90%</option>";
+        element += "<option selected=\"selected\">image scale - 100%</option>";
+        element += "</select></div>";
         $(ui_j('import_container')).append($(element));
-        $(ui_j('import_size_drop_down_box')).spinner({
-                                                min: 0.1,
-                                                max: 1.0,
-                                                step: 0.1,
-                                                start: 1.0,
-                                                spin: function( event, ui ) {
-                                                    console.log(ui.value);
-                                                 }});
+        $(ui_j('import_size_drop_down_box')).selectmenu();
+        $(ui_j('import_size_drop_down_box_button')).css({'width': '100%'});
         element = "<div id=" + ui.import_drop_zone + "></div>";
         $(ui_j('import_container')).append(element);
         element = "<button id=" + ui.import_add_image_button + ">add image...</button>";
@@ -105,6 +113,19 @@ oop.define_class({
         $(ui_j('editing_move_resize_radio_button') + " input[type=radio]").change(function() {
              self.m_selector.is_align_movement = this.id === ui.editing_move_resize_snaptogrid_button;
         });
+
+        element = "<div title=\"packing algorithm\" style=\"width:90%; margin:2%; margin-top:5%\"><select id=" + ui.editing_pack_algorithm_drop_down_box + ">";
+        element += "<option selected=\"selected\">heuristic - none</option>";
+        element += "<option>heuristic - TL (top left fit)</option>";
+        element += "<option>heuristic - BAF (best area fit)</option>";
+        element += "<option>heuristic - BSSF (best short side fit)</option>";
+        element += "<option>heuristic - BLSF (best long side fit)</option>";
+        element += "<option>heuristic - MINW (min width fit)</option>";
+        element += "<option>heuristic - MINH (min height fit)</option>";
+        element += "</select></div>";
+        $(ui_j('editing_container')).append(element);
+        $(ui_j('editing_pack_algorithm_drop_down_box')).selectmenu();
+        $(ui_j('editing_pack_algorithm_drop_down_box_button')).css({'width': '100%'});
         element = "<button id=" + ui.editing_spread_button + " style=\"margin:2%;\">spread</button>";
         $(ui_j('editing_container')).append(element);
         $(ui_j('editing_spread_button')).button();
@@ -113,7 +134,7 @@ oop.define_class({
         $(ui_j('tab_left_panel')).append($(element));
         element = "<p class=\"ui-widget-header\" style=\"margin:0px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>export</p>";
         $(ui_j('export_container')).append($(element));
-        element = "<button id=" + ui.export_animation_preview_button + " style=\"margin:2%;\">preview</button><br>";
+        element = "<button title=\"preview animation\" id=" + ui.export_animation_preview_button + " style=\"margin:2%;\">preview</button><br>";
         $(ui_j('export_container')).append(element);
         $(ui_j('export_animation_preview_button')).button();
         $(ui_j('export_animation_preview_button')).on('click', function() {
@@ -162,6 +183,11 @@ oop.define_class({
                self.activate();
             },
         });
+        $(document).tooltip({position: {
+                            my: "left top",
+                            at: "left+10 top+10",
+                            of: "#gl_canvas"}});
+
         /*var self = this;
         var save_button = document.getElementById('ss-merge-save-button');
         save_button.onclick = function() {
@@ -233,7 +259,7 @@ oop.define_class({
         this.m_merge_algorithm = new gb.max_rects_pack_algorithm();
         this.m_merge_algorithm.atlas_width = 1024;
         this.m_merge_algorithm.atlas_height = 1024;
-        this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.BSSF;
+        this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.TL;
         this.m_merge_algorithm.m_free_nodes.push(new gb.vec4(0, 0, 1024, 1024));
     },
 

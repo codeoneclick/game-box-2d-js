@@ -3385,7 +3385,7 @@ oop.define_class({namespace:"gb", name:"frames_container", init:function() {
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{heuristic:{none:0, TL:1, BAF:2, BSSF:3, BLSF:4, MINW:5, MINH:6}}, init:function() {
   this.m_free_nodes = [];
-  this.m_input_nodes = [];
+  this.m_occupied_nodes = [];
   this.m_heuristic = 0;
   Object.defineProperty(this, "heuristic", {get:function() {
     return this.m_heuristic;
@@ -3412,7 +3412,7 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
   }});
 }, release:function() {
 }, methods:{add_sprite:function(a) {
-  for (var b = !1, c = !1, d = !1, e = !1, f = !1, g = !1, h = 0, k = -1, m = gb.math.INT16_MAX, q = gb.max_rects_pack_algorithm.heuristic, r = this.m_free_nodes.length, p = 0;p < r;++p) {
+  for (var b = !1, c = !1, d = !1, e = !1, f = !1, g = !1, h = 0, k = this.m_atlas_width * this.m_atlas_height + 1, m = -1, q = gb.max_rects_pack_algorithm.heuristic, r = this.m_free_nodes.length, p = 0;p < r;++p) {
     var l = this.m_free_nodes[p];
     if (l.z >= a.size.x && l.w >= a.size.y || l.z >= a.size.y && l.w >= a.size.x) {
       f = !1;
@@ -3427,12 +3427,12 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
       }
       switch(this.m_heuristic) {
         case q.none:
-          k = p;
+          m = p;
           p = r;
           continue;
         case q.TL:
-          for (var h = h + l.y, e = d = !1, u = this.m_input_nodes.length, n = 0;n < u;++n) {
-            var t = this.m_input_nodes[n];
+          for (var h = h + l.y, e = d = !1, u = this.m_occupied_nodes.length, n = 0;n < u;++n) {
+            var t = this.m_occupied_nodes[n];
             Math.abs(t.y + t.w / 2 - l.y - l.w / 2) < Math.max(t.w, l.w) / 2 && (t.x + t.z === l.x && (h -= 5, d = !0), t.x === l.x + l.z && (h -= 5, e = !0));
           }
           if (d || !e) {
@@ -3454,17 +3454,17 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
         case q.MINH:
           h += l.w;
       }
-      h < m && (m = h, k = p, b = d, c = e, g = f);
+      h < k && (k = h, m = p, b = d, c = e, g = f);
       f && console.error("implement sprite rotation");
     }
   }
   g && console.error("implement sprite rotation");
-  if (0 <= k) {
-    p = k;
-    l = this.m_free_nodes[0];
+  if (0 <= m) {
+    p = m;
+    l = this.m_free_nodes[m];
     d = new gb.vec4(l.x, l.y, a.size.x, a.size.y);
     this.m_heuristic === q.TL && (b || 0 === l.x || l.z + l.x !== this.m_atlas_width || (d.x = this.m_atlas_width - a.size.x, d.y = l.y, d.z = a.size.x, d.w = a.size.y), !b && c && (d.x = l.x + l.z - a.size.x, d.y = l.y, d.z = a.size.x, d.w = a.size.y));
-    this.m_input_nodes.push(new gb.vec4(d));
+    this.m_occupied_nodes.push(new gb.vec4(d));
     l.z > a.size.x && (n = new gb.vec4, n.x = l.x + (d.x === l.x ? a.size.x : 0), n.y = l.y, n.z = l.z - a.size.x, n.w = l.w, this.m_free_nodes.push(n));
     l.w > a.size.y && (n = new gb.vec4, n.x = l.x, n.y = l.y + a.size.y, n.z = l.z, n.w = l.w - a.size.y, this.m_free_nodes.push(n));
     this.m_free_nodes.splice(p, 1);
@@ -3480,11 +3480,15 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
     return new gb.vec2(d.x, d.y);
   }
   console.error("can't calculate sprite position");
+}, reset:function() {
+  this.m_free_nodes = [];
+  this.m_occupied_nodes = [];
+  this.m_free_nodes.push(new gb.vec4(0, 0, this.m_atlas_width, this.m_atlas_height));
 }}, static_methods:{}});
 var g_ss_merge_controller = null, g_ss_merge_transition = null, g_ss_merge_scene = null;
-oop.define_class({namespace:"gb", name:"ss_merge_controller", constants:{html_elements:{tab_container:"ss-merge-tab-container", tab_left_panel:"ss-merge-tab-left-panel", tab_right_panel:"ss-merge-tab-right-panel", import_container:"ss-merge-import-container", import_size_drop_down_box:"ss-merge-size-drop-down-box", import_drop_zone:"ss-merge-drop-zone", import_add_image_button:"ss-merge-add_image_button", frames_container:"ss-merge-frames-container", frames_sort_button:"ss-merge-frames-sort-button", 
-frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frames-list-cell", editing_container:"ss-merge-editing-container", editing_move_resize_label:"ss-merge-editing-move-resize-label", editing_move_resize_radio_button:"ss-merge-editing-move-resize-radio-button", editing_move_resize_freeform_button:"ss-merge-editing-move-resize-freeform-button", editing_move_resize_snaptogrid_button:"ss-merge-editing-move-resize-snaptogrid-button", editing_spread_button:"ss-merge-editing-spread-button", export_container:"ss-merge-export-container", 
-export_animation_preview_button:"ss-merge-export-animation-preview_button", export_save_atlas_button:"ss-merge-export-atlas-button", export_save_frames_button:"ss-merge-export-save-frames-button", animation_preview_dialog:"ss-merge-animation-preview-dialog"}}, init:function() {
+oop.define_class({namespace:"gb", name:"ss_merge_controller", constants:{html_elements:{tab_container:"ss-merge-tab-container", tab_left_panel:"ss-merge-tab-left-panel", tab_right_panel:"ss-merge-tab-right-panel", import_container:"ss-merge-import-container", import_size_drop_down_box:"ss-merge-size-drop-down-box", import_size_drop_down_box_button:"ss-merge-size-drop-down-box-button", import_drop_zone:"ss-merge-drop-zone", import_add_image_button:"ss-merge-add_image_button", frames_container:"ss-merge-frames-container", 
+frames_sort_button:"ss-merge-frames-sort-button", frames_list:"ss-merge-frames-list", frames_list_cell:"ss-merge-frames-list-cell", editing_container:"ss-merge-editing-container", editing_move_resize_label:"ss-merge-editing-move-resize-label", editing_move_resize_radio_button:"ss-merge-editing-move-resize-radio-button", editing_move_resize_freeform_button:"ss-merge-editing-move-resize-freeform-button", editing_move_resize_snaptogrid_button:"ss-merge-editing-move-resize-snaptogrid-button", editing_pack_algorithm_drop_down_box:"ss-merge-editing-pack-algorithm-drop-down-box", 
+editing_pack_algorithm_drop_down_box_button:"ss-merge-editing-pack-algorithm-drop-down-box-button", editing_spread_button:"ss-merge-editing-spread-button", export_container:"ss-merge-export-container", export_animation_preview_button:"ss-merge-export-animation-preview_button", export_save_atlas_button:"ss-merge-export-atlas-button", export_save_frames_button:"ss-merge-export-save-frames-button", animation_preview_dialog:"ss-merge-animation-preview-dialog"}}, init:function() {
   g_ss_merge_controller = this;
   var a = gb.ss_merge_controller.ui(), b = gb.ss_merge_controller.ui_j, c = gb.ss_merge_controller.self(), d = null;
   $(b("tab_container")).append($("<div id=" + a.tab_left_panel + ' style="background:black;"/>'));
@@ -3494,11 +3498,20 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   $(b("tab_left_panel")).append($(d));
   d = '<p class="ui-widget-header" style="margin:0px;"><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>import</p>';
   $(b("import_container")).append($(d));
-  d = '<p style="margin-left:2%;"><label for="' + a.import_size_drop_down_box + '"> size </label><input id=' + a.import_size_drop_down_box + ' name="value" value="1.0"></p>';
+  d = '<div title="changed size of imported images" style="width:75%; margin:2%;"><select id=' + a.import_size_drop_down_box + ">";
+  d += "<option>image scale - 10%</option><option>image scale - 20%</option>";
+  d += "<option>image scale - 30%</option>";
+  d += "<option>image scale - 40%</option>";
+  d += "<option>image scale - 50%</option>";
+  d += "<option>image scale - 60%</option>";
+  d += "<option>image scale - 70%</option>";
+  d += "<option>image scale - 80%</option>";
+  d += "<option>image scale - 90%</option>";
+  d += '<option selected="selected">image scale - 100%</option>';
+  d += "</select></div>";
   $(b("import_container")).append($(d));
-  $(b("import_size_drop_down_box")).spinner({min:.1, max:1, step:.1, start:1, spin:function(a, b) {
-    console.log(b.value);
-  }});
+  $(b("import_size_drop_down_box")).selectmenu();
+  $(b("import_size_drop_down_box_button")).css({width:"100%"});
   d = "<div id=" + a.import_drop_zone + "></div>";
   $(b("import_container")).append(d);
   d = "<button id=" + a.import_add_image_button + ">add image...</button>";
@@ -3540,6 +3553,18 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   $(b("editing_move_resize_radio_button") + " input[type=radio]").change(function() {
     c.m_selector.is_align_movement = this.id === a.editing_move_resize_snaptogrid_button;
   });
+  d = '<div title="packing algorithm" style="width:90%; margin:2%; margin-top:5%"><select id=' + a.editing_pack_algorithm_drop_down_box + ">";
+  d += '<option selected="selected">heuristic - none</option>';
+  d += "<option>heuristic - TL (top left fit)</option>";
+  d += "<option>heuristic - BAF (best area fit)</option>";
+  d += "<option>heuristic - BSSF (best short side fit)</option>";
+  d += "<option>heuristic - BLSF (best long side fit)</option>";
+  d += "<option>heuristic - MINW (min width fit)</option>";
+  d += "<option>heuristic - MINH (min height fit)</option>";
+  d += "</select></div>";
+  $(b("editing_container")).append(d);
+  $(b("editing_pack_algorithm_drop_down_box")).selectmenu();
+  $(b("editing_pack_algorithm_drop_down_box_button")).css({width:"100%"});
   d = "<button id=" + a.editing_spread_button + ' style="margin:2%;">spread</button>';
   $(b("editing_container")).append(d);
   $(b("editing_spread_button")).button();
@@ -3547,7 +3572,7 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   $(b("tab_left_panel")).append($(d));
   d = '<p class="ui-widget-header" style="margin:0px;"><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>export</p>';
   $(b("export_container")).append($(d));
-  d = "<button id=" + a.export_animation_preview_button + ' style="margin:2%;">preview</button><br>';
+  d = '<button title="preview animation" id=' + a.export_animation_preview_button + ' style="margin:2%;">preview</button><br>';
   $(b("export_container")).append(d);
   $(b("export_animation_preview_button")).button();
   $(b("export_animation_preview_button")).on("click", function() {
@@ -3577,6 +3602,7 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
     c.m_play_animation_dialog_controller.deactivate();
     c.activate();
   }});
+  $(document).tooltip({position:{my:"left top", at:"left+10 top+10", of:"#gl_canvas"}});
   new gb.graphics_context;
   g_ss_merge_transition = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json");
   gb.game_controller.get_instance().add_transition(g_ss_merge_transition);
@@ -3589,7 +3615,7 @@ export_animation_preview_button:"ss-merge-export-animation-preview_button", expo
   this.m_merge_algorithm = new gb.max_rects_pack_algorithm;
   this.m_merge_algorithm.atlas_width = 1024;
   this.m_merge_algorithm.atlas_height = 1024;
-  this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.BSSF;
+  this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.TL;
   this.m_merge_algorithm.m_free_nodes.push(new gb.vec4(0, 0, 1024, 1024));
 }, release:function() {
 }, methods:{activate:function() {
