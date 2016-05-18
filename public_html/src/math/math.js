@@ -95,6 +95,17 @@ oop.define_class({
 			};
 		},
 
+		rect_intersect: function(rect_01, rect_02) {
+			if (rect_02.x < rect_01.x + rect_01.z && rect_01.x < rect_02.x + rect_02.z && rect_02.y < rect_01.y + rect_01.w) {
+    			return rect_01.y < rect_02.y + rect_02.w;
+			}
+    		return false;
+		},
+
+		rect_contains: function(rect_01, rect_02) {
+			return rect_02.x > rect_01.x && rect_02.y > rect_01.y && rect_02.z < rect_01.z && rect_02.w < rect_01.w;
+		},
+
 		point_orientation: function(point_01, point_02, point_03) {
 			var result = (point_02.y - point_01.y) * (point_03.x - point_02.x) - (point_02.x - point_01.x) * (point_03.y - point_02.y);
 			if (result === 0) {

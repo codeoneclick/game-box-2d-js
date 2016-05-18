@@ -55,7 +55,7 @@ oop.define_class({
             this.m_configurations_accessor.get_sprite_configuration(filename, function(configuration) {
                 self.add_materials(sprite, configuration.materials_configurations);
                 if (callback) {
-                    callback();
+                    callback(sprite);
                 }
             });
             return sprite;

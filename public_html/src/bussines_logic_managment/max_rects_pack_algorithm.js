@@ -98,6 +98,7 @@ oop.define_class({
                         }
                         rotated = true;
                         offset += sprite.size.y;
+                        console.error('implement sprite rotation');
                     }
 
                     switch (this.m_heuristic) {
@@ -160,38 +161,36 @@ oop.define_class({
                     }
 
                     if (rotated) {
-
+                        console.error('implement sprite rotation');
                     }
                 }
             }
 
             if(best_is_rotated) {
-
+                console.error('implement sprite rotation');
             }
             if(mini >= 0) {
                 i = mini;
-                var free_node = this.m_free_nodes[i];
-                var node_0 = new gb.vec4();
-                var node_temp = new gb.vec4(free_node.x, free_node.y, sprite.size.x, sprite.size.y);
+                var free_node = this.m_free_nodes[0];
+                var node_0 = new gb.vec4(free_node.x, free_node.y, sprite.size.x, sprite.size.y);
                 if(this.m_heuristic === heuristic.TL) {
                     if(!left_neighbor && free_node.x !== 0 && free_node.z + free_node.x === this.m_atlas_width) {
-                        node_temp.x = this.m_atlas_width - sprite.size.x;
-                        node_temp.y = free_node.y;
-                        node_temp.z = sprite.size.x;
-                        node_temp.w = sprite.size.y;
+                        node_0.x = this.m_atlas_width - sprite.size.x;
+                        node_0.y = free_node.y;
+                        node_0.z = sprite.size.x;
+                        node_0.w = sprite.size.y;
                     }
                     if(!left_neighbor && right_neighbor) {
-                        node_temp.x = free_node.x + free_node.z - sprite.size.x;
-                        node_temp.y = free_node.y;
-                        node_temp.z = sprite.size.x;
-                        node_temp.w = sprite.size.y;
+                        node_0.x = free_node.x + free_node.z - sprite.size.x;
+                        node_0.y = free_node.y;
+                        node_0.z = sprite.size.x;
+                        node_0.w = sprite.size.y;
                     }
                 }
-                node_0 = new gb.vec4(node_temp);
-                this.m_input_nodes.push(node_temp);
+                this.m_input_nodes.push(new gb.vec4(node_0));
                 if(free_node.z > sprite.size.x) {
                     var node = new gb.vec4();
-                    node.x = free_node.x + node_temp.x === free_node.x ? sprite.size.x : 0;
+                    node.x = free_node.x + (node_0.x === free_node.x ? sprite.size.x : 0);
                     node.y = free_node.y;
                     node.z = free_node.z - sprite.size.x;
                     node.w = free_node.w;
@@ -206,7 +205,60 @@ oop.define_class({
                     this.m_free_nodes.push(node);
                 }
                 this.m_free_nodes.splice(i, 1);
+
+                for (var i = 0; i < this.m_free_nodes.length; ++i) {
+                    var free_node = this.m_free_nodes[i];
+                    if (gb.math.rect_intersect(free_node, node_0)) {
+                        if (node_0.x + node_0.z < free_node.x + free_node.z) {
+                            var node = new gb.vec4();
+                            node.x = node_0.x + node_0.z;
+                            node.y = free_node.y;
+                            node.z = free_node.x + free_node.z - node_0.x - node_0.z;
+                            node.w = free_node.w;
+                            this.m_free_nodes.push(node);
+                        }
+                        if (node_0.y + node_0.w < free_node.y + free_node.w) {
+                            var node = new gb.vec4();
+                            node.x = free_node.x;
+                            node.y = node_0.y + node_0.w;
+                            node.z = free_node.z;
+                            node.w = free_node.y + free_node.w - node_0.y - node_0.w;
+                            this.m_free_nodes.push(node);
+                        }
+                        if (node_0.x > free_node.x) {
+                            var node = new gb.vec4();
+                            node.x = free_node.x;
+                            node.y = free_node.y;
+                            node.z = node_0.x - free_node.x;
+                            node.w = free_node.w;
+                            this.m_free_nodes.push(node);
+                        }
+                        if (node_0.y > free_node.y) {
+                            var node = new gb.vec4();
+                            node.x = free_node.x;
+                            node.y = free_node.y;
+                            node.z = free_node.z;
+                            node.w = node_0.y - free_node.y;
+                            this.m_free_nodes.push(node);
+                        }
+                        this.m_free_nodes.splice(i, 1);
+                        --i;
+                    }
+                }
+
+                for(var i = 0; i < this.m_free_nodes.length; i++) {
+                    for(var j = i + 1; j < this.m_free_nodes.length; j++) {
+                        var free_node_i = this.m_free_nodes[i];
+                        var free_node_j = this.m_free_nodes[i];
+                        if(i != j && gb.math.rect_contains(free_node_i, free_node_j)) {
+                            this.m_free_nodes.splice(j, 1);
+                            --j;
+                        }
+                    }
+                }
+                return new gb.vec2(node_0.x, node_0.y);
             }
+            console.error('can\'t calculate sprite position');
         }
     },
     static_methods: {

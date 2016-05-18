@@ -218,6 +218,7 @@ oop.define_class({
         gb.game_controller.get_instance().add_transition(g_ss_merge_transition);
 
         this.m_sprites = [];
+        this.m_debug_rect_sprites = [];
         this.m_frame_width = 128;
         this.m_frame_height = 128;
 
@@ -228,6 +229,12 @@ oop.define_class({
         this.m_frames_container = new gb.frames_container();
 
         this.m_play_animation_dialog_controller = new gb.ss_play_animation_dialog_controller();
+
+        this.m_merge_algorithm = new gb.max_rects_pack_algorithm();
+        this.m_merge_algorithm.atlas_width = 1024;
+        this.m_merge_algorithm.atlas_height = 1024;
+        this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.BSSF;
+        this.m_merge_algorithm.m_free_nodes.push(new gb.vec4(0, 0, 1024, 1024));
     },
 
     release: function() {
@@ -329,9 +336,30 @@ oop.define_class({
                                     var material_component = sprite.get_component(gb.ces_base_component.type.material);
                                     material_component.set_texture(resource, 0);
                                     sprite.size = new gb.vec2(resource.width * 0.5, resource.height * 0.5);
+                                    sprite.position = gb.ss_merge_controller.self().m_merge_algorithm.add_sprite(sprite);
+
+                                    var debug_rect_sprites_count = gb.ss_merge_controller.self().m_debug_rect_sprites.length;
+                                    for(var i = 0; i < debug_rect_sprites_count; ++i) {
+                                        var debug_rect_sprite = gb.ss_merge_controller.self().m_debug_rect_sprites[i];
+                                        g_ss_merge_scene.remove_child(debug_rect_sprite);
+                                    }
+                                    gb.ss_merge_controller.self().m_debug_rect_sprites = [];
+                                    var debug_rects = gb.ss_merge_controller.self().m_merge_algorithm.m_free_nodes;
+                                    debug_rect_sprites_count = debug_rects.length;
+                                    for(var i = 0; i < debug_rect_sprites_count; ++i) {
+                                        var debug_rect_sprite_parameters = debug_rects[i];
+                                        var debug_rect_sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function(result_sprite) {
+                                            var material_component = result_sprite.get_component(gb.ces_base_component.type.material);
+                                            material_component.set_custom_shader_uniform(new gb.vec4(0, 1, 0, 0.1), "u_color"); 
+                                        });
+                                        debug_rect_sprite.size = new gb.vec2(debug_rect_sprite_parameters.z, debug_rect_sprite_parameters.w);
+                                        debug_rect_sprite.position = new gb.vec2(debug_rect_sprite_parameters.x, debug_rect_sprite_parameters.y);
+                                        g_ss_merge_scene.add_child(debug_rect_sprite);
+                                        gb.ss_merge_controller.self().m_debug_rect_sprites.push(debug_rect_sprite);
+                                    }
                                     files_count_processed++;
                                     if(files_count_processed === files_count_unprocessed) {
-                                        gb.ss_merge_controller.self().reorder_sprites_positions();
+                                        //gb.ss_merge_controller.self().reorder_sprites_positions();
                                         gb.ss_merge_controller.self().sort_sprites_as_in_table();
                                     }
                                 });
