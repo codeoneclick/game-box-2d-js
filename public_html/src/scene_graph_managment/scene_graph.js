@@ -63,14 +63,30 @@ oop.define_class({
 				box2d_body_component = new gb.ces_box2d_body_component();
 				var transformation_component = entity.get_component(gb.ces_base_component.type.transformation);
 				var box2d_definition = box2d_body_component.box2d_definition;
-				box2d_definition.type = Box2D.b2_dynamicBody;
-				box2d_definition.set_position(new Box2D.b2Vec2(transformation_component.position.x, transformation_component.position.y));
+				box2d_definition.set_type(Box2D.b2_dynamicBody);
+				box2d_definition.set_position(new Box2D.b2Vec2(transformation_component.position.x + entity.size.x * 0.5, transformation_component.position.y + entity.size.y * 0.5));
 				box2d_definition.userData = entity;
 				var box2d_shape = new Box2D.b2PolygonShape();
+				var vertices = [];
+				vertices.push(new Box2D.b2Vec2(0.0, 0.0));
+				vertices.push(new Box2D.b2Vec2(entity.size.x, 0.0));
+				vertices.push(new Box2D.b2Vec2(entity.size.x, entity.size.y));
+				vertices.push(new Box2D.b2Vec2(0.0, entity.size.y));
 				box2d_shape.SetAsBox(entity.size.x, entity.size.y);
+				//box2d_shape.set_m_centroid(new Box2D.b2Vec2(-1, -1));
+				console.log(box2d_shape);
+				console.log(box2d_shape.GetVertex(0).get_x());
+				console.log(box2d_shape.GetVertex(0).get_y());
+				console.log(box2d_shape.GetVertex(1).get_x());
+				console.log(box2d_shape.GetVertex(1).get_y());
+				console.log(box2d_shape.GetVertex(2).get_x());
+				console.log(box2d_shape.GetVertex(2).get_y());
+				console.log(box2d_shape.GetVertex(3).get_x());
+				console.log(box2d_shape.GetVertex(3).get_y());
 				var box2d_body = box2d_world_component.box2d_world.CreateBody(box2d_body_component.box2d_definition);
 				box2d_body.CreateFixture(box2d_shape, 1);
 				box2d_body_component.box2d_body = box2d_body;
+				entity.add_component(box2d_body_component);
 			}
 		},
 

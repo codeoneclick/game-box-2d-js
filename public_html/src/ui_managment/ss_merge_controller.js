@@ -365,7 +365,7 @@ oop.define_class({
                                     material_component.set_texture(resource, 0);
                                     sprite.size = new gb.vec2(resource.width * 0.5, resource.height * 0.5);
                                     sprite.position = gb.ss_merge_controller.self().m_merge_algorithm.add_sprite(sprite);
-
+                                    g_ss_merge_scene.add_box2d_body(sprite);
                                     var debug_rect_sprites_count = gb.ss_merge_controller.self().m_debug_rect_sprites.length;
                                     for(var i = 0; i < debug_rect_sprites_count; ++i) {
                                         var debug_rect_sprite = gb.ss_merge_controller.self().m_debug_rect_sprites[i];

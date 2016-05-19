@@ -10,7 +10,7 @@ oop.define_class({
 	init: function() {
 
 		this.m_type = gb.ces_base_component.type.box2d_world;
-		this.m_gravity = new Box2D.b2Vec2(0.0, -9.8);
+		this.m_gravity = new Box2D.b2Vec2(0.0, 9.8);
 		this.m_box2d_world = new Box2D.b2World(this.m_gravity);
 		this.m_box2d_world.SetContinuousPhysics(true);
 		this.m_box2d_definition = new Box2D.b2BodyDef();

@@ -2646,7 +2646,7 @@ oop.define_class({namespace:"gb", name:"ces_box2d_body_component", extend:gb.ces
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ces_box2d_world_component", extend:gb.ces_base_component, init:function() {
   this.m_type = gb.ces_base_component.type.box2d_world;
-  this.m_gravity = new Box2D.b2Vec2(0, -9.8);
+  this.m_gravity = new Box2D.b2Vec2(0, 9.8);
   this.m_box2d_world = new Box2D.b2World(this.m_gravity);
   this.m_box2d_world.SetContinuousPhysics(!0);
   this.m_box2d_definition = new Box2D.b2BodyDef;
@@ -2955,7 +2955,12 @@ oop.define_class({namespace:"gb", name:"ces_box2d_system", extend:gb.ces_base_sy
 }, on_feed_end:function() {
 }, update_recursively:function(a) {
   var b = a.get_component(gb.ces_base_component.type.box2d_body);
-  b && (b.on_position_changed(new gb.vec2(b.box2d_body.GetPosition().x, b.box2d_body.GetPosition().y)), b.on_rotation_changed(b.box2d_body.GetAngle()));
+  if (b) {
+    var c = new gb.vec2(b.box2d_body.GetPosition().get_x(), b.box2d_body.GetPosition().get_y());
+    b.on_position_changed(c);
+    b.on_rotation_changed(b.box2d_body.GetAngle());
+    a.get_component(gb.ces_base_component.type.transformation).position = b.position;
+  }
   a = a.children;
   for (b = 0;b < a.length;++b) {
     this.update_recursively(a[b]);
@@ -3111,14 +3116,29 @@ oop.define_class({namespace:"gb", name:"scene_graph", extend:gb.ces_entity, init
   var b = this.get_component(gb.ces_base_component.type.box2d_world), c = a.get_component(gb.ces_base_component.type.box2d_body);
   if (b && !c) {
     var c = new gb.ces_box2d_body_component, d = a.get_component(gb.ces_base_component.type.transformation), e = c.box2d_definition;
-    e.type = Box2D.b2_dynamicBody;
-    e.set_position(new Box2D.b2Vec2(d.position.x, d.position.y));
+    e.set_type(Box2D.b2_dynamicBody);
+    e.set_position(new Box2D.b2Vec2(d.position.x + .5 * a.size.x, d.position.y + .5 * a.size.y));
     e.userData = a;
     d = new Box2D.b2PolygonShape;
+    e = [];
+    e.push(new Box2D.b2Vec2(0, 0));
+    e.push(new Box2D.b2Vec2(a.size.x, 0));
+    e.push(new Box2D.b2Vec2(a.size.x, a.size.y));
+    e.push(new Box2D.b2Vec2(0, a.size.y));
     d.SetAsBox(a.size.x, a.size.y);
-    a = b.box2d_world.CreateBody(c.box2d_definition);
-    a.CreateFixture(d, 1);
-    c.box2d_body = a;
+    console.log(d);
+    console.log(d.GetVertex(0).get_x());
+    console.log(d.GetVertex(0).get_y());
+    console.log(d.GetVertex(1).get_x());
+    console.log(d.GetVertex(1).get_y());
+    console.log(d.GetVertex(2).get_x());
+    console.log(d.GetVertex(2).get_y());
+    console.log(d.GetVertex(3).get_x());
+    console.log(d.GetVertex(3).get_y());
+    b = b.box2d_world.CreateBody(c.box2d_definition);
+    b.CreateFixture(d, 1);
+    c.box2d_body = b;
+    a.add_component(c);
   }
 }, remove_box2d_body:function(a) {
   var b = this.get_component(gb.ces_base_component.type.box2d_world), c = a.get_component(gb.ces_base_component.type.box2d_body);
@@ -3769,6 +3789,7 @@ editing_pack_algorithm_drop_down_box_button:"ss-merge-editing-pack-algorithm-dro
               f.get_component(gb.ces_base_component.type.material).set_texture(d, 0);
               f.size = new gb.vec2(.5 * d.width, .5 * d.height);
               f.position = gb.ss_merge_controller.self().m_merge_algorithm.add_sprite(f);
+              g_ss_merge_scene.add_box2d_body(f);
               for (var a = gb.ss_merge_controller.self().m_debug_rect_sprites.length, e = 0;e < a;++e) {
                 var g = gb.ss_merge_controller.self().m_debug_rect_sprites[e];
                 g_ss_merge_scene.remove_child(g);

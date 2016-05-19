@@ -30,15 +30,17 @@ oop.define_class({
 
         on_feed_end: function() {
 
-
         },
 
         update_recursively: function(entity) {
             var box2d_body_component = entity.get_component(gb.ces_base_component.type.box2d_body);
             if (box2d_body_component) {
-                box2d_body_component.on_position_changed(new gb.vec2(box2d_body_component.box2d_body.GetPosition().x,
-                                                                     box2d_body_component.box2d_body.GetPosition().y));
+                var new_position = new gb.vec2(box2d_body_component.box2d_body.GetPosition().get_x(),
+                                               box2d_body_component.box2d_body.GetPosition().get_y());
+                box2d_body_component.on_position_changed(new_position);
                 box2d_body_component.on_rotation_changed(box2d_body_component.box2d_body.GetAngle());
+                var transformation_component = entity.get_component(gb.ces_base_component.type.transformation);
+                transformation_component.position = box2d_body_component.position;
             }
 
             var children = entity.children;
