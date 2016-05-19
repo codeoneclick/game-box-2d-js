@@ -102,6 +102,9 @@ oop.define_class({
                 self.m_input_context.add_listener(touches_recognize_system);
                 self.m_systems_feeder.add_system(touches_recognize_system);
 
+                var box2d_system = new gb.ces_box2d_system();
+                self.m_systems_feeder.add_system(box2d_system);
+
                 loop.add_listener(self.m_systems_feeder);
             });
         },

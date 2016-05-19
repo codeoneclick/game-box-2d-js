@@ -10,7 +10,8 @@ oop.define_class({
             render: 0,
             deferred_lighting: 1,
             touches_recognize: 2,
-            animation: 3
+            animation: 3,
+            box2d: 4
         }
     },
     

@@ -62,12 +62,15 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/ces_managment/components/ces_light_mask_component.js \
 --js=../public_html/src/ces_managment/components/ces_touch_recognize_component.js \
 --js=../public_html/src/ces_managment/components/ces_animation_component.js \
+--js=../public_html/src/ces_managment/components/ces_box2d_body_component.js \
+--js=../public_html/src/ces_managment/components/ces_box2d_world_component.js \
 --js=../public_html/src/ces_managment/ces_entity.js \
 --js=../public_html/src/ces_managment/systems/ces_base_system.js \
 --js=../public_html/src/ces_managment/systems/ces_deferred_lighting_system.js \
 --js=../public_html/src/ces_managment/systems/ces_render_system.js \
 --js=../public_html/src/ces_managment/systems/ces_touches_system.js \
 --js=../public_html/src/ces_managment/systems/ces_animation_system.js \
+--js=../public_html/src/ces_managment/systems/ces_box2d_system.js \
 --js=../public_html/src/ces_managment/ces_systems_feeder.js \
 --js=../public_html/src/scene_graph_managment/camera.js \
 --js=../public_html/src/scene_graph_managment/game_object.js \

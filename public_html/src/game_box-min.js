@@ -2229,7 +2229,7 @@ oop.define_class({namespace:"gb", name:"input_context", constants:{source:{mouse
   a = _.indexOf(this.m_listeners, a);
   -1 !== a ? this.m_listeners.splice(a, 1) : console.error("input context doesn't contain this listener");
 }}, static_methods:{}});
-oop.define_class({namespace:"gb", name:"ces_base_component", constants:{type:{undefined:-1, transformation:0, material:1, geometry:2, scene:3, light:4, light_mask:5, convex_hull:6, touch_recognize:7, animation:8, max:9}}, init:function() {
+oop.define_class({namespace:"gb", name:"ces_base_component", constants:{type:{undefined:-1, transformation:0, material:1, geometry:2, scene:3, light:4, light_mask:5, convex_hull:6, touch_recognize:7, animation:8, box2d_body:9, box2d_world:10, max:11}}, init:function() {
   this.m_type = gb.ces_base_component.undefined;
   Object.defineProperty(this, "type", {get:function() {
     return this.m_type;
@@ -2618,6 +2618,58 @@ oop.define_class({namespace:"gb", name:"ces_animation_component", extend:gb.ces_
   this.m_frames[a] = b;
   this.current_animation = a;
 }}, static_methods:{}});
+oop.define_class({namespace:"gb", name:"ces_box2d_body_component", extend:gb.ces_base_component, init:function() {
+  this.m_type = gb.ces_base_component.type.box2d_body;
+  this.m_position = new gb.vec2(0);
+  this.m_rotation = 0;
+  this.m_box2d_body = null;
+  this.m_box2d_definition = new Box2D.b2BodyDef;
+  Object.defineProperty(this, "position", {configurable:!0, get:function() {
+    return this.m_position;
+  }});
+  Object.defineProperty(this, "rotation", {configurable:!0, get:function() {
+    return this.m_rotation;
+  }});
+  Object.defineProperty(this, "box2d_definition", {configurable:!0, get:function() {
+    return this.m_box2d_definition;
+  }});
+  Object.defineProperty(this, "box2d_body", {configurable:!0, get:function() {
+    return this.m_box2d_body;
+  }, set:function(a) {
+    this.m_box2d_body = a;
+  }});
+}, release:function() {
+}, methods:{on_position_changed:function(a) {
+  this.m_position = a;
+}, on_rotation_changed:function(a) {
+  this.m_rotation = a;
+}}, static_methods:{}});
+oop.define_class({namespace:"gb", name:"ces_box2d_world_component", extend:gb.ces_base_component, init:function() {
+  this.m_type = gb.ces_base_component.type.box2d_world;
+  this.m_gravity = new Box2D.b2Vec2(0, -9.8);
+  this.m_box2d_world = new Box2D.b2World(this.m_gravity);
+  this.m_box2d_world.SetContinuousPhysics(!0);
+  this.m_box2d_definition = new Box2D.b2BodyDef;
+  this.m_box2d_definition.set_position(new Box2D.b2Vec2(0, 0));
+  this.m_box2d_body = this.m_box2d_world.CreateBody(this.m_box2d_definition);
+  this.m_max_bound = this.m_min_bound = null;
+  Object.defineProperty(this, "box2d_world", {configurable:!0, get:function() {
+    return this.m_box2d_world;
+  }});
+}, release:function() {
+}, methods:{set_bounds:function(a, b) {
+  this.m_min_bound = a;
+  this.m_max_bound = b;
+  var c = new Box2D.b2EdgeShape;
+  c.Set(new Box2D.b2Vec2(a.x, a.y), new Box2D.b2Vec2(b.x, a.y));
+  this.m_box2d_body.CreateFixture(c, 0);
+  c.Set(new Box2D.b2Vec2(a.x, b.y), new Box2D.b2Vec2(b.x, b.y));
+  this.m_box2d_body.CreateFixture(c, 0);
+  c.Set(new Box2D.b2Vec2(a.x, b.y), new Box2D.b2Vec2(a.x, a.y));
+  this.m_box2d_body.CreateFixture(c, 0);
+  c.Set(new Box2D.b2Vec2(b.x, b.y), new Box2D.b2Vec2(b.x, a.y));
+  this.m_box2d_body.CreateFixture(c, 0);
+}}, static_methods:{}});
 var g_tag = 0;
 oop.define_class({namespace:"gb", name:"ces_entity", init:function() {
   this.m_tag = "ces_entity" + g_tag++;
@@ -2686,7 +2738,7 @@ oop.define_class({namespace:"gb", name:"ces_entity", init:function() {
   }
   this.remove_component(gb.ces_base_component.type.scene);
 }}, static_methods:{}});
-oop.define_class({namespace:"gb", name:"ces_base_system", constants:{type:{undefined:-1, render:0, deferred_lighting:1, touches_recognize:2, animation:3}}, init:function() {
+oop.define_class({namespace:"gb", name:"ces_base_system", constants:{type:{undefined:-1, render:0, deferred_lighting:1, touches_recognize:2, animation:3, box2d:4}}, init:function() {
   this.m_type = gb.ces_base_system.type.undefined;
   this.m_priority = 0;
   Object.defineProperty(this, "type", {get:function() {
@@ -2893,6 +2945,22 @@ oop.define_class({namespace:"gb", name:"ces_animation_system", extend:gb.ces_bas
     this.update_recursively(c[d], b);
   }
 }}, static_methods:{}});
+oop.define_class({namespace:"gb", name:"ces_box2d_system", extend:gb.ces_base_system, init:function() {
+  this.m_type = gb.ces_base_system.type.box2d;
+}, release:function() {
+}, methods:{on_feed_start:function() {
+}, on_feed:function(a) {
+  var b = a.get_component(gb.ces_base_component.type.box2d_world);
+  b && (b.box2d_world.Step(1 / 60, 1, 1), this.update_recursively(a));
+}, on_feed_end:function() {
+}, update_recursively:function(a) {
+  var b = a.get_component(gb.ces_base_component.type.box2d_body);
+  b && (b.on_position_changed(new gb.vec2(b.box2d_body.GetPosition().x, b.box2d_body.GetPosition().y)), b.on_rotation_changed(b.box2d_body.GetAngle()));
+  a = a.children;
+  for (b = 0;b < a.length;++b) {
+    this.update_recursively(a[b]);
+  }
+}}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ces_systems_feeder", init:function() {
   this.m_systems = [];
   this.m_root = null;
@@ -3035,7 +3103,27 @@ oop.define_class({namespace:"gb", name:"scene_graph", extend:gb.ces_entity, init
     return this.m_transition;
   }});
 }, release:function() {
-}, methods:{}, static_methods:{}});
+}, methods:{set_box2d_world:function(a, b) {
+  var c = this.get_component(gb.ces_base_component.type.box2d_world);
+  c || (c = new gb.ces_box2d_world_component, this.add_component(c));
+  c.set_bounds(a, b);
+}, add_box2d_body:function(a) {
+  var b = this.get_component(gb.ces_base_component.type.box2d_world), c = a.get_component(gb.ces_base_component.type.box2d_body);
+  if (b && !c) {
+    var c = new gb.ces_box2d_body_component, d = a.get_component(gb.ces_base_component.type.transformation), e = c.box2d_definition;
+    e.type = Box2D.b2_dynamicBody;
+    e.set_position(new Box2D.b2Vec2(d.position.x, d.position.y));
+    e.userData = a;
+    d = new Box2D.b2PolygonShape;
+    d.SetAsBox(a.size.x, a.size.y);
+    a = b.box2d_world.CreateBody(c.box2d_definition);
+    a.CreateFixture(d, 1);
+    c.box2d_body = a;
+  }
+}, remove_box2d_body:function(a) {
+  var b = this.get_component(gb.ces_base_component.type.box2d_world), c = a.get_component(gb.ces_base_component.type.box2d_body);
+  b && c && (b.box2d_world.DestroyBody(c.box2d_body), a.remove_component(gb.ces_base_component.type.box2d_body));
+}}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"light_source", extend:gb.game_object, constants:{radius_uniform:"u_radius", center_uniform:"u_center", color_uniform:"u_color"}, init:function() {
   var a = new gb.ces_material_component;
   this.add_component(a);
@@ -3316,6 +3404,8 @@ oop.define_class({namespace:"gb", name:"game_transition", init:function(a) {
     g.m_systems_feeder.add_system(a);
     a = new gb.ces_touches_system;
     g.m_input_context.add_listener(a);
+    g.m_systems_feeder.add_system(a);
+    a = new gb.ces_box2d_system;
     g.m_systems_feeder.add_system(a);
     loop.add_listener(g.m_systems_feeder);
   });
@@ -3640,6 +3730,7 @@ editing_pack_algorithm_drop_down_box_button:"ss-merge-editing-pack-algorithm-dro
     b = new gb.editor_fabricator;
     b.scene_fabricator = a.fabricator;
     gb.ss_merge_controller.self().m_selector = b.create_selector();
+    a.set_box2d_world(new gb.vec2(0), new gb.vec2(1024));
   });
 }, deactivate:function() {
   var a = this.m_sprites.length;

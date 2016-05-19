@@ -17,7 +17,9 @@ oop.define_class({
 			convex_hull: 6,
 			touch_recognize: 7,
 			animation: 8,
-			max: 9
+			box2d_body: 9,
+			box2d_world: 10,
+			max: 11
 		}
 	},
 

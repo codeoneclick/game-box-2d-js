@@ -299,6 +299,8 @@ oop.define_class({
                 var editor_fabricator = new gb.editor_fabricator();
                 editor_fabricator.scene_fabricator = scene.fabricator;
                 gb.ss_merge_controller.self().m_selector = editor_fabricator.create_selector();
+                
+                scene.set_box2d_world(new gb.vec2(0), new gb.vec2(1024));
             });
         },
 
