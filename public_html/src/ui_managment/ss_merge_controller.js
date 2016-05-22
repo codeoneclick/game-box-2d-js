@@ -371,7 +371,7 @@ oop.define_class({
                                         var debug_rect_sprite = gb.ss_merge_controller.self().m_debug_rect_sprites[i];
                                         g_ss_merge_scene.remove_child(debug_rect_sprite);
                                     }
-                                    gb.ss_merge_controller.self().m_debug_rect_sprites = [];
+                                    /*gb.ss_merge_controller.self().m_debug_rect_sprites = [];
                                     var debug_rects = gb.ss_merge_controller.self().m_merge_algorithm.m_free_nodes;
                                     debug_rect_sprites_count = debug_rects.length;
                                     for(var i = 0; i < debug_rect_sprites_count; ++i) {
@@ -384,7 +384,7 @@ oop.define_class({
                                         debug_rect_sprite.position = new gb.vec2(debug_rect_sprite_parameters.x, debug_rect_sprite_parameters.y);
                                         g_ss_merge_scene.add_child(debug_rect_sprite);
                                         gb.ss_merge_controller.self().m_debug_rect_sprites.push(debug_rect_sprite);
-                                    }
+                                    }*/
                                     files_count_processed++;
                                     if(files_count_processed === files_count_unprocessed) {
                                         //gb.ss_merge_controller.self().reorder_sprites_positions();
@@ -525,8 +525,10 @@ oop.define_class({
                 target.rotation = this.m_selector.rotation;
                 target_touch_recognize_component = target.get_component(gb.ces_base_component.type.touch_recognize);
                 target_touch_recognize_component.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this);
+                g_ss_merge_scene.add_box2d_body(target);
             }
             if(sprite) {
+                g_ss_merge_scene.remove_box2d_body(sprite);
                 this.m_selector.position = sprite.position;
                 this.m_selector.rotation = sprite.rotation;
                 this.m_selector.size = sprite.size;

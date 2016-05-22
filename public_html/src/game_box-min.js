@@ -2949,9 +2949,9 @@ oop.define_class({namespace:"gb", name:"ces_box2d_system", extend:gb.ces_base_sy
   this.m_type = gb.ces_base_system.type.box2d;
 }, release:function() {
 }, methods:{on_feed_start:function() {
-}, on_feed:function(a) {
-  var b = a.get_component(gb.ces_base_component.type.box2d_world);
-  b && (b.box2d_world.Step(1 / 60, 1, 1), this.update_recursively(a));
+}, on_feed:function(a, b) {
+  var c = a.get_component(gb.ces_base_component.type.box2d_world);
+  c && (c.box2d_world.Step(b, 1, 1), this.update_recursively(a));
 }, on_feed_end:function() {
 }, update_recursively:function(a) {
   var b = a.get_component(gb.ces_base_component.type.box2d_body);
@@ -2969,8 +2969,6 @@ oop.define_class({namespace:"gb", name:"ces_box2d_system", extend:gb.ces_base_sy
 oop.define_class({namespace:"gb", name:"ces_systems_feeder", init:function() {
   this.m_systems = [];
   this.m_root = null;
-  var a = document.getElementById("main_container");
-  this.m_fps_meter = new FPSMeter(a, {position:"absolute", zIndex:10, left:"auto", top:"0px", right:"0px", bottom:"auto"});
   Object.defineProperty(this, "root", {set:function(a) {
     this.m_root = a;
   }});
@@ -2986,7 +2984,6 @@ oop.define_class({namespace:"gb", name:"ces_systems_feeder", init:function() {
   for (b = 0;b < this.m_systems.length;++b) {
     c = this.m_systems[b], c.on_feed_end(a);
   }
-  this.m_fps_meter.tick();
 }, add_system:function(a) {
   this.remove_system(a.type);
   this.m_systems.push(a);
@@ -3125,7 +3122,7 @@ oop.define_class({namespace:"gb", name:"scene_graph", extend:gb.ces_entity, init
     e.push(new Box2D.b2Vec2(a.size.x, 0));
     e.push(new Box2D.b2Vec2(a.size.x, a.size.y));
     e.push(new Box2D.b2Vec2(0, a.size.y));
-    d.SetAsBox(a.size.x, a.size.y);
+    d.SetAsBox(.5 * a.size.x, .5 * a.size.y);
     console.log(d);
     console.log(d.GetVertex(0).get_x());
     console.log(d.GetVertex(0).get_y());
@@ -3335,13 +3332,20 @@ oop.define_class({namespace:"gb", name:"scene_fabricator", init:function() {
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"game_loop", init:function() {
   this.m_listeners = [];
+  this.m_stats = new Stats;
+  this.m_stats.showPanel(0);
+  this.m_stats.dom.style.top = "52px";
+  this.m_stats.dom.style.left = "408px";
+  document.body.appendChild(this.m_stats.dom);
   this.m_previous_timestamp = Date.now();
 }, release:function() {
 }, methods:{on_update:function() {
+  this.m_stats.begin();
   for (var a = Date.now(), b = (a - this.m_previous_timestamp) / 1E3, c = this.m_listeners.length, d = null, e = 0;e < c;++e) {
     d = this.m_listeners[e], d.on_update(b);
   }
   this.m_previous_timestamp = a;
+  this.m_stats.end();
 }, add_listener:function(a) {
   _.isFunction(a.on_update) ? _.contains(this.m_listeners, a) ? console.error("can't add same listener for game loop") : this.m_listeners.push(a) : console.error("game loop listener doesn't contain on_update method");
 }, remove_listener:function(a) {
@@ -3794,16 +3798,6 @@ editing_pack_algorithm_drop_down_box_button:"ss-merge-editing-pack-algorithm-dro
                 var g = gb.ss_merge_controller.self().m_debug_rect_sprites[e];
                 g_ss_merge_scene.remove_child(g);
               }
-              gb.ss_merge_controller.self().m_debug_rect_sprites = [];
-              for (var h = gb.ss_merge_controller.self().m_merge_algorithm.m_free_nodes, a = h.length, e = 0;e < a;++e) {
-                var k = h[e], g = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/selector.json", function(a) {
-                  a.get_component(gb.ces_base_component.type.material).set_custom_shader_uniform(new gb.vec4(0, 1, 0, .1), "u_color");
-                });
-                g.size = new gb.vec2(k.z, k.w);
-                g.position = new gb.vec2(k.x, k.y);
-                g_ss_merge_scene.add_child(g);
-                gb.ss_merge_controller.self().m_debug_rect_sprites.push(g);
-              }
               c++;
               c === b && gb.ss_merge_controller.self().sort_sprites_as_in_table();
             }), g = gb.ss_merge_controller.self().m_sprites.length, k = 0, u = null, n = 0;n < g;++n) {
@@ -3876,8 +3870,8 @@ editing_pack_algorithm_drop_down_box_button:"ss-merge-editing-pack-algorithm-dro
     }) : $(b("frames_list") + " li").eq(e).find("p").css({background:"black"});
   }
   d = null;
-  this.m_selector.target && (d = this.m_selector.target, g_ss_merge_scene.add_child(d), d.position = this.m_selector.position, d.rotation = this.m_selector.rotation, d = d.get_component(gb.ces_base_component.type.touch_recognize), d.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this));
-  a ? (this.m_selector.position = a.position, this.m_selector.rotation = a.rotation, this.m_selector.size = a.size, this.m_selector.target = a, d = a.get_component(gb.ces_base_component.type.touch_recognize), d.remove_callback(gb.input_context.state.pressed, this.on_sprite_pressed), this.m_selector.bounding_quad.remove_from_parent(), g_ss_merge_scene.add_child(this.m_selector.bounding_quad)) : this.m_selector.target = null;
+  this.m_selector.target && (e = this.m_selector.target, g_ss_merge_scene.add_child(e), e.position = this.m_selector.position, e.rotation = this.m_selector.rotation, d = e.get_component(gb.ces_base_component.type.touch_recognize), d.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this), g_ss_merge_scene.add_box2d_body(e));
+  a ? (g_ss_merge_scene.remove_box2d_body(a), this.m_selector.position = a.position, this.m_selector.rotation = a.rotation, this.m_selector.size = a.size, this.m_selector.target = a, d = a.get_component(gb.ces_base_component.type.touch_recognize), d.remove_callback(gb.input_context.state.pressed, this.on_sprite_pressed), this.m_selector.bounding_quad.remove_from_parent(), g_ss_merge_scene.add_child(this.m_selector.bounding_quad)) : this.m_selector.target = null;
 }, sort_sprites_as_in_table:function() {
   for (var a = gb.ss_merge_controller.self(), b = gb.ss_merge_controller.ui_j, c = $(b("frames_list") + " li").map(function() {
     return $(this).find("#frame-index").text();

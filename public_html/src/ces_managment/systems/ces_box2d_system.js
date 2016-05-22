@@ -20,10 +20,10 @@ oop.define_class({
 
         },
 
-        on_feed: function(root) {
+        on_feed: function(root, deltatime) {
             var box2d_world_component = root.get_component(gb.ces_base_component.type.box2d_world);
             if (box2d_world_component) {
-                box2d_world_component.box2d_world.Step(1.0 / 60.0, 1, 1);
+                box2d_world_component.box2d_world.Step(deltatime, 1, 1);
                 this.update_recursively(root);
             }
         },

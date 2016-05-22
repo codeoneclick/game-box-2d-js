@@ -72,7 +72,7 @@ oop.define_class({
 				vertices.push(new Box2D.b2Vec2(entity.size.x, 0.0));
 				vertices.push(new Box2D.b2Vec2(entity.size.x, entity.size.y));
 				vertices.push(new Box2D.b2Vec2(0.0, entity.size.y));
-				box2d_shape.SetAsBox(entity.size.x, entity.size.y);
+				box2d_shape.SetAsBox(entity.size.x * 0.5, entity.size.y * 0.5);
 				//box2d_shape.set_m_centroid(new Box2D.b2Vec2(-1, -1));
 				console.log(box2d_shape);
 				console.log(box2d_shape.GetVertex(0).get_x());
