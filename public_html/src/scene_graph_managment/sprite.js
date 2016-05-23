@@ -33,7 +33,9 @@ oop.define_class({
 				}
 				var touch_recognize_component = this.get_component(gb.ces_base_component.type.touch_recognize);
 				if(touch_recognize_component) {
-                	touch_recognize_component.bound = new gb.vec4(0.0, 0.0, value.x, value.y);
+					var bound = new gb.vec4(-value.x * (1.0 - geometry_component.pivot.x), -value.y * (1.0 - geometry_component.pivot.y), 
+											value.x * geometry_component.pivot.x, value.y * geometry_component.pivot.y);
+                	touch_recognize_component.bound = bound;
 				}
 			}
 		});

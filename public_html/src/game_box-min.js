@@ -2405,6 +2405,18 @@ oop.define_class({namespace:"gb", name:"ces_convex_hull_component", extend:gb.ce
 oop.define_class({namespace:"gb", name:"ces_geometry_component", extend:gb.ces_base_component, init:function() {
   this.m_type = gb.ces_base_component.type.geometry;
   this.m_mesh = null;
+  this.m_size = new gb.vec2(0);
+  this.m_pivot = new gb.vec2(0);
+  Object.defineProperty(this, "pivot", {configurable:!0, get:function() {
+    return this.m_pivot;
+  }, set:function(a) {
+    this.m_pivot = a;
+  }});
+  Object.defineProperty(this, "size", {configurable:!0, get:function() {
+    return this.m_size;
+  }, set:function(a) {
+    this.m_size = a;
+  }});
   Object.defineProperty(this, "mesh", {configurable:!0, get:function() {
     return this.m_mesh;
   }});
@@ -2420,29 +2432,30 @@ oop.define_class({namespace:"gb", name:"ces_geometry_freeform_component", extend
 }, methods:{}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ces_geometry_quad_component", extend:gb.ces_geometry_component, init:function() {
   this.m_mesh = gb.mesh_constructor.create_shape_quad();
-  this.m_frame = new gb.vec4(0, 0, 1, 1);
-  this.m_pivot = new gb.vec2(0);
+  this.m_pivot.x = .5;
+  this.m_pivot.y = .5;
   Object.defineProperty(this, "pivot", {get:function() {
     return this.m_pivot;
   }, set:function(a) {
     this.m_pivot = a;
+    this.m_pivot.x = Math.max(Math.min(this.m_pivot.x, 1), 0);
+    this.m_pivot.y = Math.max(Math.min(this.m_pivot.y, 1), 0);
     this.update_mesh_position_attributes();
   }});
   Object.defineProperty(this, "size", {get:function() {
-    return new gb.vec2(this.m_frame.w, this.m_frame.z);
+    return this.m_size;
   }, set:function(a) {
-    this.m_frame.w = a.x;
-    this.m_frame.z = a.y;
+    this.m_size = a;
     this.update_mesh_position_attributes();
   }});
 }, release:function() {
 }, methods:{update_mesh_position_attributes:function() {
-  var a = new gb.vec2(this.m_frame.z - this.m_pivot.x, this.m_frame.w - this.m_pivot.y), b = new gb.vec2(a.x - this.m_frame.z, a.y - this.m_frame.w), a = new gb.vec4(b.x, a.y, a.x, b.y), b = this.m_mesh.vbo;
-  b.write_attribute(gb.vbo.attribute.position, 0, new gb.vec2(a.x, a.z));
-  b.write_attribute(gb.vbo.attribute.position, 1, new gb.vec2(a.x, a.w));
-  b.write_attribute(gb.vbo.attribute.position, 2, new gb.vec2(a.y, a.z));
-  b.write_attribute(gb.vbo.attribute.position, 3, new gb.vec2(a.y, a.w));
-  b.submit();
+  var a = new gb.vec2(-this.m_size.x * (1 - this.m_pivot.x), -this.m_size.y * (1 - this.m_pivot.y)), b = new gb.vec2(this.m_size.x * this.m_pivot.x, this.m_size.y * this.m_pivot.y), c = this.m_mesh.vbo;
+  c.write_attribute(gb.vbo.attribute.position, 0, new gb.vec2(a.x, a.y));
+  c.write_attribute(gb.vbo.attribute.position, 1, new gb.vec2(a.x, b.y));
+  c.write_attribute(gb.vbo.attribute.position, 2, new gb.vec2(b.x, a.y));
+  c.write_attribute(gb.vbo.attribute.position, 3, new gb.vec2(b.x, b.y));
+  c.submit();
 }, update_mesh_texcoord_attributes:function(a, b, c, d) {
   var e = this.m_mesh.vbo;
   e.write_attribute(gb.vbo.attribute.texcoord, 0, new gb.vec2(a, b));
@@ -3123,15 +3136,6 @@ oop.define_class({namespace:"gb", name:"scene_graph", extend:gb.ces_entity, init
     e.push(new Box2D.b2Vec2(a.size.x, a.size.y));
     e.push(new Box2D.b2Vec2(0, a.size.y));
     d.SetAsBox(.5 * a.size.x, .5 * a.size.y);
-    console.log(d);
-    console.log(d.GetVertex(0).get_x());
-    console.log(d.GetVertex(0).get_y());
-    console.log(d.GetVertex(1).get_x());
-    console.log(d.GetVertex(1).get_y());
-    console.log(d.GetVertex(2).get_x());
-    console.log(d.GetVertex(2).get_y());
-    console.log(d.GetVertex(3).get_x());
-    console.log(d.GetVertex(3).get_y());
     b = b.box2d_world.CreateBody(c.box2d_definition);
     b.CreateFixture(d, 1);
     c.box2d_body = b;
@@ -3179,9 +3183,8 @@ oop.define_class({namespace:"gb", name:"sprite", extend:gb.game_object, init:fun
   }, set:function(a) {
     var c = this.get_component(gb.ces_base_component.type.geometry);
     c instanceof gb.ces_geometry_quad_component ? c.size = a : this.get_component(gb.ces_base_component.type.transformation).scale = a;
-    if (c = this.get_component(gb.ces_base_component.type.touch_recognize)) {
-      c.bound = new gb.vec4(0, 0, a.x, a.y);
-    }
+    var d = this.get_component(gb.ces_base_component.type.touch_recognize);
+    d && (a = new gb.vec4(-a.x * (1 - c.pivot.x), -a.y * (1 - c.pivot.y), a.x * c.pivot.x, a.y * c.pivot.y), d.bound = a);
   }});
   Object.defineProperty(this, "pivot", {get:function() {
     return this.get_component(gb.ces_base_component.type.geometry).pivot;
@@ -3871,7 +3874,7 @@ editing_pack_algorithm_drop_down_box_button:"ss-merge-editing-pack-algorithm-dro
   }
   d = null;
   this.m_selector.target && (e = this.m_selector.target, g_ss_merge_scene.add_child(e), e.position = this.m_selector.position, e.rotation = this.m_selector.rotation, d = e.get_component(gb.ces_base_component.type.touch_recognize), d.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this), g_ss_merge_scene.add_box2d_body(e));
-  a ? (g_ss_merge_scene.remove_box2d_body(a), this.m_selector.position = a.position, this.m_selector.rotation = a.rotation, this.m_selector.size = a.size, this.m_selector.target = a, d = a.get_component(gb.ces_base_component.type.touch_recognize), d.remove_callback(gb.input_context.state.pressed, this.on_sprite_pressed), this.m_selector.bounding_quad.remove_from_parent(), g_ss_merge_scene.add_child(this.m_selector.bounding_quad)) : this.m_selector.target = null;
+  a ? (g_ss_merge_scene.remove_box2d_body(a), this.m_selector.position = a.position, this.m_selector.rotation = a.rotation, this.m_selector.target = a, d = a.get_component(gb.ces_base_component.type.touch_recognize), d.remove_callback(gb.input_context.state.pressed, this.on_sprite_pressed), this.m_selector.bounding_quad.remove_from_parent(), g_ss_merge_scene.add_child(this.m_selector.bounding_quad)) : this.m_selector.target = null;
 }, sort_sprites_as_in_table:function() {
   for (var a = gb.ss_merge_controller.self(), b = gb.ss_merge_controller.ui_j, c = $(b("frames_list") + " li").map(function() {
     return $(this).find("#frame-index").text();
@@ -3966,12 +3969,6 @@ oop.define_class({namespace:"gb", name:"selector", constants:{corner_type:{left_
     return this.m_bounding_quad.size;
   }, set:function(a) {
     this.m_bounding_quad.size = a;
-    var b = new gb.vec2(a.x / 2, a.y / 2);
-    this.m_points[gb.selector.corner_type.center].position = b;
-    this.m_points[gb.selector.corner_type.left_top].position = new gb.vec2(0 + .5 * this.m_points[gb.selector.corner_type.left_top].size.x, 0 + .5 * this.m_points[gb.selector.corner_type.left_top].size.y);
-    this.m_points[gb.selector.corner_type.right_top].position = new gb.vec2(0 + .5 * this.m_points[gb.selector.corner_type.right_top].size.x, a.y - .5 * this.m_points[gb.selector.corner_type.right_top].size.y);
-    this.m_points[gb.selector.corner_type.left_bottom].position = new gb.vec2(a.x - .5 * this.m_points[gb.selector.corner_type.left_bottom].size.x, 0 + .5 * this.m_points[gb.selector.corner_type.left_bottom].size.y);
-    this.m_points[gb.selector.corner_type.right_bottom].position = new gb.vec2(a.x - .5 * this.m_points[gb.selector.corner_type.right_bottom].size.x, a.y - .5 * this.m_points[gb.selector.corner_type.right_bottom].size.y);
   }});
   Object.defineProperty(this, "position", {get:function() {
     return this.m_bounding_quad.position;
@@ -3990,6 +3987,8 @@ oop.define_class({namespace:"gb", name:"selector", constants:{corner_type:{left_
       this.m_target.rotation = 0;
       this.m_bounding_quad.add_child(this.m_target);
       this.m_bounding_quad.visible = !0;
+      this.m_bounding_quad.size = this.m_target.size;
+      this.update_interactive_points_position();
       a = null;
       for (b = 0;b < gb.selector.corner_type.max;++b) {
         a = this.m_points[b], a.remove_from_parent(), this.m_bounding_quad.add_child(a), a.visible = !0;
@@ -4023,7 +4022,15 @@ oop.define_class({namespace:"gb", name:"selector", constants:{corner_type:{left_
   }});
   this.m_summury_delta = new gb.vec2;
 }, release:function() {
-}, methods:{set_interactive_point:function(a, b) {
+}, methods:{update_interactive_points_position:function() {
+  var a = new gb.vec2(this.m_target.size.x * this.m_target.pivot.x - this.m_target.size.x * (1 - this.m_target.pivot.x), this.m_target.size.y * this.m_target.pivot.y - this.m_target.size.y * (1 - this.m_target.pivot.y));
+  this.m_points[gb.selector.corner_type.center].position = a;
+  var a = new gb.vec2(-this.m_target.size.x * (1 - this.m_target.pivot.x), -this.m_target.size.y * (1 - this.m_target.pivot.y)), b = new gb.vec2(this.m_target.size.x * this.m_target.pivot.x, this.m_target.size.y * this.m_target.pivot.y);
+  this.m_points[gb.selector.corner_type.left_top].position = new gb.vec2(a.x + .5 * this.m_points[gb.selector.corner_type.left_top].size.x, a.y + .5 * this.m_points[gb.selector.corner_type.left_top].size.y);
+  this.m_points[gb.selector.corner_type.right_top].position = new gb.vec2(a.x + .5 * this.m_points[gb.selector.corner_type.right_top].size.x, b.y - .5 * this.m_points[gb.selector.corner_type.right_top].size.y);
+  this.m_points[gb.selector.corner_type.left_bottom].position = new gb.vec2(b.x - .5 * this.m_points[gb.selector.corner_type.left_bottom].size.x, a.y + .5 * this.m_points[gb.selector.corner_type.left_bottom].size.y);
+  this.m_points[gb.selector.corner_type.right_bottom].position = new gb.vec2(b.x - .5 * this.m_points[gb.selector.corner_type.right_bottom].size.x, b.y - .5 * this.m_points[gb.selector.corner_type.right_bottom].size.y);
+}, set_interactive_point:function(a, b) {
   this.m_points[b] && this.m_points[b].remove_from_parent();
   this.m_points[b] = a;
   this.m_bounding_quad.add_child(this.m_points[b]);
@@ -4056,10 +4063,13 @@ oop.define_class({namespace:"gb", name:"selector", constants:{corner_type:{left_
       }
       16 < Math.abs(d.m_summury_delta.y) && (h = 32 * Math.round((f.y - d.m_summury_delta.y) / 32), k = 32 * Math.round((f.y + g.y - d.m_summury_delta.y) / 32), k -= f.y, b.y = f.y - h, e.y = g.y - k, d.m_summury_delta.y = 0);
     }
-    a === d.m_points[gb.selector.corner_type.left_top] ? (g.x += b.x, g.y += b.y, f.x -= b.x, f.y -= b.y) : a === d.m_points[gb.selector.corner_type.right_top] ? (g.x += b.x, g.y -= e.y, f.x -= b.x) : a === d.m_points[gb.selector.corner_type.left_bottom] ? (g.x -= e.x, g.y += b.y, f.y -= b.y) : a === d.m_points[gb.selector.corner_type.right_bottom] && (g.x -= e.x, g.y -= e.y);
+    a === d.m_points[gb.selector.corner_type.left_top] ? (g.x += b.x, g.y += b.y) : a === d.m_points[gb.selector.corner_type.right_top] ? (g.x += b.x, g.y -= e.y) : a === d.m_points[gb.selector.corner_type.left_bottom] ? (g.x -= e.x, g.y += b.y) : a === d.m_points[gb.selector.corner_type.right_bottom] && (g.x -= e.x, g.y -= e.y);
+    f.x -= b.x * d.m_target.pivot.x;
+    f.y -= b.y * d.m_target.pivot.y;
     d.position = f;
     d.size = g;
     d.m_target.size = g;
+    d.update_interactive_points_position();
     d.m_previous_selector_touch_point = new gb.vec2(c);
   }
 }, on_target_pressed:function(a, b, c, d) {

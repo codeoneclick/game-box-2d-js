@@ -531,7 +531,6 @@ oop.define_class({
                 g_ss_merge_scene.remove_box2d_body(sprite);
                 this.m_selector.position = sprite.position;
                 this.m_selector.rotation = sprite.rotation;
-                this.m_selector.size = sprite.size;
                 this.m_selector.target = sprite;
 
                 target_touch_recognize_component = sprite.get_component(gb.ces_base_component.type.touch_recognize);

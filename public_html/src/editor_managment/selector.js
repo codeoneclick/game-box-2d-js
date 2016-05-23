@@ -37,17 +37,6 @@ oop.define_class({
 			},
 			set: function(value) {
 				this.m_bounding_quad.size = value;
-				var center = new gb.vec2(value.x / 2, value.y / 2);
-				this.m_points[gb.selector.corner_type.center].position = center;
-
-				this.m_points[gb.selector.corner_type.left_top].position = new gb.vec2(0.0 + this.m_points[gb.selector.corner_type.left_top].size.x * 0.5,
-					0.0 + this.m_points[gb.selector.corner_type.left_top].size.y * 0.5);
-				this.m_points[gb.selector.corner_type.right_top].position = new gb.vec2(0.0 + this.m_points[gb.selector.corner_type.right_top].size.x * 0.5,
-					value.y - this.m_points[gb.selector.corner_type.right_top].size.y * 0.5);
-				this.m_points[gb.selector.corner_type.left_bottom].position = new gb.vec2(value.x - this.m_points[gb.selector.corner_type.left_bottom].size.x * 0.5,
-					0.0 + this.m_points[gb.selector.corner_type.left_bottom].size.y * 0.5);
-				this.m_points[gb.selector.corner_type.right_bottom].position = new gb.vec2(value.x - this.m_points[gb.selector.corner_type.right_bottom].size.x * 0.5, 
-					value.y - this.m_points[gb.selector.corner_type.right_bottom].size.y * 0.5);
 			}
 		});
 
@@ -79,6 +68,9 @@ oop.define_class({
 					this.m_target.rotation = 0;
 					this.m_bounding_quad.add_child(this.m_target);
 					this.m_bounding_quad.visible = true;
+
+					this.m_bounding_quad.size = this.m_target.size;
+					this.update_interactive_points_position();
 
 					var interactive_point = null;
 					for (var i = 0; i < gb.selector.corner_type.max; ++i) {
@@ -141,6 +133,23 @@ oop.define_class({
 	},
 
 	methods: {
+
+		update_interactive_points_position: function() {
+			var center = new gb.vec2(this.m_target.size.x * this.m_target.pivot.x - this.m_target.size.x * (1.0 - this.m_target.pivot.x), 
+									 this.m_target.size.y * this.m_target.pivot.y - this.m_target.size.y * (1.0 - this.m_target.pivot.y));
+			this.m_points[gb.selector.corner_type.center].position = center;
+			var position_00 = new gb.vec2(-this.m_target.size.x * (1.0 - this.m_target.pivot.x), -this.m_target.size.y * (1.0 - this.m_target.pivot.y));
+			var position_11 = new gb.vec2(this.m_target.size.x * this.m_target.pivot.x, this.m_target.size.y * this.m_target.pivot.y);
+			this.m_points[gb.selector.corner_type.left_top].position = new gb.vec2(position_00.x + this.m_points[gb.selector.corner_type.left_top].size.x * 0.5,
+																				   position_00.y + this.m_points[gb.selector.corner_type.left_top].size.y * 0.5);
+			this.m_points[gb.selector.corner_type.right_top].position = new gb.vec2(position_00.x + this.m_points[gb.selector.corner_type.right_top].size.x * 0.5,
+																					position_11.y - this.m_points[gb.selector.corner_type.right_top].size.y * 0.5);
+			this.m_points[gb.selector.corner_type.left_bottom].position = new gb.vec2(position_11.x - this.m_points[gb.selector.corner_type.left_bottom].size.x * 0.5,
+																					  position_00.y + this.m_points[gb.selector.corner_type.left_bottom].size.y * 0.5);
+			this.m_points[gb.selector.corner_type.right_bottom].position = new gb.vec2(position_11.x - this.m_points[gb.selector.corner_type.right_bottom].size.x * 0.5, 
+																					   position_11.y - this.m_points[gb.selector.corner_type.right_bottom].size.y * 0.5);
+		},
+
 		set_interactive_point: function(interactive_point, type) {
 			if(this.m_points[type]) {
 				this.m_points[type].remove_from_parent();
@@ -205,23 +214,22 @@ oop.define_class({
 				if (entity === userdata.m_points[gb.selector.corner_type.left_top]) {
 					current_size.x += delta.x;
 					current_size.y += delta.y;
-					current_position.x -= delta.x;
-					current_position.y -= delta.y;
 				} else if (entity === userdata.m_points[gb.selector.corner_type.right_top]) {
 					current_size.x += delta.x;
 					current_size.y -= delta_size.y;
-					current_position.x -= delta.x;
 				} else if(entity === userdata.m_points[gb.selector.corner_type.left_bottom]) {
 					current_size.x -= delta_size.x;
 					current_size.y += delta.y;
-					current_position.y -= delta.y;
 				} else if(entity === userdata.m_points[gb.selector.corner_type.right_bottom]) {
 					current_size.x -= delta_size.x;
 					current_size.y -= delta_size.y;
 				}
+				current_position.x -= delta.x * userdata.m_target.pivot.x;
+				current_position.y -= delta.y * userdata.m_target.pivot.y;
 				userdata.position = current_position;
 				userdata.size = current_size;
 				userdata.m_target.size = current_size;
+				userdata.update_interactive_points_position();
 				userdata.m_previous_selector_touch_point = new gb.vec2(point);
 			}
 		},

@@ -73,16 +73,6 @@ oop.define_class({
 				vertices.push(new Box2D.b2Vec2(entity.size.x, entity.size.y));
 				vertices.push(new Box2D.b2Vec2(0.0, entity.size.y));
 				box2d_shape.SetAsBox(entity.size.x * 0.5, entity.size.y * 0.5);
-				//box2d_shape.set_m_centroid(new Box2D.b2Vec2(-1, -1));
-				console.log(box2d_shape);
-				console.log(box2d_shape.GetVertex(0).get_x());
-				console.log(box2d_shape.GetVertex(0).get_y());
-				console.log(box2d_shape.GetVertex(1).get_x());
-				console.log(box2d_shape.GetVertex(1).get_y());
-				console.log(box2d_shape.GetVertex(2).get_x());
-				console.log(box2d_shape.GetVertex(2).get_y());
-				console.log(box2d_shape.GetVertex(3).get_x());
-				console.log(box2d_shape.GetVertex(3).get_y());
 				var box2d_body = box2d_world_component.box2d_world.CreateBody(box2d_body_component.box2d_definition);
 				box2d_body.CreateFixture(box2d_shape, 1);
 				box2d_body_component.box2d_body = box2d_body;
