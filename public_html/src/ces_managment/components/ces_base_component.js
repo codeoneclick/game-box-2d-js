@@ -19,7 +19,8 @@ oop.define_class({
 			animation: 8,
 			box2d_body: 9,
 			box2d_world: 10,
-			max: 11
+			action: 11,
+			max: 12
 		}
 	},
 

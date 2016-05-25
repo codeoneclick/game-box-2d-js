@@ -72,6 +72,29 @@ oop.define_class({
         Object.defineProperty(this, 'scale', {
             set: function(value) {
                 this.m_scale = value;
+
+                Object.defineProperty(value, 'x', {
+                    set: function(value) {
+                        self.m_scale.m_data[0] = value;
+                        self.m_matrix_s.scale(self.m_scale.x, self.m_scale.y, 1.0);
+                        self.m_is_matrix_m_computed = false;
+                    },
+                    get: function() {
+                        return self.m_scale.m_data[0];
+                    }
+                });
+
+                Object.defineProperty(value, 'y', {
+                    set: function(value) {
+                        self.m_scale.m_data[1] = value;
+                        self.m_matrix_s.scale(self.m_scale.x, self.m_scale.y, 1.0);
+                        self.m_is_matrix_m_computed = false;
+                    },
+                    get: function() {
+                        return self.m_scale.m_data[1];
+                    }
+                });
+
                 this.m_matrix_s.scale(this.m_scale.x, this.m_scale.y, 1.0);
                 this.m_is_matrix_m_computed = false;
             },

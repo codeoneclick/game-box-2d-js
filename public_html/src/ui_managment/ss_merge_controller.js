@@ -148,12 +148,15 @@ oop.define_class({
             self.set_selected_sprite(null);
             var atlas_size = self.calculate_atlas_size();
             if (atlas_size.width > 0 && atlas_size.height > 0) {
+
                 var atlas = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, atlas_size.width, atlas_size.height);
                 var frames = self.create_animation_configuration(atlas_size.width, atlas_size.height);
-                $(ui_j('animation_preview_dialog')).dialog('open');
-                $('.ui-dialog :button').blur();
                 self.deactivate();
-                self.m_play_animation_dialog_controller.activate(atlas, frames);
+                setTimeout(function() {
+                    $(ui_j('animation_preview_dialog')).dialog('open');
+                    $('.ui-dialog :button').blur();
+                    self.m_play_animation_dialog_controller.activate(atlas, frames);
+                }, 1000);
             }
         });
         element = "<button id=" + ui.export_save_atlas_button + " style=\"margin:2%;\">save atlas</button><br>";
@@ -227,6 +230,7 @@ oop.define_class({
     methods: {
 
         activate: function() {
+            var self = gb.ss_merge_controller.self();
             var ui = gb.ss_merge_controller.html_elements;
             var ui_j = function(element_name) {
                 return '#' + ui[element_name];
@@ -239,23 +243,23 @@ oop.define_class({
                 var camera = new gb.camera(gl.viewport_width, gl.viewport_height);
                 scene.camera = camera;
 
-                gb.ss_merge_controller.self().m_grid = scene.fabricator.create_grid("data/resources/configurations/game_objects/grid.json", 32, 32, 32, 32, function() {
-                    gb.ss_merge_controller.self().m_grid.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
-                    gb.ss_merge_controller.self().m_grid.position = new gb.vec2(0.0, -1.0);
+                self.m_grid = scene.fabricator.create_grid("data/resources/configurations/game_objects/grid.json", 32, 32, 32, 32, function() {
+                    self.m_grid.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
+                    self.m_grid.position = new gb.vec2(0.0, -1.0);
                 });
-                scene.add_child(gb.ss_merge_controller.self().m_grid);
+                scene.add_child(self.m_grid);
 
-                var sprites_count = gb.ss_merge_controller.self().m_sprites.length;
+                var sprites_count = self.m_sprites.length;
                 if (sprites_count !== 0) {
                     for (var i = 0; i < sprites_count; ++i) {
-                        var sprite = gb.ss_merge_controller.self().m_sprites[i];
+                        var sprite = self.m_sprites[i];
                         scene.add_child(sprite);
                     }
                 }
-                gb.ss_merge_controller.self().pack_sprites();
+                self.pack_sprites();
                 var editor_fabricator = new gb.editor_fabricator();
                 editor_fabricator.scene_fabricator = scene.fabricator;
-                gb.ss_merge_controller.self().m_selector = editor_fabricator.create_selector();
+                self.m_selector = editor_fabricator.create_selector();
             });
         },
 
@@ -317,11 +321,12 @@ oop.define_class({
                                 var sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
                                     resource.mag_filter = gl.LINEAR;
                                     resource.min_filter = gl.LINEAR;
-                                    resource.wrap_mode = gl.CLAMP_TO_EDGE;1
+                                    resource.wrap_mode = gl.CLAMP_TO_EDGE;
                                     var material_component = sprite.get_component(gb.ces_base_component.type.material);
                                     material_component.set_texture(resource, 0);
                                     sprite.size = new gb.vec2(Math.round(resource.width * gb.ss_merge_controller.self().m_importing_content_scale_factor),
                                                               Math.round(resource.height * gb.ss_merge_controller.self().m_importing_content_scale_factor));
+                                    gb.ss_merge_controller.self().on_sprite_added(sprite, 0.0);
                                     files_count_processed++;
                                     if (files_count_processed === files_count_unprocessed) {
                                         gb.ss_merge_controller.self().sort_sprites_in_table();
@@ -497,7 +502,6 @@ oop.define_class({
         },
 
         sort_sprites_in_table: function() {
-            var self = gb.ss_merge_controller.self();
             var ui_j = gb.ss_merge_controller.ui_j;
             var tags = $(ui_j('frames_list') + " li").map(function() {
                 return $(this).find("#frame-index").text();
@@ -506,28 +510,47 @@ oop.define_class({
             var tags_count = tags.length;
             var sprite = null;
             for (var i = 0; i < tags_count; ++i) {
-                sprite = self.m_sprites.find(function(analized_sprite) {
+                sprite = this.m_sprites.find(function(analized_sprite) {
                     return analized_sprite.tag === tags[i];
                 });
                 sprites.push(sprite);
             }
-            self.m_sprites = sprites;
+            this.m_sprites = sprites;
 
-            var sprites_count = self.m_sprites.length;
+            var sprites_count = this.m_sprites.length;
             $(ui_j('frames_list')).height(sprites_count > 0 ? sprites_count == 1 ? 170 : 340 : 0);
             $(ui_j('frames_sort_button')).button(sprites_count > 1 ? 'enable' : 'disable');
         },
 
         pack_sprites: function() {
-            var self = gb.ss_merge_controller.self();
-            self.m_merge_algorithm.reset();
-            var sprites_count = self.m_sprites.length;
+            this.m_merge_algorithm.reset();
+            var sprites_count = this.m_sprites.length;
             for (var i = 0; i < sprites_count; ++i) {
-                var sprite = self.m_sprites[i];
-                var position_in_atlas = self.m_merge_algorithm.add_sprite(sprite);
+                var sprite = this.m_sprites[i];
+                var position_in_atlas = this.m_merge_algorithm.add_sprite(sprite);
                 position_in_atlas.x += sprite.size.x * sprite.pivot.x;
                 position_in_atlas.y += sprite.size.y * sprite.pivot.y;
                 sprite.position = position_in_atlas;
+            }
+        },
+
+        on_sprite_added: function(entity, deltatime) {
+            var action_component = entity.get_component(gb.ces_base_component.type.action);
+            if(!action_component) {
+                entity.scale.x = 0.0;
+                entity.scale.y = 0.0;
+                action_component = new gb.ces_action_component();
+                action_component.action = this.on_sprite_added;
+                entity.add_component(action_component);
+            }
+            if(entity.scale.x < 1.0) {
+                entity.scale.x += 0.1;
+                entity.scale.y += 0.1;
+            } else {
+                entity.scale.x = 1.0;
+                entity.scale.y = 1.0;
+                action_component.action = null;
+                entity.remove_component(gb.ces_base_component.type.action);
             }
         }
     },

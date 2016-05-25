@@ -105,6 +105,9 @@ oop.define_class({
                 var box2d_system = new gb.ces_box2d_system();
                 self.m_systems_feeder.add_system(box2d_system);
 
+                var action_system = new gb.ces_action_system();
+                self.m_systems_feeder.add_system(action_system);
+
                 loop.add_listener(self.m_systems_feeder);
             });
         },

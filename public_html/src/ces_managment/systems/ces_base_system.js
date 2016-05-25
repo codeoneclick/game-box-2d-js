@@ -11,7 +11,8 @@ oop.define_class({
             deferred_lighting: 1,
             touches_recognize: 2,
             animation: 3,
-            box2d: 4
+            box2d: 4,
+            action: 5
         }
     },
     
