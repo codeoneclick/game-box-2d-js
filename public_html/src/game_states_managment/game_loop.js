@@ -7,11 +7,6 @@ oop.define_class({
 
     init: function() {
         this.m_listeners = [];
-        this.m_stats = new Stats();
-        this.m_stats.showPanel(0);
-        this.m_stats.dom.style.top = "52px";
-        this.m_stats.dom.style.left = "408px";
-        document.body.appendChild(this.m_stats.dom);
         this.m_previous_timestamp = Date.now();
     },
 
@@ -21,7 +16,6 @@ oop.define_class({
 
     methods: {
         on_update: function() {
-            this.m_stats.begin();
             var current_timestamp = Date.now();
             var deltatime = (current_timestamp - this.m_previous_timestamp) / 1000;
 
@@ -32,7 +26,6 @@ oop.define_class({
                 listener.on_update(deltatime);
             }
             this.m_previous_timestamp = current_timestamp;
-            this.m_stats.end();
         },
 
         add_listener: function(listener) {

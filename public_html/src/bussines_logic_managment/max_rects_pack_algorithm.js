@@ -165,6 +165,7 @@ oop.define_class({
                 }
             }
 
+
             if(best_is_rotated) {
                 console.error('implement sprite rotation');
             }
