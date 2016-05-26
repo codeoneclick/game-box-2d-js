@@ -23,7 +23,8 @@ oop.define_class({
             frames_list: "ss-merge-frames-list",
             frames_list_cell: "ss-merge-frames-list-cell",
             editing_container: "ss-merge-editing-container",
-            editing_move_resize_label: "ss-merge-editing-move-resize-label",
+            editing_page_drop_down_box: "ss-merge-editing-page-drop-down-box",
+            editing_page_drop_down_box_button: "ss-merge-editing-page-drop-down-box-button",
             editing_move_resize_radio_button: "ss-merge-editing-move-resize-radio-button",
             editing_move_resize_freeform_button: "ss-merge-editing-move-resize-freeform-button",
             editing_move_resize_snaptogrid_button: "ss-merge-editing-move-resize-snaptogrid-button",
@@ -107,6 +108,17 @@ oop.define_class({
         $(ui_j('tab_left_panel')).append($(element));
         element = "<p class=\"ui-widget-header\" style=\"margin:0px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>editing</p>";
         $(ui_j('editing_container')).append($(element));
+        element = "<div title=\"page\" style=\"width:90%; margin:2%; margin-top:5%\"><select id=" + ui.editing_page_drop_down_box + ">";
+        element += "<option selected=\"selected\">page 1</option>";
+        element += "</select></div>";
+        $(ui_j('editing_container')).append(element);
+        $(ui_j('editing_page_drop_down_box')).selectmenu();
+        $(ui_j('editing_page_drop_down_box_button')).css({
+            'width': '100%'
+        });
+        $(ui_j('editing_page_drop_down_box')).on("selectmenuselect", function(event, ui) { 
+            self.on_page_changed(ui.item.index);
+        });
         element = "<div style=\"margin:2%;\" id=" + ui.editing_move_resize_radio_button + ">";
         element += "<input type=\"radio\" id=" + ui.editing_move_resize_freeform_button + " name=\"" + ui.editing_move_resize_radio_button + "\" checked=\"checked\">";
         element += "<label for=" + ui.editing_move_resize_freeform_button + ">free form</label>";
@@ -118,7 +130,6 @@ oop.define_class({
         $(ui_j('editing_move_resize_radio_button') + " input[type=radio]").change(function() {
             self.m_selector.is_align_movement = this.id === ui.editing_move_resize_snaptogrid_button;
         });
-
         element = "<div title=\"packing algorithm\" style=\"width:90%; margin:2%; margin-top:5%\"><select id=" + ui.editing_pack_algorithm_drop_down_box + ">";
         element += "<option selected=\"selected\">heuristic - none</option>";
         element += "<option>heuristic - TL (top left fit)</option>";
@@ -206,13 +217,13 @@ oop.define_class({
         gb.game_controller.get_instance().add_transition(g_ss_merge_transition);
 
         this.m_sprites = [];
+        this.m_sprites_on_pages = [];
+        this.m_current_page = 0;
         this.m_importing_content_scale_factor = 1.0;
 
         this.m_grid = null;
-        this.m_preview_sprite = null;
 
         this.m_selector = null;
-        this.m_frames_container = new gb.frames_container();
 
         this.m_play_animation_dialog_controller = new gb.ss_play_animation_dialog_controller();
 
@@ -220,7 +231,6 @@ oop.define_class({
         this.m_merge_algorithm.atlas_width = 1024;
         this.m_merge_algorithm.atlas_height = 1024;
         this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.TL;
-        this.m_merge_algorithm.m_free_nodes.push(new gb.vec4(0, 0, 1024, 1024));
     },
 
     release: function() {
@@ -425,7 +435,7 @@ oop.define_class({
         create_animation_configuration: function(atlas_width, atlas_height) {
             var frames = [];
             var sortered_sprites = this.m_sprites.sort(function(sprite_1, sprite_2) {
-                return sprite_1.tag.localeCompare(sprite_2.tag, "en", {
+                return sprite_1.tag.localeCompare(sprite_2.tag, 'en', {
                     numeric: true
                 });
             });
@@ -524,13 +534,28 @@ oop.define_class({
 
         pack_sprites: function() {
             this.m_merge_algorithm.reset();
+            this.m_sprites_on_pages = [];
             var sprites_count = this.m_sprites.length;
+            var pages_count = 1;
             for (var i = 0; i < sprites_count; ++i) {
                 var sprite = this.m_sprites[i];
-                var position_in_atlas = this.m_merge_algorithm.add_sprite(sprite);
-                position_in_atlas.x += sprite.size.x * sprite.pivot.x;
-                position_in_atlas.y += sprite.size.y * sprite.pivot.y;
-                sprite.position = position_in_atlas;
+                var packed_data = this.m_merge_algorithm.add_sprite(sprite);
+                var position = packed_data.position;
+                var page = packed_data.page;
+                if(!this.m_sprites_on_pages[page]) {
+                    this.m_sprites_on_pages[page] = [];
+                }
+                this.m_sprites_on_pages[page].push(sprite);
+                position.x += sprite.size.x * sprite.pivot.x;
+                position.y += sprite.size.y * sprite.pivot.y;
+                sprite.position = position;
+                sprite.visible = page === this.m_current_page;
+                pages_count = Math.max(pages_count, page + 1);
+            }
+            var ui_j = gb.ss_merge_controller.ui_j;
+            $(ui_j('editing_page_drop_down_box')).find('option').remove().end();
+            for(var i = 0; i < pages_count; ++i) {
+                $(ui_j('editing_page_drop_down_box')).append($("<option></option>").attr("value", i).text('page ' + (i + 1))); 
             }
         },
 
@@ -552,6 +577,10 @@ oop.define_class({
                 action_component.action = null;
                 entity.remove_component(gb.ces_base_component.type.action);
             }
+        },
+
+        on_page_changed: function(index) {
+            console.log(index);
         }
     },
 
