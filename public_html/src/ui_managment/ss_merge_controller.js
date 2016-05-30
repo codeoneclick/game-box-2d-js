@@ -35,6 +35,8 @@ oop.define_class({
             export_container: "ss-merge-export-container",
             export_animation_preview_button: "ss-merge-export-animation-preview_button",
             export_save_atlas_button: "ss-merge-export-atlas-button",
+            export_save_pages_list: "ss-merge-export-save-pages-list",
+            export_save_pages_list_download_button: "ss-merge-export-save-pages-list-download",
             export_save_frames_button: "ss-merge-export-save-frames-button",
             animation_preview_dialog: "ss-merge-animation-preview-dialog"
         }
@@ -51,11 +53,9 @@ oop.define_class({
         $(ui_j('tab_container')).append($("<div id=" + ui.tab_right_panel + " style=\"background:black;\"/>"));
         $(ui_j('tab_right_panel')).append($("<canvas style=\"width:100%; height:100%;\" id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
 
-        element = "<div id=" + ui.import_container + "/>";
+        element = "<h3><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>import</h3><div style=\"background:none; border:0px;\" id=" + ui.import_container + "/>";
         $(ui_j('tab_left_panel')).append($(element));
-        element = "<p class=\"ui-widget-header\" style=\"margin:0px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>import</p>";
-        $(ui_j('import_container')).append($(element));
-        element = "<div title=\"changed size of imported images\" style=\"width:75%; margin:2%;\"><select id=" + ui.import_size_drop_down_box + ">";
+        element = "<div title=\"changed size of imported images\" style=\"width:95%; margin:2%;\"><select id=" + ui.import_size_drop_down_box + ">";
         element += "<option>image scale - 10%</option>";
         element += "<option>image scale - 20%</option>";
         element += "<option>image scale - 30%</option>";
@@ -77,24 +77,22 @@ oop.define_class({
         });
         element = "<div id=" + ui.import_drop_zone + "></div>";
         $(ui_j('import_container')).append(element);
-        element = "<input type=\"file\" id=" + ui.import_add_image_input + " style=\"display:none;\" multiple><a href=\"#\" id=" + ui.import_add_image_button + ">add images...</a>";
+        element = "<input type=\"file\" id=" + ui.import_add_image_input + " style=\"display:none;\" multiple><a style=\"width:99%;\" href=\"#\" id=" + ui.import_add_image_button + ">add images...</a>";
         $(ui_j('import_drop_zone')).append(element);
         $(ui_j('import_add_image_button')).button();
         $(ui_j('import_add_image_button')).on('click', function() {
             $(ui_j('import_add_image_input')).trigger('click');
         });
         document.getElementById(ui.import_add_image_input).addEventListener("change", function() { self.open_images(this.files); }, false);
-        element = "<label style=\"float:right; margin-top:8%; margin-right:16%\">or drop here...</label>";
+        element = "<label style=\"float:right; margin-top:8%; margin-right:33.5%\">or drop here...</label>";
         $(ui_j('import_drop_zone')).append(element);
         var drop_zone = document.getElementById(ui.import_drop_zone);
         drop_zone.addEventListener("dragover", this.on_files_drag_over, false);
         drop_zone.addEventListener("drop", this.on_files_dropped, false);
 
-        element = "<div id=" + ui.frames_container + "/>";
+        element = "<h3><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>frames</h3><div style=\"background:none; border:0px;\" id=" + ui.frames_container + "/>";
         $(ui_j('tab_left_panel')).append($(element));
-        element = "<p class=\"ui-widget-header\" style=\"margin:0px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>frames</p>";
-        $(ui_j('frames_container')).append($(element));
-        element = "<button id=" + ui.frames_sort_button + " style=\"margin:2%;\">sort by name</button>";
+        element = "<button id=" + ui.frames_sort_button + " style=\"margin:2%; width:95%;\">sort by name</button>";
         $(ui_j('frames_container')).append(element);
         $(ui_j('frames_sort_button')).button();
         $(ui_j('frames_sort_button')).button('disable');
@@ -109,11 +107,9 @@ oop.define_class({
             }
         });
 
-        element = "<div id=" + ui.editing_container + "/>";
+        element = "<h3><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>editing</h3><div style=\"background:none; border:0px;\" id=" + ui.editing_container + "/>";
         $(ui_j('tab_left_panel')).append($(element));
-        element = "<p class=\"ui-widget-header\" style=\"margin:0px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>editing</p>";
-        $(ui_j('editing_container')).append($(element));
-        element = "<div title=\"page\" style=\"width:90%; margin:2%; margin-top:5%\"><select id=" + ui.editing_page_drop_down_box + ">";
+        element = "<div style=\"width:95%; margin:2%; margin-top:5%\"><select id=" + ui.editing_page_drop_down_box + ">";
         element += "<option selected=\"selected\">page 1</option>";
         element += "</select></div>";
         $(ui_j('editing_container')).append(element);
@@ -122,20 +118,20 @@ oop.define_class({
             'width': '100%'
         });
         $(ui_j('editing_page_drop_down_box')).on("selectmenuselect", function(event, ui) { 
-            self.on_page_changed(ui.item.index);
+            self.on_page_changed(ui.item.index, true);
         });
         element = "<div style=\"margin:2%;\" id=" + ui.editing_move_resize_radio_button + ">";
         element += "<input type=\"radio\" id=" + ui.editing_move_resize_freeform_button + " name=\"" + ui.editing_move_resize_radio_button + "\" checked=\"checked\">";
-        element += "<label for=" + ui.editing_move_resize_freeform_button + ">free form</label>";
+        element += "<label for=" + ui.editing_move_resize_freeform_button + " style=\"width:48%;\">free form</label>";
         element += "<input type=\"radio\" id=" + ui.editing_move_resize_snaptogrid_button + " name=\"" + ui.editing_move_resize_radio_button + "\">";
-        element += "<label for=" + ui.editing_move_resize_snaptogrid_button + ">snap to grid</label>";
+        element += "<label for=" + ui.editing_move_resize_snaptogrid_button + " style=\"width:52%;\">snap to grid</label>";
         element += "</div>";
         $(ui_j('editing_container')).append($(element));
         $(ui_j('editing_move_resize_radio_button')).buttonset();
         $(ui_j('editing_move_resize_radio_button') + " input[type=radio]").change(function() {
             self.m_selector.is_align_movement = this.id === ui.editing_move_resize_snaptogrid_button;
         });
-        element = "<div title=\"packing algorithm\" style=\"width:90%; margin:2%; margin-top:5%\"><select id=" + ui.editing_pack_algorithm_drop_down_box + ">";
+        element = "<div title=\"packing algorithm\" style=\"width:95%; margin:2%; margin-top:5%\"><select id=" + ui.editing_pack_algorithm_drop_down_box + ">";
         element += "<option selected=\"selected\">heuristic - none</option>";
         element += "<option>heuristic - TL (top left fit)</option>";
         element += "<option>heuristic - BAF (best area fit)</option>";
@@ -149,22 +145,19 @@ oop.define_class({
         $(ui_j('editing_pack_algorithm_drop_down_box_button')).css({
             'width': '100%'
         });
-        element = "<button id=" + ui.editing_spread_button + " style=\"margin:2%;\">spread</button>";
+        element = "<button id=" + ui.editing_spread_button + " style=\"margin:2%; width:95.5%;\">spread</button>";
         $(ui_j('editing_container')).append(element);
         $(ui_j('editing_spread_button')).button();
 
-        element = "<div id=" + ui.export_container + "/>";
+        element = "<h3><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>export</h3><div style=\"background:none; border:0px;\" id=" + ui.export_container + "/>";
         $(ui_j('tab_left_panel')).append($(element));
-        element = "<p class=\"ui-widget-header\" style=\"margin:0px;\"><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>export</p>";
-        $(ui_j('export_container')).append($(element));
-        element = "<button title=\"preview animation\" id=" + ui.export_animation_preview_button + " style=\"margin:2%;\">preview</button><br>";
+        element = "<button title=\"preview animation\" id=" + ui.export_animation_preview_button + " style=\"margin:2%; width:95.5%;\">preview</button><br>";
         $(ui_j('export_container')).append(element);
         $(ui_j('export_animation_preview_button')).button();
         $(ui_j('export_animation_preview_button')).on('click', function() {
             self.set_selected_sprite(null);
             var atlas_size = self.calculate_atlas_size();
             if (atlas_size.width > 0 && atlas_size.height > 0) {
-
                 var atlas = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, atlas_size.width, atlas_size.height);
                 var frames = self.create_animation_configuration(atlas_size.width, atlas_size.height);
                 self.deactivate();
@@ -175,17 +168,40 @@ oop.define_class({
                 }, 1000);
             }
         });
-        element = "<button id=" + ui.export_save_atlas_button + " style=\"margin:2%;\">save atlas</button><br>";
+        element = "<button id=" + ui.export_save_atlas_button + " style=\"margin:2%; width:95.5%;\">create images</button><br>";
         $(ui_j('export_container')).append(element);
         $(ui_j('export_save_atlas_button')).button();
         $(ui_j('export_save_atlas_button')).on('click', function() {
-            var atlas_size = self.calculate_atlas_size();
-            if (atlas_size.width > 0 && atlas_size.height > 0) {
-                var atlas = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, atlas_size.width, atlas_size.height);
-                window.location.href = atlas.src.replace('image/png', 'image/octet-stream');
-            }
+            self.set_selected_sprite(null);
+            var pages_count = self.m_sprites_on_pages.length;
+            var page = 0;
+            var create_page_shapshot = function(page) {
+                self.on_page_changed(page, true, function() {
+                    var image = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, gl.viewport_width, gl.viewport_height);
+                    var element = "<li class=\"ui-state-default\" style=\"height:160px; margin:8px; background: none;\">";
+                    element += "<p align=\"center\" style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;\" id=\"page-index\" class=\"ui-widget-header\" style=\"margin:4px;\">page_" + (page + 1) + ".png</p>";
+                    element += ['<img style=\"float:left; margin:2px; height:128px; width:128px;\" id="images-list-cell-image" align="left" src="', image.src, '"/>'].join('');
+                    element += "<a style=\"margin-top:12%; margin-left:24%;\" id=\"" + ui.export_save_pages_list_download_button + page + "\" href=\"" + image.src.replace('image/png', 'image/octet-stream') + "\"  download=\"page_" + (page + 1) + ".png\">download</a>";
+                    element += "</li>";
+                    $(ui_j('export_save_pages_list')).append($(element));
+                    $('#' + ui.export_save_pages_list_download_button + page).button();
+                    page++;
+                    $(ui_j('export_save_pages_list')).height(170 * Math.min(page + 1, pages_count));
+                    if(page < pages_count) {
+                        create_page_shapshot(page);
+                    } else {
+                        self.on_page_changed(0, true);
+                    }
+                });
+            };
+            create_page_shapshot(page);
         });
-        element = "<button id=" + ui.export_save_frames_button + " style=\"margin:2%;\">save frames</button>";
+        element = "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%; margin-top:-0.5%;\" id=\"" + ui.export_save_pages_list + "\"></ul>"
+        $(ui_j('export_container')).append($(element));
+        $(ui_j('export_save_pages_list')).height(0);
+        $(ui_j('export_save_pages_list')).sortable();
+        $(ui_j('export_save_pages_list')).disableSelection();
+        element = "<button id=" + ui.export_save_frames_button + " style=\"margin:2%; margin-top:-2%; width:95.5%;\">create frames configuration</button>";
         $(ui_j('export_container')).append(element);
         $(ui_j('export_save_frames_button')).button();
 
@@ -216,6 +232,7 @@ oop.define_class({
                 of: "#gl_canvas"
             }
         });
+        $(ui_j('tab_left_panel')).accordion({heightStyle: "content"});
 
         var gl_context = new gb.graphics_context();
         g_ss_merge_transition = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json");
@@ -566,90 +583,125 @@ oop.define_class({
             }
         },
 
-        on_sprite_added: function(entity, deltatime) {
-            var action_component = entity.get_component(gb.ces_base_component.type.action);
-            if(!action_component) {
-                entity.scale.x = 0.0;
-                entity.scale.y = 0.0;
-                entity.visible = true;
-                action_component = new gb.ces_action_component();
-                action_component.action = this.on_sprite_added;
-                entity.add_component(action_component);
-            }
-            if(entity.scale.x < 1.0) {
-                entity.scale.x += 0.1;
-                entity.scale.y += 0.1;
+        on_sprite_added: function(entity, animated) {
+            if (animated) {
+                var action_component = entity.get_component(gb.ces_base_component.type.action);
+                if (!action_component) {
+                    entity.scale.x = 0.0;
+                    entity.scale.y = 0.0;
+                    entity.visible = true;
+                    action_component = new gb.ces_action_component();
+                    action_component.action = function(entity, deltatime) {
+                        if (entity.scale.x < 1.0) {
+                            entity.scale.x += 0.1;
+                            entity.scale.y += 0.1;
+                        } else {
+                            entity.scale.x = 1.0;
+                            entity.scale.y = 1.0;
+                            action_component.action = null;
+                            entity.remove_component(gb.ces_base_component.type.action);
+                        }
+                    };
+                    entity.add_component(action_component);
+                }
             } else {
                 entity.scale.x = 1.0;
                 entity.scale.y = 1.0;
-                action_component.action = null;
-                entity.remove_component(gb.ces_base_component.type.action);
+                entity.visible = true;
             }
         },
 
-        on_sprite_removed: function(entity, deltatime) {
-            var action_component = entity.get_component(gb.ces_base_component.type.action);
-            if(!action_component) {
-                entity.scale.x = 1.0;
-                entity.scale.y = 1.0;
-                action_component = new gb.ces_action_component();
-                action_component.action = this.on_sprite_removed;
-                entity.add_component(action_component);
-            }
-            if(entity.scale.x > 0.0) {
-                entity.scale.x -= 0.1;
-                entity.scale.y -= 0.1;
+        on_sprite_removed: function(entity, animated) {
+            if (animated) {
+                var action_component = entity.get_component(gb.ces_base_component.type.action);
+                if (!action_component) {
+                    entity.scale.x = 1.0;
+                    entity.scale.y = 1.0;
+                    action_component = new gb.ces_action_component();
+                    action_component.action = function(entity, deltatime) {
+                        if (entity.scale.x > 0.0) {
+                            entity.scale.x -= 0.1;
+                            entity.scale.y -= 0.1;
+                        } else {
+                            entity.scale.x = 0.0;
+                            entity.scale.y = 0.0;
+                            entity.visible = false;
+                            action_component.action = null;
+                            entity.remove_component(gb.ces_base_component.type.action);
+                        }
+                    };
+                    entity.add_component(action_component);
+                }
             } else {
                 entity.scale.x = 0.0;
                 entity.scale.y = 0.0;
                 entity.visible = false;
-                action_component.action = null;
-                entity.remove_component(gb.ces_base_component.type.action);
             }
         },
 
-        on_add_sprites_on_page: function(page) {
+        on_add_sprites_on_page: function(page, animated, callback) {
             var sprites = this.m_sprites_on_pages[page];
             var sprites_count = sprites.length;
             var sprite = null;
-            for(var i = 0; i < sprites_count; ++i) {
+            for (var i = 0; i < sprites_count; ++i) {
                 sprite = sprites[i];
-                this.on_sprite_added(sprite, 0);
+                this.on_sprite_added(sprite, animated);
             }
-        },
-
-        on_remove_sprites_on_page: function(page, callback) {
-            var sprites = this.m_sprites_on_pages[page];
-            var sprites_count = sprites.length;
-            var sprite = null;
-            for(var i = 0; i < sprites_count; ++i) {
-                sprite = sprites[i];
-                this.on_sprite_removed(sprite, 0);
-            }
-            var check_sprites_status = function() {
-                var is_sprites_removed = true;
-                for(var i = 0; i < sprites_count; ++i) {
-                    sprite = sprites[i];
-                    var action_component = sprite.get_component(gb.ces_base_component.type.action);
-                    if(action_component) {
-                        is_sprites_removed = false;
-                        break;
+            if (callback) {
+                var check_sprites_status = function() {
+                    var is_sprites_removed = true;
+                    for (var i = 0; i < sprites_count; ++i) {
+                        sprite = sprites[i];
+                        var action_component = sprite.get_component(gb.ces_base_component.type.action);
+                        if (action_component) {
+                            is_sprites_removed = false;
+                            break;
+                        }
                     }
-                }
-                if(is_sprites_removed) {
-                    callback();
-                } else {
-                    setTimeout(check_sprites_status, 100);
-                }
-            };
-            check_sprites_status();
+                    if (is_sprites_removed) {
+                        setTimeout(callback, 100);
+                    } else {
+                        setTimeout(check_sprites_status, 100);
+                    }
+                };
+                check_sprites_status();
+            }
         },
 
-        on_page_changed: function(index) {
+        on_remove_sprites_on_page: function(page, animated, callback) {
+                var sprites = this.m_sprites_on_pages[page];
+                var sprites_count = sprites.length;
+                var sprite = null;
+                for (var i = 0; i < sprites_count; ++i) {
+                    sprite = sprites[i];
+                    this.on_sprite_removed(sprite, animated);
+                }
+                if (callback) {
+                    var check_sprites_status = function() {
+                        var is_sprites_removed = true;
+                        for (var i = 0; i < sprites_count; ++i) {
+                            sprite = sprites[i];
+                            var action_component = sprite.get_component(gb.ces_base_component.type.action);
+                            if (action_component) {
+                                is_sprites_removed = false;
+                                break;
+                            }
+                        }
+                        if (is_sprites_removed) {
+                            setTimeout(callback, 100);
+                        } else {
+                            setTimeout(check_sprites_status, 100);
+                        }
+                    };
+                    check_sprites_status();
+                }
+        },
+
+        on_page_changed: function(index, animated, callback) {
             var self = gb.ss_merge_controller.self();
-            this.on_remove_sprites_on_page(this.m_current_page, function() {
+            this.on_remove_sprites_on_page(this.m_current_page, animated, function() {
                 self.m_current_page = index;
-                self.on_add_sprites_on_page(index);
+                self.on_add_sprites_on_page(index, animated, callback);
             }); 
         }
     },

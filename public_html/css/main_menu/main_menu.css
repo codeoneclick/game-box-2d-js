@@ -22,7 +22,7 @@
 
 #ss-merge-tab-container {
     width: 1420px;
-    height: 1024px;
+    height: 2048px;
     margin: 0px;
     padding: 0px;
     background: black;
@@ -34,7 +34,7 @@
     margin-left: -3px;
     margin-top: -4px;
     width: 400px;
-    height: 1024px;
+    height: 2048px;
     float:left;
 }
 
@@ -55,7 +55,9 @@
     min-width: 80px;
     min-height: 80px; 
     border-color: white;
-    font: italic bold 16px Georgia, serif;
+    font-family: Segoe UI,Arial,sans-serif;
+    font-weight: bold;
+    font-size: 14px;
     color: lightgray;
     padding: 10px;
 }
