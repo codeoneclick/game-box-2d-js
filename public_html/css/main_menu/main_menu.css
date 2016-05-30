@@ -22,7 +22,7 @@
 
 #ss-merge-tab-container {
     width: 1420px;
-    height: 2048px;
+    height: 1024px;
     margin: 0px;
     padding: 0px;
     background: black;
@@ -34,7 +34,7 @@
     margin-left: -3px;
     margin-top: -4px;
     width: 400px;
-    height: 2048px;
+    height: 1024px;
     float:left;
 }
 
