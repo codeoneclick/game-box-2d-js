@@ -53,157 +53,11 @@ oop.define_class({
         $(ui_j('tab_container')).append($("<div id=" + ui.tab_right_panel + " style=\"background:black;\"/>"));
         $(ui_j('tab_right_panel')).append($("<canvas style=\"width:100%; height:100%;\" id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
 
-        element = "<h3><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>import</h3><div style=\"background:none; border:0px;\" id=" + ui.import_container + "/>";
-        $(ui_j('tab_left_panel')).append($(element));
-        element = "<div title=\"changed size of imported images\" style=\"width:95%; margin:2%;\"><select id=" + ui.import_size_drop_down_box + ">";
-        element += "<option>image scale - 10%</option>";
-        element += "<option>image scale - 20%</option>";
-        element += "<option>image scale - 30%</option>";
-        element += "<option>image scale - 40%</option>";
-        element += "<option>image scale - 50%</option>";
-        element += "<option>image scale - 60%</option>";
-        element += "<option>image scale - 70%</option>";
-        element += "<option>image scale - 80%</option>";
-        element += "<option>image scale - 90%</option>";
-        element += "<option selected=\"selected\">image scale - 100%</option>";
-        element += "</select></div>";
-        $(ui_j('import_container')).append($(element));
-        $(ui_j('import_size_drop_down_box')).selectmenu();
-        $(ui_j('import_size_drop_down_box_button')).css({
-            'width': '100%'
-        });
-        $(ui_j('import_size_drop_down_box')).on("selectmenuselect", function(event, ui) { 
-            self.m_importing_content_scale_factor = (ui.item.index + 1) / 10.0;
-        });
-        element = "<div id=" + ui.import_drop_zone + "></div>";
-        $(ui_j('import_container')).append(element);
-        element = "<input type=\"file\" id=" + ui.import_add_image_input + " style=\"display:none;\" multiple><a style=\"width:99%;\" href=\"#\" id=" + ui.import_add_image_button + ">add images...</a>";
-        $(ui_j('import_drop_zone')).append(element);
-        $(ui_j('import_add_image_button')).button();
-        $(ui_j('import_add_image_button')).on('click', function() {
-            $(ui_j('import_add_image_input')).trigger('click');
-        });
-        document.getElementById(ui.import_add_image_input).addEventListener("change", function() { self.open_images(this.files); }, false);
-        element = "<label style=\"float:right; margin-top:8%; margin-right:33.5%\">or drop here...</label>";
-        $(ui_j('import_drop_zone')).append(element);
-        var drop_zone = document.getElementById(ui.import_drop_zone);
-        drop_zone.addEventListener("dragover", this.on_files_drag_over, false);
-        drop_zone.addEventListener("drop", this.on_files_dropped, false);
-
-        element = "<h3><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>frames</h3><div style=\"background:none; border:0px;\" id=" + ui.frames_container + "/>";
-        $(ui_j('tab_left_panel')).append($(element));
-        element = "<button id=" + ui.frames_sort_button + " style=\"margin:2%; width:95%;\">sort by name</button>";
-        $(ui_j('frames_container')).append(element);
-        $(ui_j('frames_sort_button')).button();
-        $(ui_j('frames_sort_button')).button('disable');
-        element = "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%;\" id=\"" + ui.frames_list + "\"></ul>"
-        $(ui_j('frames_container')).append($(element));
-        $(ui_j('frames_list')).height(0);
-        $(ui_j('frames_list')).sortable();
-        $(ui_j('frames_list')).disableSelection();
-        $(ui_j('frames_list')).sortable({
-            stop: function() {
-                self.sort_sprites_in_table();
-            }
-        });
-
-        element = "<h3><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>editing</h3><div style=\"background:none; border:0px;\" id=" + ui.editing_container + "/>";
-        $(ui_j('tab_left_panel')).append($(element));
-        element = "<div style=\"width:95%; margin:2%; margin-top:5%\"><select id=" + ui.editing_page_drop_down_box + ">";
-        element += "<option selected=\"selected\">page 1</option>";
-        element += "</select></div>";
-        $(ui_j('editing_container')).append(element);
-        $(ui_j('editing_page_drop_down_box')).selectmenu();
-        $(ui_j('editing_page_drop_down_box_button')).css({
-            'width': '100%'
-        });
-        $(ui_j('editing_page_drop_down_box')).on("selectmenuselect", function(event, ui) { 
-            self.on_page_changed(ui.item.index, true);
-        });
-        element = "<div style=\"margin:2%;\" id=" + ui.editing_move_resize_radio_button + ">";
-        element += "<input type=\"radio\" id=" + ui.editing_move_resize_freeform_button + " name=\"" + ui.editing_move_resize_radio_button + "\" checked=\"checked\">";
-        element += "<label for=" + ui.editing_move_resize_freeform_button + " style=\"width:48%;\">free form</label>";
-        element += "<input type=\"radio\" id=" + ui.editing_move_resize_snaptogrid_button + " name=\"" + ui.editing_move_resize_radio_button + "\">";
-        element += "<label for=" + ui.editing_move_resize_snaptogrid_button + " style=\"width:52%;\">snap to grid</label>";
-        element += "</div>";
-        $(ui_j('editing_container')).append($(element));
-        $(ui_j('editing_move_resize_radio_button')).buttonset();
-        $(ui_j('editing_move_resize_radio_button') + " input[type=radio]").change(function() {
-            self.m_selector.is_align_movement = this.id === ui.editing_move_resize_snaptogrid_button;
-        });
-        element = "<div title=\"packing algorithm\" style=\"width:95%; margin:2%; margin-top:5%\"><select id=" + ui.editing_pack_algorithm_drop_down_box + ">";
-        element += "<option selected=\"selected\">heuristic - none</option>";
-        element += "<option>heuristic - TL (top left fit)</option>";
-        element += "<option>heuristic - BAF (best area fit)</option>";
-        element += "<option>heuristic - BSSF (best short side fit)</option>";
-        element += "<option>heuristic - BLSF (best long side fit)</option>";
-        element += "<option>heuristic - MINW (min width fit)</option>";
-        element += "<option>heuristic - MINH (min height fit)</option>";
-        element += "</select></div>";
-        $(ui_j('editing_container')).append(element);
-        $(ui_j('editing_pack_algorithm_drop_down_box')).selectmenu();
-        $(ui_j('editing_pack_algorithm_drop_down_box_button')).css({
-            'width': '100%'
-        });
-        element = "<button id=" + ui.editing_spread_button + " style=\"margin:2%; width:95.5%;\">spread</button>";
-        $(ui_j('editing_container')).append(element);
-        $(ui_j('editing_spread_button')).button();
-
-        element = "<h3><span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>export</h3><div style=\"background:none; border:0px;\" id=" + ui.export_container + "/>";
-        $(ui_j('tab_left_panel')).append($(element));
-        element = "<button title=\"preview animation\" id=" + ui.export_animation_preview_button + " style=\"margin:2%; width:95.5%;\">preview</button><br>";
-        $(ui_j('export_container')).append(element);
-        $(ui_j('export_animation_preview_button')).button();
-        $(ui_j('export_animation_preview_button')).on('click', function() {
-            self.set_selected_sprite(null);
-            var atlas_size = self.calculate_atlas_size();
-            if (atlas_size.width > 0 && atlas_size.height > 0) {
-                var atlas = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, atlas_size.width, atlas_size.height);
-                var frames = self.create_animation_configuration(atlas_size.width, atlas_size.height);
-                self.deactivate();
-                setTimeout(function() {
-                    $(ui_j('animation_preview_dialog')).dialog('open');
-                    $('.ui-dialog :button').blur();
-                    self.m_play_animation_dialog_controller.activate(atlas, frames);
-                }, 1000);
-            }
-        });
-        element = "<button id=" + ui.export_save_atlas_button + " style=\"margin:2%; width:95.5%;\">create images</button><br>";
-        $(ui_j('export_container')).append(element);
-        $(ui_j('export_save_atlas_button')).button();
-        $(ui_j('export_save_atlas_button')).on('click', function() {
-            self.set_selected_sprite(null);
-            var pages_count = self.m_sprites_on_pages.length;
-            var page = 0;
-            var create_page_shapshot = function(page) {
-                self.on_page_changed(page, true, function() {
-                    var image = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, gl.viewport_width, gl.viewport_height);
-                    var element = "<li class=\"ui-state-default\" style=\"height:160px; margin:8px; background: none;\">";
-                    element += "<p align=\"center\" style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;\" id=\"page-index\" class=\"ui-widget-header\" style=\"margin:4px;\">page_" + (page + 1) + ".png</p>";
-                    element += ['<img style=\"float:left; margin:2px; height:128px; width:128px;\" id="images-list-cell-image" align="left" src="', image.src, '"/>'].join('');
-                    element += "<a style=\"margin-top:12%; margin-left:24%;\" id=\"" + ui.export_save_pages_list_download_button + page + "\" href=\"" + image.src.replace('image/png', 'image/octet-stream') + "\"  download=\"page_" + (page + 1) + ".png\">download</a>";
-                    element += "</li>";
-                    $(ui_j('export_save_pages_list')).append($(element));
-                    $('#' + ui.export_save_pages_list_download_button + page).button();
-                    page++;
-                    $(ui_j('export_save_pages_list')).height(170 * Math.min(page + 1, pages_count));
-                    if(page < pages_count) {
-                        create_page_shapshot(page);
-                    } else {
-                        self.on_page_changed(0, true);
-                    }
-                });
-            };
-            create_page_shapshot(page);
-        });
-        element = "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%; margin-top:-0.5%;\" id=\"" + ui.export_save_pages_list + "\"></ul>"
-        $(ui_j('export_container')).append($(element));
-        $(ui_j('export_save_pages_list')).height(0);
-        $(ui_j('export_save_pages_list')).sortable();
-        $(ui_j('export_save_pages_list')).disableSelection();
-        element = "<button id=" + ui.export_save_frames_button + " style=\"margin:2%; margin-top:-2%; width:95.5%;\">create frames configuration</button>";
-        $(ui_j('export_container')).append(element);
-        $(ui_j('export_save_frames_button')).button();
+        this.ui_import(self, ui, gb.ss_merge_controller.ui_j_v2);
+        this.ui_frames(self, ui, gb.ss_merge_controller.ui_j_v2);
+        this.ui_packer(self, ui, gb.ss_merge_controller.ui_j_v2);
+        this.ui_export(self, ui, gb.ss_merge_controller.ui_j_v2);
+        
 
         var element = "<div id=" + ui.animation_preview_dialog + " class=\"ui-dialog\" title=\"Animation\"></div>";
         $(ui_j('tab_right_panel')).append($(element));
@@ -260,6 +114,195 @@ oop.define_class({
     },
 
     methods: {
+
+        ui_import: function(self, ui, ui_j) {
+            $(ui_j(ui.tab_left_panel)).append(
+            "<h3>" +
+                "<span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>import" +
+            "</h3>" + 
+            "<div style=\"background:none; border:0px;\" id=" + ui.import_container + ">" +
+                "<div title=\"changed size of imported images\" style=\"width:95%; margin:2%;\">" +
+                    "<select id=" + ui.import_size_drop_down_box + ">" +
+                        "<option>image scale - 10%</option>" +
+                        "<option>image scale - 20%</option>" +
+                        "<option>image scale - 30%</option>" +
+                        "<option>image scale - 40%</option>" +
+                        "<option>image scale - 50%</option>" +
+                        "<option>image scale - 60%</option>" +
+                        "<option>image scale - 70%</option>" +
+                        "<option>image scale - 80%</option>" +
+                        "<option>image scale - 90%</option>" +
+                        "<option selected=\"selected\">image scale - 100%</option>" +
+                    "</select>" +
+                "</div>" +
+                "<div id=" + ui.import_drop_zone + ">" + 
+                    "<input type=\"file\" id=" + ui.import_add_image_input + " style=\"display:none;\" multiple>" +
+                    "<a style=\"width:99%;\" href=\"#\" id=" + ui.import_add_image_button + ">add images...</a>" +
+                    "<label style=\"float:right; margin-top:8%; margin-right:33.5%\">or drop here...</label>" +
+                "</div>" +
+            "</div>"
+            );
+
+            $(ui_j(ui.import_add_image_button)).button();
+            $(ui_j(ui.import_add_image_button)).on('click', function() {
+                $(ui_j(ui.import_add_image_input)).trigger('click');
+            });
+            document.getElementById(ui.import_add_image_input).addEventListener('change', function() {
+                self.open_images(this.files);
+            }, false);
+            var drop_zone = document.getElementById(ui.import_drop_zone);
+            drop_zone.addEventListener('dragover', this.on_files_drag_over, false);
+            drop_zone.addEventListener('drop', this.on_files_dropped, false);
+
+            $(ui_j(ui.import_size_drop_down_box)).selectmenu();
+            $(ui_j(ui.import_size_drop_down_box_button)).css({
+                'width': '100%'
+            });
+            $(ui_j(ui.import_size_drop_down_box)).on('selectmenuselect', function(event, ui) {
+                self.m_importing_content_scale_factor = (ui.item.index + 1) / 10.0;
+            });
+        },
+
+        ui_frames: function(self, ui, ui_j) {
+            $(ui_j(ui.tab_left_panel)).append(
+            "<h3>" + 
+                "<span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>frames" +
+            "</h3>" +
+            "<div style=\"background:none; border:0px;\" id=" + ui.frames_container + ">" +
+                "<button id=" + ui.frames_sort_button + " style=\"margin:2%; width:95%;\">sort by name</button>" +
+                "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%;\" id=\"" + ui.frames_list + "\"></ul>" +
+            "</div>"
+            );
+        
+            $(ui_j(ui.frames_list)).height(0);
+            $(ui_j(ui.frames_list)).sortable();
+            $(ui_j(ui.frames_list)).disableSelection();
+            $(ui_j(ui.frames_list)).sortable({
+                stop: function() {
+                    self.sort_sprites_in_table();
+                }
+            });
+
+            $(ui_j(ui.frames_sort_button)).button();
+            $(ui_j(ui.frames_sort_button)).button('disable');
+        },
+
+        ui_packer: function(self, ui, ui_j) {
+            $(ui_j(ui.tab_left_panel)).append(
+            "<h3>" +
+                "<span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>packer" + 
+            "</h3>" +
+            "<div style=\"background:none; border:0px;\" id=" + ui.editing_container + ">" + 
+                "<div style=\"width:95%; margin:2%; margin-top:5%\">" +
+                    "<select id=" + ui.editing_page_drop_down_box + ">" +
+                        "<option selected=\"selected\">page 1</option>" +
+                    "</select>" +
+                "</div>" + 
+                "<div style=\"margin:2%;\" id=" + ui.editing_move_resize_radio_button + ">" + 
+                    "<input type=\"radio\" id=" + ui.editing_move_resize_freeform_button + " name=\"" + ui.editing_move_resize_radio_button + "\" checked=\"checked\">" +
+                    "<label for=" + ui.editing_move_resize_freeform_button + " style=\"width:48%;\">free form</label>" +
+                    "<input type=\"radio\" id=" + ui.editing_move_resize_snaptogrid_button + " name=\"" + ui.editing_move_resize_radio_button + "\">" +
+                    "<label for=" + ui.editing_move_resize_snaptogrid_button + " style=\"width:52%;\">snap to grid</label>" +
+                "</div>" +
+                "<div title=\"packing algorithm\" style=\"width:95%; margin:2%; margin-top:5%\">" +
+                    "<select id=" + ui.editing_pack_algorithm_drop_down_box + ">" +
+                        "<option selected=\"selected\">heuristic - none</option>" +
+                        "<option>heuristic - TL (top left fit)</option>" +
+                        "<option>heuristic - BAF (best area fit)</option>" + 
+                        "<option>heuristic - BSSF (best short side fit)</option>" +
+                        "<option>heuristic - BLSF (best long side fit)</option>" +
+                        "<option>heuristic - MINW (min width fit)</option>" +
+                        "<option>heuristic - MINH (min height fit)</option>" +
+                    "</select>" +
+                "</div>" +
+                "<button id=" + ui.editing_spread_button + " style=\"margin:2%; width:95.5%;\">spread</button>" +
+            "</div>"
+            );
+
+            $(ui_j(ui.editing_pack_algorithm_drop_down_box)).selectmenu();
+            $(ui_j(ui.editing_pack_algorithm_drop_down_box_button)).css({
+                'width': '100%'
+            });
+
+            $(ui_j(ui.editing_spread_button)).button();
+
+            $(ui_j(ui.editing_page_drop_down_box)).selectmenu();
+            $(ui_j(ui.editing_page_drop_down_box_button)).css({
+                'width': '100%'
+            });
+            $(ui_j(ui.editing_page_drop_down_box)).on("selectmenuselect", function(event, ui) { 
+                self.on_page_changed(ui.item.index, true);
+            });
+
+            $(ui_j(ui.editing_move_resize_radio_button)).buttonset();
+            $(ui_j(ui.editing_move_resize_radio_button) + ' input[type=radio]').change(function() {
+                self.m_selector.is_align_movement = this.id === ui.editing_move_resize_snaptogrid_button;
+            });
+        },
+
+        ui_export: function(self, ui, ui_j) {
+            $(ui_j(ui.tab_left_panel)).append(
+            "<h3>" +
+                "<span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>export" +
+            "</h3>" +
+            "<div style=\"background:none; border:0px;\" id=" + ui.export_container + ">" +
+                "<button title=\"preview animation\" id=" + ui.export_animation_preview_button + " style=\"margin:2%; width:95.5%;\">preview</button>" +
+                "<br>" +
+                "<button id=" + ui.export_save_atlas_button + " style=\"margin:2%; width:95.5%;\">create images</button>" +
+                "<br>" +
+                "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%; margin-top:-0.5%;\" id=\"" + ui.export_save_pages_list + "\"/>" +
+                "<button id=" + ui.export_save_frames_button + " style=\"margin:2%; margin-top:-2%; width:95.5%;\">create frames configuration</button>" +
+            "</div>"
+            );
+
+            $(ui_j(ui.export_save_atlas_button)).button();
+            $(ui_j(ui.export_save_atlas_button)).on('click', function() {
+                self.set_selected_sprite(null);
+                var pages_count = self.m_sprites_on_pages.length;
+                var page = 0;
+                var create_page_shapshot = function(page) {
+                    self.on_page_changed(page, true, function() {
+                        var image = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, gl.viewport_width, gl.viewport_height);
+                        var element = "<li class=\"ui-state-default\" style=\"height:160px; margin:8px; background: none;\">";
+                        element += "<p align=\"center\" style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;\" id=\"page-index\" class=\"ui-widget-header\" style=\"margin:4px;\">page_" + (page + 1) + ".png</p>";
+                        element += ['<img style=\"float:left; margin:2px; height:128px; width:128px;\" id="images-list-cell-image" align="left" src="', image.src, '"/>'].join('');
+                        element += "<a style=\"margin-top:12%; margin-left:24%;\" id=\"" + ui.export_save_pages_list_download_button + page + "\" href=\"" + image.src.replace('image/png', 'image/octet-stream') + "\"  download=\"page_" + (page + 1) + ".png\">download</a>";
+                        element += "</li>";
+                        $(ui_j(ui.export_save_pages_list)).append($(element));
+                        $('#' + ui.export_save_pages_list_download_button + page).button();
+                        page++;
+                        $(ui_j(ui.export_save_pages_list)).height(170 * Math.min(page + 1, pages_count));
+                        if(page < pages_count) {
+                            create_page_shapshot(page);
+                        } else {
+                            self.on_page_changed(0, true);
+                        }
+                    });
+                };
+                create_page_shapshot(page);
+            });
+
+            $(ui_j(ui.export_save_pages_list)).height(0);
+            $(ui_j(ui.export_save_pages_list)).sortable();
+            $(ui_j(ui.export_save_pages_list)).disableSelection();
+            $(ui_j(ui.export_save_frames_button)).button();
+
+            $(ui_j(ui.export_animation_preview_button)).button();
+            $(ui_j(ui.export_animation_preview_button)).on('click', function() {
+                self.set_selected_sprite(null);
+                var atlas_size = self.calculate_atlas_size();
+                if (atlas_size.width > 0 && atlas_size.height > 0) {
+                    var atlas = g_ss_merge_transition.get_ws_technique_result_as_image('ws.savetoimage', 0, atlas_size.width, atlas_size.height);
+                    var frames = self.create_animation_configuration(atlas_size.width, atlas_size.height);
+                    self.deactivate();
+                    setTimeout(function() {
+                        $(ui_j(ui.animation_preview_dialog)).dialog('open');
+                        $('.ui-dialog :button').blur();
+                        self.m_play_animation_dialog_controller.activate(atlas, frames);
+                    }, 1000);
+                }
+            });
+        },
 
         activate: function() {
             var self = gb.ss_merge_controller.self();
@@ -715,6 +758,9 @@ oop.define_class({
         },
         ui_j: function(element_name) {
             return '#' + gb.ss_merge_controller.ui()[element_name];
+        }, 
+        ui_j_v2: function(element_name) {
+            return '#' + element_name;
         }
     }
 });

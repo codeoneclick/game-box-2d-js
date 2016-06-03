@@ -41,22 +41,22 @@ var oop = {global:function() {
     }
     f.prototype.init = c;
     f.prototype.release = d;
-    var k = a.methods;
-    if (k) {
-      for (var h in k) {
-        if ("function" !== typeof k[h]) {
+    var h = a.methods;
+    if (h) {
+      for (var k in h) {
+        if ("function" !== typeof h[k]) {
           throw Error("class method must be function");
         }
-        f.prototype[h] = k[h];
+        f.prototype[k] = h[k];
       }
     }
     var m = a.static_methods;
     if (m) {
-      for (h in m) {
-        if ("function" !== typeof m[h]) {
+      for (k in m) {
+        if ("function" !== typeof m[k]) {
           throw Error("class method must be function");
         }
-        f[h] = m[h];
+        f[k] = m[k];
       }
     }
     var n = a.constants;
@@ -443,15 +443,15 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
 }, rotate:function(a) {
   var b = a.x, c = a.y, d = a.z;
   a = Math.cos(b);
-  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), f = Math.cos(d), d = Math.sin(d), g = a * f, k = a * d, h = b * f, m = b * d;
+  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), f = Math.cos(d), d = Math.sin(d), g = a * f, h = a * d, k = b * f, m = b * d;
   this.m_elements[0] = e * f;
   this.m_elements[4] = -e * d;
   this.m_elements[8] = c;
-  this.m_elements[1] = k + h * c;
+  this.m_elements[1] = h + k * c;
   this.m_elements[5] = g - m * c;
   this.m_elements[9] = -b * e;
   this.m_elements[2] = m - g * c;
-  this.m_elements[6] = h + k * c;
+  this.m_elements[6] = k + h * c;
   this.m_elements[10] = a * e;
   this.m_elements[3] = 0;
   this.m_elements[7] = 0;
@@ -602,11 +602,11 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
 }, to_array:function() {
   return this.m_elements;
 }}, static_methods:{multiply:function(a, b) {
-  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, f = c[0], g = c[4], k = c[8], h = c[12], m = c[1], n = c[5], t = c[9], q = c[13], u = c[2], w = c[6], r = c[10], l = c[14], x = c[3], p = c[7], v = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
-  e.m_elements[0] = f * y + g * C + k * G + h * K;
-  e.m_elements[4] = f * z + g * D + k * H + h * L;
-  e.m_elements[8] = f * A + g * E + k * I + h * M;
-  e.m_elements[12] = f * B + g * F + k * J + h * d;
+  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, f = c[0], g = c[4], h = c[8], k = c[12], m = c[1], n = c[5], t = c[9], q = c[13], u = c[2], w = c[6], r = c[10], l = c[14], x = c[3], p = c[7], v = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
+  e.m_elements[0] = f * y + g * C + h * G + k * K;
+  e.m_elements[4] = f * z + g * D + h * H + k * L;
+  e.m_elements[8] = f * A + g * E + h * I + k * M;
+  e.m_elements[12] = f * B + g * F + h * J + k * d;
   e.m_elements[1] = m * y + n * C + t * G + q * K;
   e.m_elements[5] = m * z + n * D + t * H + q * L;
   e.m_elements[9] = m * A + n * E + t * I + q * M;
@@ -649,14 +649,14 @@ oop.define_class({namespace:"gb", name:"math", constants:{INT16_MAX:32767, INT16
   var e = a.x, f = a.y, g = b.x - a.x;
   a = b.y - a.y;
   b = c.x;
-  var k = d.x - c.x;
+  var h = d.x - c.x;
   d = d.y - c.y;
-  var h = Math.sqrt(g * g + a * a), m = Math.sqrt(k * k + d * d);
-  if (g / h === k / m && a / h === d / m) {
+  var k = Math.sqrt(g * g + a * a), m = Math.sqrt(h * h + d * d);
+  if (g / k === h / m && a / k === d / m) {
     return {intersected:!1};
   }
-  c = (g * (c.y - f) + a * (e - b)) / (k * a - d * g);
-  b = (b + k * c - e) / g;
+  c = (g * (c.y - f) + a * (e - b)) / (h * a - d * g);
+  b = (b + h * c - e) / g;
   return 0 > b || 0 > c || 1 < c ? {intersected:!1} : {intersected:!0, point_x:e + g * b, point_y:f + a * b, distance:b};
 }, rect_intersect:function(a, b) {
   return b.x < a.x + a.z && a.x < b.x + b.z && b.y < a.y + a.w ? a.y < b.y + b.w : !1;
@@ -1674,16 +1674,16 @@ oop.define_class({namespace:"gb", name:"mesh_constructor", init:function() {
   c.submit();
   return new gb.mesh(a, c, gl.TRIANGLES);
 }, create_grid:function(a, b, c, d) {
-  for (var e = (a + 1) * (b + 1) * 4, f = new gb.vbo((a + 1) * (b + 1) * 4, gl.STATIC_DRAW, gb.vbo.declaration.position_xy), g = 0, k = new gb.vec2, h = 0;h <= a;++h) {
-    k.x = h * c, k.y = 0, h === b && --k.x, 0 === h && (k.x += 1), f.write_attribute(gb.vbo.attribute.position, g, k), g++, k.x = h * c, h === b && --k.x, 0 === h && (k.x += 1), k.y = b * d, f.write_attribute(gb.vbo.attribute.position, g, k), g++;
+  for (var e = (a + 1) * (b + 1) * 4, f = new gb.vbo((a + 1) * (b + 1) * 4, gl.STATIC_DRAW, gb.vbo.declaration.position_xy), g = 0, h = new gb.vec2, k = 0;k <= a;++k) {
+    h.x = k * c, h.y = 0, k === b && --h.x, 0 === k && (h.x += 1), f.write_attribute(gb.vbo.attribute.position, g, h), g++, h.x = k * c, k === b && --h.x, 0 === k && (h.x += 1), h.y = b * d, f.write_attribute(gb.vbo.attribute.position, g, h), g++;
   }
-  for (h = 0;h <= b;++h) {
-    k.x = 0, k.y = h * d, h === b && --k.y, 0 === h && (k.y += 1), f.write_attribute(gb.vbo.attribute.position, g, k), g++, k.x = b * c, k.y = h * d, h === b && --k.y, 0 === h && (k.y += 1), f.write_attribute(gb.vbo.attribute.position, g, k), g++;
+  for (k = 0;k <= b;++k) {
+    h.x = 0, h.y = k * d, k === b && --h.y, 0 === k && (h.y += 1), f.write_attribute(gb.vbo.attribute.position, g, h), g++, h.x = b * c, h.y = k * d, k === b && --h.y, 0 === k && (h.y += 1), f.write_attribute(gb.vbo.attribute.position, g, h), g++;
   }
   f.submit();
   a = new gb.ibo(4 * e, gl.STATIC_DRAW);
-  for (h = 0;h < e;++h) {
-    a.write_element(h, h);
+  for (k = 0;k < e;++k) {
+    a.write_element(k, k);
   }
   a.submit();
   return new gb.mesh(f, a, gl.LINES);
@@ -2528,20 +2528,20 @@ oop.define_class({namespace:"gb", name:"ces_light_mask_component", extend:gb.ces
     b.push(e);
     b.push(e + 1E-4);
   }
-  for (var d = [], f = new gb.vec2(0), g = new gb.vec2(gb.math.INT16_MIN), k = new gb.vec2(g), h = gb.math.INT16_MAX, c = 0;c < b.length;++c) {
+  for (var d = [], f = new gb.vec2(0), g = new gb.vec2(gb.math.INT16_MIN), h = new gb.vec2(g), k = gb.math.INT16_MAX, c = 0;c < b.length;++c) {
     e = b[c];
     f.x = Math.cos(e);
     f.y = Math.sin(e);
-    var m = a, n = f.add(a), h = gb.math.INT16_MAX;
-    k.x = g.x;
-    k.y = g.y;
+    var m = a, n = f.add(a), k = gb.math.INT16_MAX;
+    h.x = g.x;
+    h.y = g.y;
     for (var t = 0;t < this.m_shadow_casters_edges.length;++t) {
       var q = gb.math.intersect(m, n, this.m_shadow_casters_edges[t].point_01, this.m_shadow_casters_edges[t].point_02);
-      q.intersected && q.distance < h && (h = q.distance, k.x = q.point_x, k.y = q.point_y);
+      q.intersected && q.distance < k && (k = q.distance, h.x = q.point_x, h.y = q.point_y);
     }
-    k.equals(g) || -1 === d.findIndex(function(a) {
-      return a.point_x === k.x && a.point_y === k.y;
-    }) && d.push({point_x:k.x, point_y:k.y, angle:e});
+    h.equals(g) || -1 === d.findIndex(function(a) {
+      return a.point_x === h.x && a.point_y === h.y;
+    }) && d.push({point_x:h.x, point_y:h.y, angle:e});
   }
   d.sort(function(a, b) {
     return a.angle - b.angle;
@@ -2807,11 +2807,11 @@ oop.define_class({namespace:"gb", name:"ces_deferred_lighting_system", extend:gb
     }
     d = gb.mat4.multiply_vec2(d.position, e);
     for (e = 0;e < this.m_shadow_casters.length;++e) {
-      for (var f = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.convex_hull), g = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.transformation), k = (new gb.mat4).identity(), h = this.m_shadow_casters[e].parent;h;) {
-        var m = h.get_component(gb.ces_base_component.type.transformation), k = gb.mat4.multiply(k, m.matrix_m), h = h.parent
+      for (var f = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.convex_hull), g = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.transformation), h = (new gb.mat4).identity(), k = this.m_shadow_casters[e].parent;k;) {
+        var m = k.get_component(gb.ces_base_component.type.transformation), h = gb.mat4.multiply(h, m.matrix_m), k = k.parent
       }
-      k = gb.mat4.multiply(k, g.matrix_m);
-      c.update_mask_geometry(k, f.oriented_vertices);
+      h = gb.mat4.multiply(h, g.matrix_m);
+      c.update_mask_geometry(h, f.oriented_vertices);
       b.add_shadow_caster(this.m_shadow_casters[e]);
     }
     c.generate_mask_mesh(d);
@@ -2850,9 +2850,9 @@ oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_s
 }, draw_recursively:function(a, b, c) {
   var d = a.get_component(gb.ces_base_component.type.scene);
   if (d) {
-    var e = a.get_component(gb.ces_base_component.type.light), f = a.get_component(gb.ces_base_component.type.transformation), g = a.get_component(gb.ces_base_component.type.material), k = a.get_component(gb.ces_base_component.type.geometry);
-    !e && g && k && f && (e = g.get_material(b, c), k = k.mesh, e && e.shader && e.shader.is_commited && k && a.visible && (e.set_custom_shader_uniform(gb.ces_render_system.shadow_color_for_casters, gb.ces_render_system.shadow_color_uniform), g.bind(b, c, e), e.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p), e.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v), d = gb.ces_transformation_component.get_absolute_transformation(a, !0), e.shader.set_mat4(d, gb.shader.uniform_type.mat_m), 
-    k.bind(e.shader.attributes), k.draw(), k.unbind(e.shader.attributes), g.unbind(b, c, e)));
+    var e = a.get_component(gb.ces_base_component.type.light), f = a.get_component(gb.ces_base_component.type.transformation), g = a.get_component(gb.ces_base_component.type.material), h = a.get_component(gb.ces_base_component.type.geometry);
+    !e && g && h && f && (e = g.get_material(b, c), h = h.mesh, e && e.shader && e.shader.is_commited && h && a.visible && (e.set_custom_shader_uniform(gb.ces_render_system.shadow_color_for_casters, gb.ces_render_system.shadow_color_uniform), g.bind(b, c, e), e.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p), e.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v), d = gb.ces_transformation_component.get_absolute_transformation(a, !0), e.shader.set_mat4(d, gb.shader.uniform_type.mat_m), 
+    h.bind(e.shader.attributes), h.draw(), h.unbind(e.shader.attributes), g.unbind(b, c, e)));
     a = a.children;
     for (g = 0;g < a.length;++g) {
       this.draw_recursively(a[g], b, c);
@@ -2861,9 +2861,9 @@ oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_s
 }, draw_recursively_lights:function(a, b, c) {
   var d = a.get_component(gb.ces_base_component.type.scene);
   if (d) {
-    var e = a.get_component(gb.ces_base_component.type.light), f = a.get_component(gb.ces_base_component.type.light_mask), g = a.get_component(gb.ces_base_component.type.transformation), k = a.get_component(gb.ces_base_component.type.material), h = a.get_component(gb.ces_base_component.type.geometry);
-    if (e && k && h && g) {
-      var m = k.get_material(b, c), n = h.mesh, t = f.mesh;
+    var e = a.get_component(gb.ces_base_component.type.light), f = a.get_component(gb.ces_base_component.type.light_mask), g = a.get_component(gb.ces_base_component.type.transformation), h = a.get_component(gb.ces_base_component.type.material), k = a.get_component(gb.ces_base_component.type.geometry);
+    if (e && h && k && g) {
+      var m = h.get_material(b, c), n = k.mesh, t = f.mesh;
       m && a.visible && m.shader && m.shader.is_commited && n && t && (function() {
         gl.colorMask(!1, !1, !1, !1);
         gl.depthMask(!1);
@@ -2873,20 +2873,20 @@ oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_s
         m.stencil_mask_parameter = 1;
         m.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
         m.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform);
-        k.bind(b, c, m);
+        h.bind(b, c, m);
         m.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p);
         m.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v);
         m.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m);
         t.bind(m.shader.attributes);
         t.draw();
         t.unbind(m.shader.attributes);
-        for (var a = e.shadow_casters, g = 0;g < a.length;++g) {
-          var f = a[g], h = f.get_component(gb.ces_base_component.type.geometry);
-          f.get_component(gb.ces_base_component.type.material).get_material(b, c) && (h = h.mesh, f = gb.ces_transformation_component.get_absolute_transformation(f, !1), m.shader.set_mat4(f, gb.shader.uniform_type.mat_m), h.bind(m.shader.attributes), h.draw(), h.unbind(m.shader.attributes));
+        for (var a = e.shadow_casters, f = 0;f < a.length;++f) {
+          var g = a[f], k = g.get_component(gb.ces_base_component.type.geometry);
+          g.get_component(gb.ces_base_component.type.material).get_material(b, c) && (k = k.mesh, g = gb.ces_transformation_component.get_absolute_transformation(g, !1), m.shader.set_mat4(g, gb.shader.uniform_type.mat_m), k.bind(m.shader.attributes), k.draw(), k.unbind(m.shader.attributes));
         }
         gl.colorMask(!0, !0, !0, !0);
         gl.depthMask(!0);
-        k.unbind(b, c, m);
+        h.unbind(b, c, m);
       }(), function() {
         var d = gb.ces_transformation_component.get_absolute_transformation(a, !0);
         m.stencil_function = gl.EQUAL;
@@ -2897,14 +2897,14 @@ oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_s
         m.blending_function_destination = gl.ONE;
         m.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
         m.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_fs_flag_uniform);
-        k.bind(b, c, m);
+        h.bind(b, c, m);
         m.shader.set_mat4(d, gb.shader.uniform_type.mat_m);
         n.bind(m.shader.attributes);
         n.draw();
         n.unbind(m.shader.attributes);
-        k.unbind(b, c, m);
-      }(), gl.colorMask(!1, !1, !1, !1), gl.depthMask(!1), m.stencil_function = gl.ALWAYS, m.stencil_function_parameter_1 = 0, m.stencil_function_parameter_2 = 255, m.stencil_mask_parameter = 1, m.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_vs_flag_uniform), m.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform), k.bind(b, c, m), m.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m), this.m_screed_quad_mesh.bind(m.shader.attributes), this.m_screed_quad_mesh.draw(), 
-      this.m_screed_quad_mesh.unbind(m.shader.attributes), gl.colorMask(!0, !0, !0, !0), gl.depthMask(!0), k.unbind(b, c, m));
+        h.unbind(b, c, m);
+      }(), gl.colorMask(!1, !1, !1, !1), gl.depthMask(!1), m.stencil_function = gl.ALWAYS, m.stencil_function_parameter_1 = 0, m.stencil_function_parameter_2 = 255, m.stencil_mask_parameter = 1, m.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_vs_flag_uniform), m.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform), h.bind(b, c, m), m.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m), this.m_screed_quad_mesh.bind(m.shader.attributes), this.m_screed_quad_mesh.draw(), 
+      this.m_screed_quad_mesh.unbind(m.shader.attributes), gl.colorMask(!0, !0, !0, !0), gl.depthMask(!0), h.unbind(b, c, m));
     }
     f = a.children;
     for (g = 0;g < f.length;++g) {
@@ -2923,9 +2923,9 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
     var b = this.m_events.pop(), c = this.intersected_entity(a, b.state, b.point);
     if (b.state === gb.input_context.state.released) {
       for (var d = this.m_captured_entities.length, e = 0;e < d;++e) {
-        for (var f = this.m_captured_entities[e], g = f.get_component(gb.ces_base_component.type.touch_recognize), g = g.get_callbacks(b.state), k = g.length, h = 0;h < k;++h) {
-          var m = g[h].callback;
-          m(f, b.state, b.point, g[h].userdata);
+        for (var f = this.m_captured_entities[e], g = f.get_component(gb.ces_base_component.type.touch_recognize), g = g.get_callbacks(b.state), h = g.length, k = 0;k < h;++k) {
+          var m = g[k].callback;
+          m(f, b.state, b.point, g[k].userdata);
         }
       }
       this.m_captured_entities = [];
@@ -2933,7 +2933,7 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
     if (c) {
       for (b.state === gb.input_context.state.pressed && (d = this.m_captured_entities.findIndex(function(a) {
         return a === c;
-      }), -1 === d && this.m_captured_entities.push(c)), g = c.get_component(gb.ces_base_component.type.touch_recognize), g = g.get_callbacks(b.state), k = g.length, e = 0;e < k;++e) {
+      }), -1 === d && this.m_captured_entities.push(c)), g = c.get_component(gb.ces_base_component.type.touch_recognize), g = g.get_callbacks(b.state), h = g.length, e = 0;e < h;++e) {
         m = g[e].callback, d = this.m_captured_entities.findIndex(function(a) {
           return a === c;
         }), -1 !== d && m(c, b.state, b.point, g[e].userdata);
@@ -2941,16 +2941,16 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
     }
     if (b.state === gb.input_context.state.dragged) {
       for (d = this.m_captured_entities.length, e = 0;e < d;++e) {
-        for (f = this.m_captured_entities[e], g = f.get_component(gb.ces_base_component.type.touch_recognize), g = g.get_callbacks(b.state), k = g.length, h = 0;h < k;++h) {
-          m = g[h].callback, m(f, b.state, b.point, g[h].userdata);
+        for (f = this.m_captured_entities[e], g = f.get_component(gb.ces_base_component.type.touch_recognize), g = g.get_callbacks(b.state), h = g.length, k = 0;k < h;++k) {
+          m = g[k].callback, m(f, b.state, b.point, g[k].userdata);
         }
       }
     }
   }
 }, on_feed_end:function() {
 }, intersected_entity:function(a, b, c) {
-  for (var d = null, e = a.children, f = e.length, g = null, k = 0;k < f;++k) {
-    g = e[k], (g = this.intersected_entity(g, b, c)) && (d = g);
+  for (var d = null, e = a.children, f = e.length, g = null, h = 0;h < f;++h) {
+    g = e[h], (g = this.intersected_entity(g, b, c)) && (d = g);
   }
   (e = a.get_component(gb.ces_base_component.type.touch_recognize)) && !d && e.is_respond_to(b) && a.visible && (f = a.get_component(gb.ces_base_component.type.scene), b = gb.ces_transformation_component.get_absolute_transformation(a, !1), b = gb.mat4.multiply(b, f.camera.matrix_v), f = gb.mat4.multiply_vec2(e.min_bound, b), b = gb.mat4.multiply_vec2(e.max_bound, b), gb.math.intersect_min_max_bound(f, b, c) && (d = a));
   return d;
@@ -3364,9 +3364,9 @@ oop.define_class({namespace:"gb", name:"scene_fabricator", init:function() {
   c = new gb.ces_convex_hull_component;
   c.generate_convex_hull(b);
   g.add_component(c);
-  var k = this;
+  var h = this;
   this.m_configurations_accessor.get_sprite_configuration(a, function(a) {
-    k.add_materials(g, a.materials_configurations);
+    h.add_materials(g, a.materials_configurations);
     f && f();
   });
   return g;
@@ -3567,16 +3567,16 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
   this.m_free_nodes_container[b] || (this.m_free_nodes_container[b] = [], this.m_free_nodes_container[b].push(new gb.vec4(0, 0, this.m_atlas_width, this.m_atlas_height)), console.warn("new atlas page created with index: " + b));
   var c = this.m_free_nodes_container[b];
   this.m_occupied_nodes_container[b] || (this.m_occupied_nodes_container[b] = []);
-  for (var d = this.m_occupied_nodes_container[b], e = !1, f = !1, g = !1, k = !1, h = !1, m = !1, n = 0, t = this.m_atlas_width * this.m_atlas_height + 1, q = -1, u = gb.max_rects_pack_algorithm.heuristic, w = c.length, r = 0;r < w;++r) {
+  for (var d = this.m_occupied_nodes_container[b], e = !1, f = !1, g = !1, h = !1, k = !1, m = !1, n = 0, t = this.m_atlas_width * this.m_atlas_height + 1, q = -1, u = gb.max_rects_pack_algorithm.heuristic, w = c.length, r = 0;r < w;++r) {
     var l = c[r];
     if (l.z >= a.size.x && l.w >= a.size.y || l.z >= a.size.y && l.w >= a.size.x) {
-      h = !1;
+      k = !1;
       n = 0;
       if (l.z >= a.size.y && l.w >= a.size.x && !(l.z >= a.size.x && l.w >= a.size.y)) {
         if (!this.m_is_rotation_enabled) {
           continue;
         }
-        h = !0;
+        k = !0;
         n += a.size.y;
         console.error("implement sprite rotation");
       }
@@ -3586,12 +3586,12 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
           r = w;
           continue;
         case u.TL:
-          for (var n = n + l.y, k = g = !1, x = d.length, p = 0;p < x;++p) {
+          for (var n = n + l.y, h = g = !1, x = d.length, p = 0;p < x;++p) {
             var v = d[p];
-            Math.abs(v.y + v.w / 2 - l.y - l.w / 2) < Math.max(v.w, l.w) / 2 && (v.x + v.z === l.x && (n -= 5, g = !0), v.x === l.x + l.z && (n -= 5, k = !0));
+            Math.abs(v.y + v.w / 2 - l.y - l.w / 2) < Math.max(v.w, l.w) / 2 && (v.x + v.z === l.x && (n -= 5, g = !0), v.x === l.x + l.z && (n -= 5, h = !0));
           }
-          if (g || !k) {
-            l.x + l.z === this.m_atlas_width && (--n, k = !0), 0 === l.x && (--n, g = !0);
+          if (g || !h) {
+            l.x + l.z === this.m_atlas_width && (--n, h = !0), 0 === l.x && (--n, g = !0);
           }
           break;
         case u.BAF:
@@ -3609,8 +3609,8 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
         case u.MINH:
           n += l.w;
       }
-      n < t && (t = n, q = r, e = g, f = k, m = h);
-      h && console.error("implement sprite rotation");
+      n < t && (t = n, q = r, e = g, f = h, m = k);
+      k && console.error("implement sprite rotation");
     }
   }
   m && console.error("implement sprite rotation");
@@ -3649,143 +3649,10 @@ export_save_pages_list:"ss-merge-export-save-pages-list", export_save_pages_list
   $(b("tab_container")).append($("<div id=" + a.tab_left_panel + ' style="background:black;"/>'));
   $(b("tab_container")).append($("<div id=" + a.tab_right_panel + ' style="background:black;"/>'));
   $(b("tab_right_panel")).append($('<canvas style="width:100%; height:100%;" id="gl_canvas" width="1024" height="1024"></canvas>'));
-  d = '<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>import</h3><div style="background:none; border:0px;" id=' + a.import_container + "/>";
-  $(b("tab_left_panel")).append($(d));
-  d = '<div title="changed size of imported images" style="width:95%; margin:2%;"><select id=' + a.import_size_drop_down_box + ">";
-  d += "<option>image scale - 10%</option><option>image scale - 20%</option>";
-  d += "<option>image scale - 30%</option>";
-  d += "<option>image scale - 40%</option>";
-  d += "<option>image scale - 50%</option>";
-  d += "<option>image scale - 60%</option>";
-  d += "<option>image scale - 70%</option>";
-  d += "<option>image scale - 80%</option>";
-  d += "<option>image scale - 90%</option>";
-  d += '<option selected="selected">image scale - 100%</option>';
-  d += "</select></div>";
-  $(b("import_container")).append($(d));
-  $(b("import_size_drop_down_box")).selectmenu();
-  $(b("import_size_drop_down_box_button")).css({width:"100%"});
-  $(b("import_size_drop_down_box")).on("selectmenuselect", function(a, b) {
-    c.m_importing_content_scale_factor = (b.item.index + 1) / 10;
-  });
-  d = "<div id=" + a.import_drop_zone + "></div>";
-  $(b("import_container")).append(d);
-  d = '<input type="file" id=' + a.import_add_image_input + ' style="display:none;" multiple><a style="width:99%;" href="#" id=' + a.import_add_image_button + ">add images...</a>";
-  $(b("import_drop_zone")).append(d);
-  $(b("import_add_image_button")).button();
-  $(b("import_add_image_button")).on("click", function() {
-    $(b("import_add_image_input")).trigger("click");
-  });
-  document.getElementById(a.import_add_image_input).addEventListener("change", function() {
-    c.open_images(this.files);
-  }, !1);
-  d = '<label style="float:right; margin-top:8%; margin-right:33.5%">or drop here...</label>';
-  $(b("import_drop_zone")).append(d);
-  d = document.getElementById(a.import_drop_zone);
-  d.addEventListener("dragover", this.on_files_drag_over, !1);
-  d.addEventListener("drop", this.on_files_dropped, !1);
-  d = '<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>frames</h3><div style="background:none; border:0px;" id=' + a.frames_container + "/>";
-  $(b("tab_left_panel")).append($(d));
-  d = "<button id=" + a.frames_sort_button + ' style="margin:2%; width:95%;">sort by name</button>';
-  $(b("frames_container")).append(d);
-  $(b("frames_sort_button")).button();
-  $(b("frames_sort_button")).button("disable");
-  d = '<ul style="list-style-type:none; height:340px; overflow:auto; margin-left:-10%;" id="' + a.frames_list + '"></ul>';
-  $(b("frames_container")).append($(d));
-  $(b("frames_list")).height(0);
-  $(b("frames_list")).sortable();
-  $(b("frames_list")).disableSelection();
-  $(b("frames_list")).sortable({stop:function() {
-    c.sort_sprites_in_table();
-  }});
-  d = '<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>editing</h3><div style="background:none; border:0px;" id=' + a.editing_container + "/>";
-  $(b("tab_left_panel")).append($(d));
-  d = '<div style="width:95%; margin:2%; margin-top:5%"><select id=' + a.editing_page_drop_down_box + ">";
-  d += '<option selected="selected">page 1</option>';
-  d += "</select></div>";
-  $(b("editing_container")).append(d);
-  $(b("editing_page_drop_down_box")).selectmenu();
-  $(b("editing_page_drop_down_box_button")).css({width:"100%"});
-  $(b("editing_page_drop_down_box")).on("selectmenuselect", function(a, b) {
-    c.on_page_changed(b.item.index, !0);
-  });
-  d = '<div style="margin:2%;" id=' + a.editing_move_resize_radio_button + ">";
-  d += '<input type="radio" id=' + a.editing_move_resize_freeform_button + ' name="' + a.editing_move_resize_radio_button + '" checked="checked">';
-  d += "<label for=" + a.editing_move_resize_freeform_button + ' style="width:48%;">free form</label>';
-  d += '<input type="radio" id=' + a.editing_move_resize_snaptogrid_button + ' name="' + a.editing_move_resize_radio_button + '">';
-  d += "<label for=" + a.editing_move_resize_snaptogrid_button + ' style="width:52%;">snap to grid</label>';
-  d += "</div>";
-  $(b("editing_container")).append($(d));
-  $(b("editing_move_resize_radio_button")).buttonset();
-  $(b("editing_move_resize_radio_button") + " input[type=radio]").change(function() {
-    c.m_selector.is_align_movement = this.id === a.editing_move_resize_snaptogrid_button;
-  });
-  d = '<div title="packing algorithm" style="width:95%; margin:2%; margin-top:5%"><select id=' + a.editing_pack_algorithm_drop_down_box + ">";
-  d += '<option selected="selected">heuristic - none</option>';
-  d += "<option>heuristic - TL (top left fit)</option>";
-  d += "<option>heuristic - BAF (best area fit)</option>";
-  d += "<option>heuristic - BSSF (best short side fit)</option>";
-  d += "<option>heuristic - BLSF (best long side fit)</option>";
-  d += "<option>heuristic - MINW (min width fit)</option>";
-  d += "<option>heuristic - MINH (min height fit)</option>";
-  d += "</select></div>";
-  $(b("editing_container")).append(d);
-  $(b("editing_pack_algorithm_drop_down_box")).selectmenu();
-  $(b("editing_pack_algorithm_drop_down_box_button")).css({width:"100%"});
-  d = "<button id=" + a.editing_spread_button + ' style="margin:2%; width:95.5%;">spread</button>';
-  $(b("editing_container")).append(d);
-  $(b("editing_spread_button")).button();
-  d = '<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>export</h3><div style="background:none; border:0px;" id=' + a.export_container + "/>";
-  $(b("tab_left_panel")).append($(d));
-  d = '<button title="preview animation" id=' + a.export_animation_preview_button + ' style="margin:2%; width:95.5%;">preview</button><br>';
-  $(b("export_container")).append(d);
-  $(b("export_animation_preview_button")).button();
-  $(b("export_animation_preview_button")).on("click", function() {
-    c.set_selected_sprite(null);
-    var a = c.calculate_atlas_size();
-    if (0 < a.width && 0 < a.height) {
-      var d = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, a.width, a.height), g = c.create_animation_configuration(a.width, a.height);
-      c.deactivate();
-      setTimeout(function() {
-        $(b("animation_preview_dialog")).dialog("open");
-        $(".ui-dialog :button").blur();
-        c.m_play_animation_dialog_controller.activate(d, g);
-      }, 1E3);
-    }
-  });
-  d = "<button id=" + a.export_save_atlas_button + ' style="margin:2%; width:95.5%;">create images</button><br>';
-  $(b("export_container")).append(d);
-  $(b("export_save_atlas_button")).button();
-  $(b("export_save_atlas_button")).on("click", function() {
-    c.set_selected_sprite(null);
-    var d = c.m_sprites_on_pages.length, f = function(g) {
-      c.on_page_changed(g, !0, function() {
-        var k = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, gl.viewport_width, gl.viewport_height), h;
-        h = '<li class="ui-state-default" style="height:160px; margin:8px; background: none;">' + ('<p align="center" style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;" id="page-index" class="ui-widget-header" style="margin:4px;">page_' + (g + 1) + ".png</p>");
-        h += ['<img style="float:left; margin:2px; height:128px; width:128px;" id="images-list-cell-image" align="left" src="', k.src, '"/>'].join("");
-        h += '<a style="margin-top:12%; margin-left:24%;" id="' + a.export_save_pages_list_download_button + g + '" href="' + k.src.replace("image/png", "image/octet-stream") + '"  download="page_' + (g + 1) + '.png">download</a>';
-        h += "</li>";
-        $(b("export_save_pages_list")).append($(h));
-        $("#" + a.export_save_pages_list_download_button + g).button();
-        g++;
-        $(b("export_save_pages_list")).height(170 * Math.min(g + 1, d));
-        if (g < d) {
-          f(g);
-        } else {
-          c.on_page_changed(0, !0);
-        }
-      });
-    };
-    f(0);
-  });
-  d = '<ul style="list-style-type:none; height:340px; overflow:auto; margin-left:-10%; margin-top:-0.5%;" id="' + a.export_save_pages_list + '"></ul>';
-  $(b("export_container")).append($(d));
-  $(b("export_save_pages_list")).height(0);
-  $(b("export_save_pages_list")).sortable();
-  $(b("export_save_pages_list")).disableSelection();
-  d = "<button id=" + a.export_save_frames_button + ' style="margin:2%; margin-top:-2%; width:95.5%;">create frames configuration</button>';
-  $(b("export_container")).append(d);
-  $(b("export_save_frames_button")).button();
+  this.ui_import(c, a, gb.ss_merge_controller.ui_j_v2);
+  this.ui_frames(c, a, gb.ss_merge_controller.ui_j_v2);
+  this.ui_packer(c, a, gb.ss_merge_controller.ui_j_v2);
+  this.ui_export(c, a, gb.ss_merge_controller.ui_j_v2);
   d = "<div id=" + a.animation_preview_dialog + ' class="ui-dialog" title="Animation"></div>';
   $(b("tab_right_panel")).append($(d));
   $(b("animation_preview_dialog")).dialog({autoOpen:!1, width:512, height:512, modal:!0, show:{effect:"blind", duration:300}, hide:{effect:"blind", duration:300}, beforeClose:function(a, b) {
@@ -3808,7 +3675,95 @@ export_save_pages_list:"ss-merge-export-save-pages-list", export_save_pages_list
   this.m_merge_algorithm.atlas_height = 1024;
   this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.TL;
 }, release:function() {
-}, methods:{activate:function() {
+}, methods:{ui_import:function(a, b, c) {
+  $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>import</h3><div style="background:none; border:0px;" id=' + b.import_container + '><div title="changed size of imported images" style="width:95%; margin:2%;"><select id=' + b.import_size_drop_down_box + '><option>image scale - 10%</option><option>image scale - 20%</option><option>image scale - 30%</option><option>image scale - 40%</option><option>image scale - 50%</option><option>image scale - 60%</option><option>image scale - 70%</option><option>image scale - 80%</option><option>image scale - 90%</option><option selected="selected">image scale - 100%</option></select></div><div id=' + 
+  b.import_drop_zone + '><input type="file" id=' + b.import_add_image_input + ' style="display:none;" multiple><a style="width:99%;" href="#" id=' + b.import_add_image_button + '>add images...</a><label style="float:right; margin-top:8%; margin-right:33.5%">or drop here...</label></div></div>');
+  $(c(b.import_add_image_button)).button();
+  $(c(b.import_add_image_button)).on("click", function() {
+    $(c(b.import_add_image_input)).trigger("click");
+  });
+  document.getElementById(b.import_add_image_input).addEventListener("change", function() {
+    a.open_images(this.files);
+  }, !1);
+  var d = document.getElementById(b.import_drop_zone);
+  d.addEventListener("dragover", this.on_files_drag_over, !1);
+  d.addEventListener("drop", this.on_files_dropped, !1);
+  $(c(b.import_size_drop_down_box)).selectmenu();
+  $(c(b.import_size_drop_down_box_button)).css({width:"100%"});
+  $(c(b.import_size_drop_down_box)).on("selectmenuselect", function(b, c) {
+    a.m_importing_content_scale_factor = (c.item.index + 1) / 10;
+  });
+}, ui_frames:function(a, b, c) {
+  $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>frames</h3><div style="background:none; border:0px;" id=' + b.frames_container + "><button id=" + b.frames_sort_button + ' style="margin:2%; width:95%;">sort by name</button><ul style="list-style-type:none; height:340px; overflow:auto; margin-left:-10%;" id="' + b.frames_list + '"></ul></div>');
+  $(c(b.frames_list)).height(0);
+  $(c(b.frames_list)).sortable();
+  $(c(b.frames_list)).disableSelection();
+  $(c(b.frames_list)).sortable({stop:function() {
+    a.sort_sprites_in_table();
+  }});
+  $(c(b.frames_sort_button)).button();
+  $(c(b.frames_sort_button)).button("disable");
+}, ui_packer:function(a, b, c) {
+  $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>packer</h3><div style="background:none; border:0px;" id=' + b.editing_container + '><div style="width:95%; margin:2%; margin-top:5%"><select id=' + b.editing_page_drop_down_box + '><option selected="selected">page 1</option></select></div><div style="margin:2%;" id=' + b.editing_move_resize_radio_button + '><input type="radio" id=' + b.editing_move_resize_freeform_button + ' name="' + b.editing_move_resize_radio_button + 
+  '" checked="checked"><label for=' + b.editing_move_resize_freeform_button + ' style="width:48%;">free form</label><input type="radio" id=' + b.editing_move_resize_snaptogrid_button + ' name="' + b.editing_move_resize_radio_button + '"><label for=' + b.editing_move_resize_snaptogrid_button + ' style="width:52%;">snap to grid</label></div><div title="packing algorithm" style="width:95%; margin:2%; margin-top:5%"><select id=' + b.editing_pack_algorithm_drop_down_box + '><option selected="selected">heuristic - none</option><option>heuristic - TL (top left fit)</option><option>heuristic - BAF (best area fit)</option><option>heuristic - BSSF (best short side fit)</option><option>heuristic - BLSF (best long side fit)</option><option>heuristic - MINW (min width fit)</option><option>heuristic - MINH (min height fit)</option></select></div><button id=' + 
+  b.editing_spread_button + ' style="margin:2%; width:95.5%;">spread</button></div>');
+  $(c(b.editing_pack_algorithm_drop_down_box)).selectmenu();
+  $(c(b.editing_pack_algorithm_drop_down_box_button)).css({width:"100%"});
+  $(c(b.editing_spread_button)).button();
+  $(c(b.editing_page_drop_down_box)).selectmenu();
+  $(c(b.editing_page_drop_down_box_button)).css({width:"100%"});
+  $(c(b.editing_page_drop_down_box)).on("selectmenuselect", function(b, c) {
+    a.on_page_changed(c.item.index, !0);
+  });
+  $(c(b.editing_move_resize_radio_button)).buttonset();
+  $(c(b.editing_move_resize_radio_button) + " input[type=radio]").change(function() {
+    a.m_selector.is_align_movement = this.id === b.editing_move_resize_snaptogrid_button;
+  });
+}, ui_export:function(a, b, c) {
+  $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>export</h3><div style="background:none; border:0px;" id=' + b.export_container + '><button title="preview animation" id=' + b.export_animation_preview_button + ' style="margin:2%; width:95.5%;">preview</button><br><button id=' + b.export_save_atlas_button + ' style="margin:2%; width:95.5%;">create images</button><br><ul style="list-style-type:none; height:340px; overflow:auto; margin-left:-10%; margin-top:-0.5%;" id="' + 
+  b.export_save_pages_list + '"/><button id=' + b.export_save_frames_button + ' style="margin:2%; margin-top:-2%; width:95.5%;">create frames configuration</button></div>');
+  $(c(b.export_save_atlas_button)).button();
+  $(c(b.export_save_atlas_button)).on("click", function() {
+    a.set_selected_sprite(null);
+    var d = a.m_sprites_on_pages.length, e = function(f) {
+      a.on_page_changed(f, !0, function() {
+        var g = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, gl.viewport_width, gl.viewport_height), h;
+        h = '<li class="ui-state-default" style="height:160px; margin:8px; background: none;">' + ('<p align="center" style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;" id="page-index" class="ui-widget-header" style="margin:4px;">page_' + (f + 1) + ".png</p>");
+        h += ['<img style="float:left; margin:2px; height:128px; width:128px;" id="images-list-cell-image" align="left" src="', g.src, '"/>'].join("");
+        h += '<a style="margin-top:12%; margin-left:24%;" id="' + b.export_save_pages_list_download_button + f + '" href="' + g.src.replace("image/png", "image/octet-stream") + '"  download="page_' + (f + 1) + '.png">download</a>';
+        h += "</li>";
+        $(c(b.export_save_pages_list)).append($(h));
+        $("#" + b.export_save_pages_list_download_button + f).button();
+        f++;
+        $(c(b.export_save_pages_list)).height(170 * Math.min(f + 1, d));
+        if (f < d) {
+          e(f);
+        } else {
+          a.on_page_changed(0, !0);
+        }
+      });
+    };
+    e(0);
+  });
+  $(c(b.export_save_pages_list)).height(0);
+  $(c(b.export_save_pages_list)).sortable();
+  $(c(b.export_save_pages_list)).disableSelection();
+  $(c(b.export_save_frames_button)).button();
+  $(c(b.export_animation_preview_button)).button();
+  $(c(b.export_animation_preview_button)).on("click", function() {
+    a.set_selected_sprite(null);
+    var d = a.calculate_atlas_size();
+    if (0 < d.width && 0 < d.height) {
+      var e = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, d.width, d.height), f = a.create_animation_configuration(d.width, d.height);
+      a.deactivate();
+      setTimeout(function() {
+        $(c(b.animation_preview_dialog)).dialog("open");
+        $(".ui-dialog :button").blur();
+        a.m_play_animation_dialog_controller.activate(e, f);
+      }, 1E3);
+    }
+  });
+}, activate:function() {
   var a = gb.ss_merge_controller.self(), b = gb.ss_merge_controller.html_elements, c = $("#gl_canvas").detach();
   $("#" + b.tab_right_panel).append(c);
   gb.game_controller.get_instance().goto_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json", function(b) {
@@ -3867,28 +3822,28 @@ export_save_pages_list:"ss-merge-export-save-pages-list", export_save_pages_list
           d.src = a.target.result;
           d.onload = function() {
             g_ss_merge_scene.fabricator.resources_accessor.get_texture(a.target.m_filename, d).add_resource_loading_callback(function(d, e) {
-              for (var g = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+              for (var f = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
                 d.mag_filter = gl.LINEAR;
                 d.min_filter = gl.LINEAR;
                 d.wrap_mode = gl.CLAMP_TO_EDGE;
-                g.get_component(gb.ces_base_component.type.material).set_texture(d, 0);
-                g.size = new gb.vec2(Math.round(d.width * gb.ss_merge_controller.self().m_importing_content_scale_factor), Math.round(d.height * gb.ss_merge_controller.self().m_importing_content_scale_factor));
-                gb.ss_merge_controller.self().on_sprite_added(g, 0);
+                f.get_component(gb.ces_base_component.type.material).set_texture(d, 0);
+                f.size = new gb.vec2(Math.round(d.width * gb.ss_merge_controller.self().m_importing_content_scale_factor), Math.round(d.height * gb.ss_merge_controller.self().m_importing_content_scale_factor));
+                gb.ss_merge_controller.self().on_sprite_added(f, 0);
                 c++;
                 c === b && (gb.ss_merge_controller.self().sort_sprites_in_table(), gb.ss_merge_controller.self().pack_sprites());
-              }), f = gb.ss_merge_controller.self().m_sprites.length, h = 0, w = null, r = 0;r < f;++r) {
-                w = gb.ss_merge_controller.self().m_sprites[r], -1 !== w.tag.indexOf(a.target.m_filename) && h++;
+              }), g = gb.ss_merge_controller.self().m_sprites.length, k = 0, w = null, r = 0;r < g;++r) {
+                w = gb.ss_merge_controller.self().m_sprites[r], -1 !== w.tag.indexOf(a.target.m_filename) && k++;
               }
-              f = a.target.m_filename;
-              0 !== h && (f += "(" + h + ")");
-              h = '<li class="ui-state-default" id=' + f + ' style="height: 160px; margin: 8px; background: none;">' + ('<p align="center" style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;" id="frame-index" class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-circle-arrow-e" style="float:left; margin:4px;"></span><span id="delete-icon" class="ui-icon ui-icon-trash" style="float:right; margin:4px;"></span>' + 
-              f + "</p>");
-              h += ['<img style="float:left; margin:2px; height:128px; width:128px;" id="images-list-cell-image" align="left" src="', a.target.result, '"/>'].join("");
-              h += "</li>";
-              $("#" + gb.ss_merge_controller.html_elements.frames_list).append($(h));
-              h = $("#" + gb.ss_merge_controller.html_elements.frames_list).children();
-              h = $(h[h.length - 1]).find("#delete-icon");
-              $(h).click(function() {
+              g = a.target.m_filename;
+              0 !== k && (g += "(" + k + ")");
+              k = '<li class="ui-state-default" id=' + g + ' style="height: 160px; margin: 8px; background: none;">' + ('<p align="center" style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;" id="frame-index" class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-circle-arrow-e" style="float:left; margin:4px;"></span><span id="delete-icon" class="ui-icon ui-icon-trash" style="float:right; margin:4px;"></span>' + 
+              g + "</p>");
+              k += ['<img style="float:left; margin:2px; height:128px; width:128px;" id="images-list-cell-image" align="left" src="', a.target.result, '"/>'].join("");
+              k += "</li>";
+              $("#" + gb.ss_merge_controller.html_elements.frames_list).append($(k));
+              k = $("#" + gb.ss_merge_controller.html_elements.frames_list).children();
+              k = $(k[k.length - 1]).find("#delete-icon");
+              $(k).click(function() {
                 var a = $(this).parent().find("#frame-index").text();
                 $(this).parent().parent().remove();
                 for (var b = -1, c = null, d = gb.ss_merge_controller.self().m_sprites.length, e = 0;e < d;++e) {
@@ -3902,11 +3857,11 @@ export_save_pages_list:"ss-merge-export-save-pages-list", export_save_pages_list
                 c.release();
                 gb.ss_merge_controller.self().reorder_sprites_positions();
               });
-              g.is_touchable = !0;
-              g.get_component(gb.ces_base_component.type.touch_recognize).add_callback(gb.input_context.state.pressed, gb.ss_merge_controller.self().on_sprite_pressed, gb.ss_merge_controller.self());
-              g.tag = f;
-              g_ss_merge_scene.add_child(g);
-              gb.ss_merge_controller.self().m_sprites.push(g);
+              f.is_touchable = !0;
+              f.get_component(gb.ces_base_component.type.touch_recognize).add_callback(gb.input_context.state.pressed, gb.ss_merge_controller.self().on_sprite_pressed, gb.ss_merge_controller.self());
+              f.tag = g;
+              g_ss_merge_scene.add_child(f);
+              gb.ss_merge_controller.self().m_sprites.push(f);
             });
           };
         };
@@ -3929,8 +3884,8 @@ export_save_pages_list:"ss-merge-export-save-pages-list", export_save_pages_list
 }, create_animation_configuration:function(a, b) {
   for (var c = [], d = this.m_sprites.sort(function(a, b) {
     return a.tag.localeCompare(b.tag, "en", {numeric:!0});
-  }), e = d.length, f = null, g = null, f = null, k = 0;k < e;++k) {
-    f = d[k], g = f.position, g.x -= f.size.x * f.pivot.x, g.y -= f.size.y * f.pivot.y, f = gb.vec2.add(g, f.size), c.push({u_0:g.x / a, v_0:g.y / b, u_1:f.x / a, v_1:f.y / b});
+  }), e = d.length, f = null, g = null, f = null, h = 0;h < e;++h) {
+    f = d[h], g = f.position, g.x -= f.size.x * f.pivot.x, g.y -= f.size.y * f.pivot.y, f = gb.vec2.add(g, f.size), c.push({u_0:g.x / a, v_0:g.y / b, u_1:f.x / a, v_1:f.y / b});
   }
   return c;
 }, on_sprite_pressed:function(a, b, c, d) {
@@ -4038,6 +3993,8 @@ export_save_pages_list:"ss-merge-export-save-pages-list", export_save_pages_list
   return gb.ss_merge_controller.html_elements;
 }, ui_j:function(a) {
   return "#" + gb.ss_merge_controller.ui()[a];
+}, ui_j_v2:function(a) {
+  return "#" + a;
 }}});
 var g_ss_animation_controller = null, g_ss_animation_scene = null;
 oop.define_class({namespace:"gb", name:"ss_animation_controller", init:function() {
@@ -4203,12 +4160,12 @@ oop.define_class({namespace:"gb", name:"selector", constants:{corner_type:{left_
       e.x = 0;
       e.y = 0;
       if (16 < Math.abs(d.m_summury_delta.x)) {
-        var k = 32 * Math.round((f.x - d.m_summury_delta.x) / 32), h = 32 * Math.round((f.x + g.x - d.m_summury_delta.x) / 32), h = h - f.x;
-        b.x = f.x - k;
-        e.x = g.x - h;
+        var h = 32 * Math.round((f.x - d.m_summury_delta.x) / 32), k = 32 * Math.round((f.x + g.x - d.m_summury_delta.x) / 32), k = k - f.x;
+        b.x = f.x - h;
+        e.x = g.x - k;
         d.m_summury_delta.x = 0;
       }
-      16 < Math.abs(d.m_summury_delta.y) && (k = 32 * Math.round((f.y - d.m_summury_delta.y) / 32), h = 32 * Math.round((f.y + g.y - d.m_summury_delta.y) / 32), h -= f.y, b.y = f.y - k, e.y = g.y - h, d.m_summury_delta.y = 0);
+      16 < Math.abs(d.m_summury_delta.y) && (h = 32 * Math.round((f.y - d.m_summury_delta.y) / 32), k = 32 * Math.round((f.y + g.y - d.m_summury_delta.y) / 32), k -= f.y, b.y = f.y - h, e.y = g.y - k, d.m_summury_delta.y = 0);
     }
     a === d.m_points[gb.selector.corner_type.left_top] ? (g.x += b.x, g.y += b.y) : a === d.m_points[gb.selector.corner_type.right_top] ? (g.x += b.x, g.y -= e.y) : a === d.m_points[gb.selector.corner_type.left_bottom] ? (g.x -= e.x, g.y += b.y) : a === d.m_points[gb.selector.corner_type.right_bottom] && (g.x -= e.x, g.y -= e.y);
     f.x -= b.x * d.m_target.pivot.x;
