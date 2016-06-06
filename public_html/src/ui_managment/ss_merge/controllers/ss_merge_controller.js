@@ -329,13 +329,9 @@ oop.define_class({
                                 if (same_images_count !== 0) {
                                     unique_tag += "(" + same_images_count + ")"
                                 }
-                                self.frames_view.add_frame(self, unique_tag, data.target.result, gb.ss_merge_controller.ui(), gb.ss_merge_controller.ui_j_v2);
-                                sprite.is_touchable = true;
-                                var touch_recognize_component = sprite.get_component(gb.ces_base_component.type.touch_recognize);
-                                touch_recognize_component.add_callback(gb.input_context.state.pressed, self.on_sprite_pressed, self);
                                 sprite.tag = unique_tag;
-                                self.scene.add_child(sprite);
-                                self.m_sprites.push(sprite);
+                                self.frames_view.add_frame(self, unique_tag, data.target.result, gb.ss_merge_controller.ui(), gb.ss_merge_controller.ui_j_v2);
+                                self.on_sprite_added_to_table(sprite);
                             });
                         };
                     };
@@ -468,6 +464,14 @@ oop.define_class({
             for(var i = 0; i < pages_count; ++i) {
                 $(ui_j('editing_page_drop_down_box')).append($("<option></option>").attr("value", i).text('page ' + (i + 1))); 
             }
+        },
+
+        on_sprite_added_to_table: function(sprite) {
+            sprite.is_touchable = true;
+            var touch_recognize_component = sprite.get_component(gb.ces_base_component.type.touch_recognize);
+            touch_recognize_component.add_callback(gb.input_context.state.pressed, self.on_sprite_pressed, self);
+            this.scene.add_child(sprite);
+            this.m_sprites.push(sprite);
         },
 
         on_sprite_removed_from_table: function(unique_tag) {
