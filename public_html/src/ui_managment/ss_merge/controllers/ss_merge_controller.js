@@ -3,7 +3,6 @@
 
 var g_ss_merge_controller = null;
 var g_ss_merge_transition = null;
-var g_ss_merge_scene = null;
 
 oop.define_class({
     namespace: "gb",
@@ -21,8 +20,10 @@ oop.define_class({
             import_add_image_input: "ss-merge-add_image-input",
             frames_container: "ss-merge-frames-container",
             frames_sort_button: "ss-merge-frames-sort-button",
-            frames_list: "ss-merge-frames-list",
-            frames_list_cell: "ss-merge-frames-list-cell",
+            frames_table: "ss-merge-frames-table",
+            frames_table_cell: "ss-merge-frames-table-cell",
+            frames_table_cell_delete_icon: "ss-merge-frames-table-cell-delete-icon",
+            frames_table_cell_image: "ss-merge-frames-table-cell-image",
             editing_container: "ss-merge-editing-container",
             editing_page_drop_down_box: "ss-merge-editing-page-drop-down-box",
             editing_page_drop_down_box_button: "ss-merge-editing-page-drop-down-box-button",
@@ -53,11 +54,11 @@ oop.define_class({
         $(ui_j('tab_container')).append($("<div id=" + ui.tab_right_panel + " style=\"background:black;\"/>"));
         $(ui_j('tab_right_panel')).append($("<canvas style=\"width:100%; height:100%;\" id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
 
-        this.ui_import(self, ui, gb.ss_merge_controller.ui_j_v2);
-        this.ui_frames(self, ui, gb.ss_merge_controller.ui_j_v2);
-        this.ui_packer(self, ui, gb.ss_merge_controller.ui_j_v2);
+        this.m_import_view = new gb.ss_merge_import_view(this, ui, gb.ss_merge_controller.ui_j_v2);
+        this.m_frames_view = new gb.ss_merge_frames_view(this, ui, gb.ss_merge_controller.ui_j_v2);
+        this.m_packer_view = new gb.ss_merge_packer_view(this, ui, gb.ss_merge_controller.ui_j_v2);
+
         this.ui_export(self, ui, gb.ss_merge_controller.ui_j_v2);
-        
 
         var element = "<div id=" + ui.animation_preview_dialog + " class=\"ui-dialog\" title=\"Animation\"></div>";
         $(ui_j('tab_right_panel')).append($(element));
@@ -95,7 +96,7 @@ oop.define_class({
         this.m_sprites = [];
         this.m_sprites_on_pages = [];
         this.m_current_page = 0;
-        this.m_importing_content_scale_factor = 1.0;
+        this.m_importing_images_size = 1.0;
 
         this.m_grid = null;
 
@@ -107,6 +108,32 @@ oop.define_class({
         this.m_merge_algorithm.atlas_width = 1024;
         this.m_merge_algorithm.atlas_height = 1024;
         this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.TL;
+
+        this.m_scene = null;
+
+        Object.defineProperty(this, 'import_view', {
+            get: function() {
+                return this.m_import_view;
+            }
+        });
+        Object.defineProperty(this, 'frames_view', {
+            get: function() {
+                return this.m_frames_view;
+            }
+        });
+        Object.defineProperty(this, 'importing_images_size', {
+            get: function() {
+                return this.m_importing_images_size;
+            }
+        });
+        Object.defineProperty(this, 'scene', {
+            get: function() {
+                return this.m_scene;
+            },
+            set: function(value) {
+                this.m_scene = value;
+            }
+        });
     },
 
     release: function() {
@@ -114,131 +141,6 @@ oop.define_class({
     },
 
     methods: {
-
-        ui_import: function(self, ui, ui_j) {
-            $(ui_j(ui.tab_left_panel)).append(
-            "<h3>" +
-                "<span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>import" +
-            "</h3>" + 
-            "<div style=\"background:none; border:0px;\" id=" + ui.import_container + ">" +
-                "<div title=\"changed size of imported images\" style=\"width:95%; margin:2%;\">" +
-                    "<select id=" + ui.import_size_drop_down_box + ">" +
-                        "<option>image scale - 10%</option>" +
-                        "<option>image scale - 20%</option>" +
-                        "<option>image scale - 30%</option>" +
-                        "<option>image scale - 40%</option>" +
-                        "<option>image scale - 50%</option>" +
-                        "<option>image scale - 60%</option>" +
-                        "<option>image scale - 70%</option>" +
-                        "<option>image scale - 80%</option>" +
-                        "<option>image scale - 90%</option>" +
-                        "<option selected=\"selected\">image scale - 100%</option>" +
-                    "</select>" +
-                "</div>" +
-                "<div id=" + ui.import_drop_zone + ">" + 
-                    "<input type=\"file\" id=" + ui.import_add_image_input + " style=\"display:none;\" multiple>" +
-                    "<a style=\"width:99%;\" href=\"#\" id=" + ui.import_add_image_button + ">add images...</a>" +
-                    "<label style=\"float:right; margin-top:8%; margin-right:33.5%\">or drop here...</label>" +
-                "</div>" +
-            "</div>"
-            );
-
-            $(ui_j(ui.import_add_image_button)).button();
-            $(ui_j(ui.import_add_image_button)).on('click', function() {
-                $(ui_j(ui.import_add_image_input)).trigger('click');
-            });
-            document.getElementById(ui.import_add_image_input).addEventListener('change', function() {
-                self.open_images(this.files);
-            }, false);
-            var drop_zone = document.getElementById(ui.import_drop_zone);
-            drop_zone.addEventListener('dragover', this.on_files_drag_over, false);
-            drop_zone.addEventListener('drop', this.on_files_dropped, false);
-
-            $(ui_j(ui.import_size_drop_down_box)).selectmenu();
-            $(ui_j(ui.import_size_drop_down_box_button)).css({
-                'width': '100%'
-            });
-            $(ui_j(ui.import_size_drop_down_box)).on('selectmenuselect', function(event, ui) {
-                self.m_importing_content_scale_factor = (ui.item.index + 1) / 10.0;
-            });
-        },
-
-        ui_frames: function(self, ui, ui_j) {
-            $(ui_j(ui.tab_left_panel)).append(
-            "<h3>" + 
-                "<span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>frames" +
-            "</h3>" +
-            "<div style=\"background:none; border:0px;\" id=" + ui.frames_container + ">" +
-                "<button id=" + ui.frames_sort_button + " style=\"margin:2%; width:95%;\">sort by name</button>" +
-                "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%;\" id=\"" + ui.frames_list + "\"></ul>" +
-            "</div>"
-            );
-        
-            $(ui_j(ui.frames_list)).height(0);
-            $(ui_j(ui.frames_list)).sortable();
-            $(ui_j(ui.frames_list)).disableSelection();
-            $(ui_j(ui.frames_list)).sortable({
-                stop: function() {
-                    self.sort_sprites_in_table();
-                }
-            });
-
-            $(ui_j(ui.frames_sort_button)).button();
-            $(ui_j(ui.frames_sort_button)).button('disable');
-        },
-
-        ui_packer: function(self, ui, ui_j) {
-            $(ui_j(ui.tab_left_panel)).append(
-            "<h3>" +
-                "<span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>packer" + 
-            "</h3>" +
-            "<div style=\"background:none; border:0px;\" id=" + ui.editing_container + ">" + 
-                "<div style=\"width:95%; margin:2%; margin-top:5%\">" +
-                    "<select id=" + ui.editing_page_drop_down_box + ">" +
-                        "<option selected=\"selected\">page 1</option>" +
-                    "</select>" +
-                "</div>" + 
-                "<div style=\"margin:2%;\" id=" + ui.editing_move_resize_radio_button + ">" + 
-                    "<input type=\"radio\" id=" + ui.editing_move_resize_freeform_button + " name=\"" + ui.editing_move_resize_radio_button + "\" checked=\"checked\">" +
-                    "<label for=" + ui.editing_move_resize_freeform_button + " style=\"width:48%;\">free form</label>" +
-                    "<input type=\"radio\" id=" + ui.editing_move_resize_snaptogrid_button + " name=\"" + ui.editing_move_resize_radio_button + "\">" +
-                    "<label for=" + ui.editing_move_resize_snaptogrid_button + " style=\"width:52%;\">snap to grid</label>" +
-                "</div>" +
-                "<div title=\"packing algorithm\" style=\"width:95%; margin:2%; margin-top:5%\">" +
-                    "<select id=" + ui.editing_pack_algorithm_drop_down_box + ">" +
-                        "<option selected=\"selected\">heuristic - none</option>" +
-                        "<option>heuristic - TL (top left fit)</option>" +
-                        "<option>heuristic - BAF (best area fit)</option>" + 
-                        "<option>heuristic - BSSF (best short side fit)</option>" +
-                        "<option>heuristic - BLSF (best long side fit)</option>" +
-                        "<option>heuristic - MINW (min width fit)</option>" +
-                        "<option>heuristic - MINH (min height fit)</option>" +
-                    "</select>" +
-                "</div>" +
-                "<button id=" + ui.editing_spread_button + " style=\"margin:2%; width:95.5%;\">spread</button>" +
-            "</div>"
-            );
-
-            $(ui_j(ui.editing_pack_algorithm_drop_down_box)).selectmenu();
-            $(ui_j(ui.editing_pack_algorithm_drop_down_box_button)).css({
-                'width': '100%'
-            });
-
-            $(ui_j(ui.editing_spread_button)).button();
-
-            $(ui_j(ui.editing_page_drop_down_box)).selectmenu();
-            $(ui_j(ui.editing_page_drop_down_box_button)).css({
-                'width': '100%'
-            });
-            $(ui_j(ui.editing_page_drop_down_box)).on("selectmenuselect", function(event, ui) { 
-                self.on_page_changed(ui.item.index, true);
-            });
-
-            $(ui_j(ui.editing_move_resize_radio_button)).buttonset();
-            $(ui_j(ui.editing_move_resize_radio_button) + ' input[type=radio]').change(function() {
-                self.m_selector.is_align_movement = this.id === ui.editing_move_resize_snaptogrid_button;
-            });
-        },
 
         ui_export: function(self, ui, ui_j) {
             $(ui_j(ui.tab_left_panel)).append(
@@ -314,7 +216,7 @@ oop.define_class({
             $(ui_j('tab_right_panel')).append(gl_canvas);
 
             gb.game_controller.get_instance().goto_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json", function(scene) {
-                g_ss_merge_scene = scene;
+                self.scene = scene;
                 var camera = new gb.camera(gl.viewport_width, gl.viewport_height);
                 scene.camera = camera;
 
@@ -343,12 +245,20 @@ oop.define_class({
             if (sprites_count !== 0) {
                 for (var i = 0; i < sprites_count; ++i) {
                     var sprite = this.m_sprites[i];
-                    g_ss_merge_scene.remove_child(sprite);
+                    this.scene.remove_child(sprite);
                 }
             }
-            g_ss_merge_scene.remove_child(this.m_grid);
+            this.scene.remove_child(this.m_grid);
             var geometry_component = this.m_grid.get_component(gb.ces_base_component.type.geometry);
             geometry_component.mesh.release();
+        },
+
+        on_importing_images_size_changed: function(size) {
+            this.m_importing_images_size = size;
+        },
+
+        on_move_resize_mode_changed: function(snap_to_grid) {
+            self.m_selector.is_align_movement = snap_to_grid;
         },
 
         calculate_atlas_size: function() {
@@ -371,58 +281,45 @@ oop.define_class({
             }
         },
 
-        on_files_dropped: function(event) {
-            event.stopPropagation();
-            event.preventDefault();
+        on_images_importing: function(images_files) {
             var self = gb.ss_merge_controller.self();
-            self.open_images(event.dataTransfer.files);
-        },
-
-        on_files_drag_over: function(event) {
-            event.stopPropagation();
-            event.preventDefault();
-            event.dataTransfer.dropEffect = 'copy';
-        },
-
-        open_images: function(files) {
-            var files_count_unprocessed = files.length;
-            var files_count_processed = 0;
-            for (var i = 0; i < files_count_unprocessed; ++i) {
-                var file = files[i];
-                if (!file.type.match('image.*')) {
+            var images_files_count_unprocessed = images_files.length;
+            var images_files_count_processed = 0;
+            for (var i = 0; i < images_files_count_unprocessed; ++i) {
+                var image_file = images_files[i];
+                if (!image_file.type.match('image.*')) {
                     continue;
                 }
                 var reader = new FileReader();
-                reader.m_filename = file.name;
+                reader.m_filename = image_file.name;
 
                 reader.onload = (function(data) {
                     return function(data) {
                         var image = new Image();
                         image.src = data.target.result;
                         image.onload = function() {
-                            var new_texture = g_ss_merge_scene.fabricator.resources_accessor.get_texture(data.target.m_filename, image);
-                            new_texture.add_resource_loading_callback(function(resource, userdata) {
-                                var sprite = g_ss_merge_scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+                            var texture = self.scene.fabricator.resources_accessor.get_texture(data.target.m_filename, image);
+                            texture.add_resource_loading_callback(function(resource, userdata) {
+                                var sprite = self.scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
                                     resource.mag_filter = gl.LINEAR;
                                     resource.min_filter = gl.LINEAR;
                                     resource.wrap_mode = gl.CLAMP_TO_EDGE;
                                     var material_component = sprite.get_component(gb.ces_base_component.type.material);
                                     material_component.set_texture(resource, 0);
-                                    sprite.size = new gb.vec2(Math.round(resource.width * gb.ss_merge_controller.self().m_importing_content_scale_factor),
-                                                              Math.round(resource.height * gb.ss_merge_controller.self().m_importing_content_scale_factor));
-                                    gb.ss_merge_controller.self().on_sprite_added(sprite, 0.0);
-                                    files_count_processed++;
-                                    if (files_count_processed === files_count_unprocessed) {
-                                        gb.ss_merge_controller.self().sort_sprites_in_table();
-                                        gb.ss_merge_controller.self().pack_sprites();
+                                    sprite.size = new gb.vec2(Math.round(resource.width * self.importing_images_size),
+                                                              Math.round(resource.height * self.importing_images_size));
+                                    self.on_sprite_added(sprite, 0.0);
+                                    images_files_count_processed++;
+                                    if (images_files_count_processed === images_files_count_unprocessed) {
+                                        self.pack_sprites();
                                     }
                                 });
 
-                                var sprites_count = gb.ss_merge_controller.self().m_sprites.length;
+                                var sprites_count = self.m_sprites.length;
                                 var same_images_count = 0;
                                 var analized_sprite = null;
                                 for (var i = 0; i < sprites_count; ++i) {
-                                    analized_sprite = gb.ss_merge_controller.self().m_sprites[i];
+                                    analized_sprite = self.m_sprites[i];
                                     if (analized_sprite.tag.indexOf(data.target.m_filename) !== -1) {
                                         same_images_count++;
                                     }
@@ -432,72 +329,19 @@ oop.define_class({
                                 if (same_images_count !== 0) {
                                     unique_tag += "(" + same_images_count + ")"
                                 }
-
-                                var element = "<li class=\"ui-state-default\" id=" + unique_tag + " style=\"height: 160px; margin: 8px; background: none;\">";
-                                element += "<p align=\"center\" style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;\" id=\"frame-index\" class=\"ui-widget-header\" style=\"margin:4px;\"><span class=\"ui-icon ui-icon-circle-arrow-e\" style=\"float:left; margin:4px;\"></span><span id=\"delete-icon\" class=\"ui-icon ui-icon-trash\" style=\"float:right; margin:4px;\"></span>" + unique_tag + "</p>";
-                                element += ['<img style=\"float:left; margin:2px; height:128px; width:128px;\" id="images-list-cell-image" align="left" src="', data.target.result, '"/>'].join('');
-                                element += "</li>";
-                                $("#" + gb.ss_merge_controller.html_elements.frames_list).append($(element));
-
-                                var cells = $("#" + gb.ss_merge_controller.html_elements.frames_list).children();
-                                var last_cell = cells[cells.length - 1];
-                                var delete_icon = $(last_cell).find("#delete-icon")
-
-                                $(delete_icon).click(function() {
-                                    var frame_tag = $(this).parent().find("#frame-index").text();
-                                    $(this).parent().parent().remove();
-
-                                    var sprite_index = -1;
-                                    var sprite = null;
-                                    var sprites_count = gb.ss_merge_controller.self().m_sprites.length;
-                                    for (var i = 0; i < sprites_count; ++i) {
-                                        sprite = gb.ss_merge_controller.self().m_sprites[i];
-                                        if (sprite.tag === frame_tag) {
-                                            sprite_index = i;
-                                            break;
-                                        }
-                                    }
-                                    gb.ss_merge_controller.self().m_sprites.splice(sprite_index, 1);
-                                    g_ss_merge_scene.remove_child(sprite);
-                                    sprite.release();
-                                    gb.ss_merge_controller.self().reorder_sprites_positions();
-                                });
-
+                                self.frames_view.add_frame(self, unique_tag, data.target.result, gb.ss_merge_controller.ui(), gb.ss_merge_controller.ui_j_v2);
                                 sprite.is_touchable = true;
                                 var touch_recognize_component = sprite.get_component(gb.ces_base_component.type.touch_recognize);
-                                touch_recognize_component.add_callback(gb.input_context.state.pressed, gb.ss_merge_controller.self().on_sprite_pressed, gb.ss_merge_controller.self());
-
+                                touch_recognize_component.add_callback(gb.input_context.state.pressed, self.on_sprite_pressed, self);
                                 sprite.tag = unique_tag;
-                                g_ss_merge_scene.add_child(sprite);
-                                gb.ss_merge_controller.self().m_sprites.push(sprite);
+                                self.scene.add_child(sprite);
+                                self.m_sprites.push(sprite);
                             });
                         };
                     };
-                })(file);
-                reader.readAsDataURL(file);
+                })(image_file);
+                reader.readAsDataURL(image_file);
             }
-        },
-
-        reorder_sprites_positions: function() {
-            this.set_selected_sprite(null);
-            this.m_frames_container.reset();
-            var sortered_sprites = this.m_sprites.sort(function(sprite_1, sprite_2) {
-                return sprite_2.size.x * sprite_2.size.y - sprite_1.size.x * sprite_1.size.y;
-            });
-            var sprites_count = sortered_sprites.length;
-            for (var i = 0; i < sprites_count; ++i) {
-                var sprite = sortered_sprites[i];
-                var sprite_size = sprite.size;
-                var frame = this.m_frames_container.get_frame_parameters(sprite_size.x, sprite_size.y);
-                if (frame) {
-                    sprite.position = new gb.vec2(frame.x, frame.y);
-                } else {
-                    console.error("can't insert image");
-                }
-            }
-            var ui_j = gb.ss_merge_controller.ui_j;
-            $(ui_j('frames_list')).height(sprites_count > 0 ? sprites_count == 1 ? 170 : 340 : 0);
-            $(ui_j('frames_sort_button')).button(sprites_count > 1 ? 'enable' : 'disable');
         },
 
         create_animation_configuration: function(atlas_width, atlas_height) {
@@ -555,15 +399,15 @@ oop.define_class({
             var target_touch_recognize_component = null;
             if (this.m_selector.target) {
                 var target = this.m_selector.target;
-                g_ss_merge_scene.add_child(target);
+                this.scene.add_child(target);
                 target.position = this.m_selector.position;
                 target.rotation = this.m_selector.rotation;
                 target_touch_recognize_component = target.get_component(gb.ces_base_component.type.touch_recognize);
                 target_touch_recognize_component.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this);
-                g_ss_merge_scene.add_box2d_body(target);
+                this.scene.add_box2d_body(target);
             }
             if (sprite) {
-                g_ss_merge_scene.remove_box2d_body(sprite);
+                this.scene.remove_box2d_body(sprite);
                 this.m_selector.position = sprite.position;
                 this.m_selector.rotation = sprite.rotation;
                 this.m_selector.target = sprite;
@@ -572,13 +416,13 @@ oop.define_class({
                 target_touch_recognize_component.remove_callback(gb.input_context.state.pressed, this.on_sprite_pressed);
 
                 this.m_selector.bounding_quad.remove_from_parent();
-                g_ss_merge_scene.add_child(this.m_selector.bounding_quad);
+                this.scene.add_child(this.m_selector.bounding_quad);
             } else {
                 this.m_selector.target = null;
             }
         },
 
-        sort_sprites_in_table: function() {
+        on_sprites_reordering: function() {
             var ui_j = gb.ss_merge_controller.ui_j;
             var tags = $(ui_j('frames_list') + " li").map(function() {
                 return $(this).find("#frame-index").text();
@@ -624,6 +468,22 @@ oop.define_class({
             for(var i = 0; i < pages_count; ++i) {
                 $(ui_j('editing_page_drop_down_box')).append($("<option></option>").attr("value", i).text('page ' + (i + 1))); 
             }
+        },
+
+        on_sprite_removed_from_table: function(unique_tag) {
+            var sprite_index = -1;
+            var sprite = null;
+            var sprites_count = this.m_sprites.length;
+            for (var i = 0; i < sprites_count; ++i) {
+                sprite = gb.ss_merge_controller.self().m_sprites[i];
+                if (sprite.tag === unique_tag) {
+                    sprite_index = i;
+                    break;
+                }
+            }
+            this.m_sprites.splice(sprite_index, 1);
+            this.scene.remove_child(sprite);
+            sprite.release();
         },
 
         on_sprite_added: function(entity, animated) {
