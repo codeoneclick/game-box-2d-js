@@ -366,6 +366,21 @@ oop.define_class({
             this.m_parameters.textures[sampler] = texture;
         },
 
+        get_texture_sampler: function(guid) {
+            var sampler = -1;
+            for (var i = 0; i < 8; ++i) {
+                if (this.m_parameters.textures[i] !== null && this.m_parameters.textures[i].guid === guid) {
+                    sampler = i;
+                    break;
+                }
+            }
+            return sampler;
+        },
+
+        get_texture: function(sampler) {
+            return this.m_parameters.textures[sampler];
+        },
+
         set_custom_shader_uniform: function(value, uniform) {
             var current_uniform = null;
             if (typeof this.m_custom_shader_uniforms[uniform] !== 'undefined') {

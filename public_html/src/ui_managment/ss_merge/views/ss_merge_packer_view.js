@@ -42,6 +42,9 @@ oop.define_class({
             'width': '100%'
         });
         $(ui_j(ui.editing_spread_button)).button();
+        $(ui_j(ui.editing_spread_button)).on('click', function() {
+            controller.on_pack_sprites();
+        });;
         $(ui_j(ui.editing_page_drop_down_box)).selectmenu();
         $(ui_j(ui.editing_page_drop_down_box_button)).css({
             'width': '100%'

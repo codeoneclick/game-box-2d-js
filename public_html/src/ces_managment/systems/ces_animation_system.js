@@ -32,7 +32,8 @@ oop.define_class({
 
             var geometry_component = entity.get_component(gb.ces_base_component.type.geometry);
             var animation_component = entity.get_component(gb.ces_base_component.type.animation);
-            if (geometry_component && animation_component) {
+            var material_component = entity.get_component(gb.ces_base_component.type.material);
+            if (geometry_component && animation_component && material_component) {
                 animation_component.current_switch_frame_deltatime -= deltatime;
                 if(animation_component.current_switch_frame_deltatime < 0) {
                     var frames = animation_component.frames;
@@ -42,7 +43,9 @@ oop.define_class({
                     if(frames) {
                         animation_component.current_frame = current_frame;
                         var frame = frames[animation_component.current_frame];
+                        material_component.swap_texture_to_active(frame.t_name);
                         geometry_component.update_mesh_texcoord_attributes(frame.u_0, frame.v_0, frame.u_1, frame.v_1);
+                        console.log("frame: ", frame.d_name);
                     }
                 }
             }

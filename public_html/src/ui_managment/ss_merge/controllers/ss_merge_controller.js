@@ -36,10 +36,11 @@ oop.define_class({
             export_container: "ss-merge-export-container",
             export_animation_preview_button: "ss-merge-export-animation-preview_button",
             export_save_atlas_button: "ss-merge-export-atlas-button",
-            export_save_pages_list: "ss-merge-export-save-pages-list",
-            export_save_pages_list_download_button: "ss-merge-export-save-pages-list-download",
+            export_save_pages_table: "ss-merge-export-save-pages-table",
+            export_save_pages_table_cell: "ss-merge-export-save-pages-table-cell",
+            export_save_pages_table_cell_download_button: "ss-merge-export-save-pages-table-cell-download-button",
             export_save_frames_button: "ss-merge-export-save-frames-button",
-            animation_preview_dialog: "ss-merge-animation-preview-dialog"
+            export_animation_preview_dialog: "ss-merge-export-animation-preview-dialog"
         }
     },
 
@@ -50,44 +51,23 @@ oop.define_class({
         var self = gb.ss_merge_controller.self();
         var element = null;
 
-        $(ui_j('tab_container')).append($("<div id=" + ui.tab_left_panel + " style=\"background:black;\"/>"));
-        $(ui_j('tab_container')).append($("<div id=" + ui.tab_right_panel + " style=\"background:black;\"/>"));
-        $(ui_j('tab_right_panel')).append($("<canvas style=\"width:100%; height:100%;\" id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
+        $(ui_j(ui.tab_container)).append($("<div id=" + ui.tab_left_panel + " style=\"background:black;\"/>"));
+        $(ui_j(ui.tab_container)).append($("<div id=" + ui.tab_right_panel + " style=\"background:black;\"/>"));
+        $(ui_j(ui.tab_right_panel)).append($("<canvas style=\"width:100%; height:100%;\" id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
 
-        this.m_import_view = new gb.ss_merge_import_view(this, ui, gb.ss_merge_controller.ui_j_v2);
-        this.m_frames_view = new gb.ss_merge_frames_view(this, ui, gb.ss_merge_controller.ui_j_v2);
-        this.m_packer_view = new gb.ss_merge_packer_view(this, ui, gb.ss_merge_controller.ui_j_v2);
+        this.m_import_view = new gb.ss_merge_import_view(this, ui, ui_j);
+        this.m_frames_view = new gb.ss_merge_frames_view(this, ui, ui_j);
+        this.m_packer_view = new gb.ss_merge_packer_view(this, ui, ui_j);
+        this.m_export_view = new gb.ss_merge_export_view(this, ui, ui_j);
 
-        this.ui_export(self, ui, gb.ss_merge_controller.ui_j_v2);
-
-        var element = "<div id=" + ui.animation_preview_dialog + " class=\"ui-dialog\" title=\"Animation\"></div>";
-        $(ui_j('tab_right_panel')).append($(element));
-        $(ui_j('animation_preview_dialog')).dialog({
-            autoOpen: false,
-            width: 512,
-            height: 512,
-            modal: true,
-            show: {
-                effect: "blind",
-                duration: 300
-            },
-            hide: {
-                effect: "blind",
-                duration: 300
-            },
-            beforeClose: function(event, ui) {
-                self.m_play_animation_dialog_controller.deactivate();
-                self.activate();
-            },
-        });
-        $(ui_j('tab_container')).tooltip({
+        $(ui_j(ui.tab_container)).tooltip({
             position: {
-                my: "left top",
-                at: "left+10 top+10",
-                of: "#gl_canvas"
+                my: 'left top',
+                at: 'left+10 top+10',
+                of: '#gl_canvas'
             }
         });
-        $(ui_j('tab_left_panel')).accordion({heightStyle: "content"});
+        $(ui_j(ui.tab_left_panel)).accordion({heightStyle: 'content'});
 
         var gl_context = new gb.graphics_context();
         g_ss_merge_transition = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json");
@@ -102,7 +82,7 @@ oop.define_class({
 
         this.m_selector = null;
 
-        this.m_play_animation_dialog_controller = new gb.ss_play_animation_dialog_controller();
+        this.m_preview_animation_controller = new gb.ss_preview_animation_controller();
 
         this.m_merge_algorithm = new gb.max_rects_pack_algorithm();
         this.m_merge_algorithm.atlas_width = 1024;
@@ -110,6 +90,7 @@ oop.define_class({
         this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.TL;
 
         this.m_scene = null;
+        this.m_page_size = 1024;
 
         Object.defineProperty(this, 'import_view', {
             get: function() {
@@ -119,6 +100,16 @@ oop.define_class({
         Object.defineProperty(this, 'frames_view', {
             get: function() {
                 return this.m_frames_view;
+            }
+        });
+        Object.defineProperty(this, 'export_view', {
+            get: function() {
+                return this.m_export_view;
+            }
+        });
+        Object.defineProperty(this, 'preview_animation_controller', {
+            get: function() {
+                return this.m_preview_animation_controller;
             }
         });
         Object.defineProperty(this, 'importing_images_size', {
@@ -141,79 +132,13 @@ oop.define_class({
     },
 
     methods: {
-
-        ui_export: function(self, ui, ui_j) {
-            $(ui_j(ui.tab_left_panel)).append(
-            "<h3>" +
-                "<span class=\"ui-icon ui-icon-note\" style=\"float:left; margin:2px;\"></span>export" +
-            "</h3>" +
-            "<div style=\"background:none; border:0px;\" id=" + ui.export_container + ">" +
-                "<button title=\"preview animation\" id=" + ui.export_animation_preview_button + " style=\"margin:2%; width:95.5%;\">preview</button>" +
-                "<br>" +
-                "<button id=" + ui.export_save_atlas_button + " style=\"margin:2%; width:95.5%;\">create images</button>" +
-                "<br>" +
-                "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%; margin-top:-0.5%;\" id=\"" + ui.export_save_pages_list + "\"/>" +
-                "<button id=" + ui.export_save_frames_button + " style=\"margin:2%; margin-top:-2%; width:95.5%;\">create frames configuration</button>" +
-            "</div>"
-            );
-
-            $(ui_j(ui.export_save_atlas_button)).button();
-            $(ui_j(ui.export_save_atlas_button)).on('click', function() {
-                self.set_selected_sprite(null);
-                var pages_count = self.m_sprites_on_pages.length;
-                var page = 0;
-                var create_page_shapshot = function(page) {
-                    self.on_page_changed(page, true, function() {
-                        var image = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, gl.viewport_width, gl.viewport_height);
-                        var element = "<li class=\"ui-state-default\" style=\"height:160px; margin:8px; background: none;\">";
-                        element += "<p align=\"center\" style=\"font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;\" id=\"page-index\" class=\"ui-widget-header\" style=\"margin:4px;\">page_" + (page + 1) + ".png</p>";
-                        element += ['<img style=\"float:left; margin:2px; height:128px; width:128px;\" id="images-list-cell-image" align="left" src="', image.src, '"/>'].join('');
-                        element += "<a style=\"margin-top:12%; margin-left:24%;\" id=\"" + ui.export_save_pages_list_download_button + page + "\" href=\"" + image.src.replace('image/png', 'image/octet-stream') + "\"  download=\"page_" + (page + 1) + ".png\">download</a>";
-                        element += "</li>";
-                        $(ui_j(ui.export_save_pages_list)).append($(element));
-                        $('#' + ui.export_save_pages_list_download_button + page).button();
-                        page++;
-                        $(ui_j(ui.export_save_pages_list)).height(170 * Math.min(page + 1, pages_count));
-                        if(page < pages_count) {
-                            create_page_shapshot(page);
-                        } else {
-                            self.on_page_changed(0, true);
-                        }
-                    });
-                };
-                create_page_shapshot(page);
-            });
-
-            $(ui_j(ui.export_save_pages_list)).height(0);
-            $(ui_j(ui.export_save_pages_list)).sortable();
-            $(ui_j(ui.export_save_pages_list)).disableSelection();
-            $(ui_j(ui.export_save_frames_button)).button();
-
-            $(ui_j(ui.export_animation_preview_button)).button();
-            $(ui_j(ui.export_animation_preview_button)).on('click', function() {
-                self.set_selected_sprite(null);
-                var atlas_size = self.calculate_atlas_size();
-                if (atlas_size.width > 0 && atlas_size.height > 0) {
-                    var atlas = g_ss_merge_transition.get_ws_technique_result_as_image('ws.savetoimage', 0, atlas_size.width, atlas_size.height);
-                    var frames = self.create_animation_configuration(atlas_size.width, atlas_size.height);
-                    self.deactivate();
-                    setTimeout(function() {
-                        $(ui_j(ui.animation_preview_dialog)).dialog('open');
-                        $('.ui-dialog :button').blur();
-                        self.m_play_animation_dialog_controller.activate(atlas, frames);
-                    }, 1000);
-                }
-            });
-        },
-
         activate: function() {
             var self = gb.ss_merge_controller.self();
             var ui = gb.ss_merge_controller.html_elements;
-            var ui_j = function(element_name) {
-                return '#' + ui[element_name];
-            };
+            var ui_j = gb.ss_merge_controller.ui_j;
+
             var gl_canvas = $('#gl_canvas').detach();
-            $(ui_j('tab_right_panel')).append(gl_canvas);
+            $(ui_j(ui.tab_right_panel)).append(gl_canvas);
 
             gb.game_controller.get_instance().goto_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json", function(scene) {
                 self.scene = scene;
@@ -233,7 +158,7 @@ oop.define_class({
                         scene.add_child(sprite);
                     }
                 }
-                self.pack_sprites();
+                self.on_pack_sprites();
                 var editor_fabricator = new gb.editor_fabricator();
                 editor_fabricator.scene_fabricator = scene.fabricator;
                 self.m_selector = editor_fabricator.create_selector();
@@ -261,28 +186,8 @@ oop.define_class({
             self.m_selector.is_align_movement = snap_to_grid;
         },
 
-        calculate_atlas_size: function() {
-            var sortered_sprites = this.m_sprites.sort(function(sprite_1, sprite_2) {
-                return sprite_2.size.x * sprite_2.size.y - sprite_1.size.x * sprite_1.size.y;
-            });
-            var sprites_count = sortered_sprites.length;
-            var atlas_width = 0;
-            var atlas_height = 0;
-            for (var i = 0; i < sprites_count; ++i) {
-                var sprite = sortered_sprites[i];
-                var sprite_offset_x = sprite.position.x + sprite.size.x;
-                var sprite_offset_y = sprite.position.y + sprite.size.y;
-                atlas_width = sprite_offset_x > atlas_width ? sprite_offset_x : atlas_width;
-                atlas_height = sprite_offset_y > atlas_height ? sprite_offset_y : atlas_height;
-            }
-            return {
-                width: Math.min(atlas_width, gl.viewport_width),
-                height: Math.min(atlas_height, gl.viewport_height)
-            }
-        },
-
         on_images_importing: function(images_files) {
-            var self = gb.ss_merge_controller.self();
+            var self = this;
             var images_files_count_unprocessed = images_files.length;
             var images_files_count_processed = 0;
             for (var i = 0; i < images_files_count_unprocessed; ++i) {
@@ -308,10 +213,10 @@ oop.define_class({
                                     material_component.set_texture(resource, 0);
                                     sprite.size = new gb.vec2(Math.round(resource.width * self.importing_images_size),
                                                               Math.round(resource.height * self.importing_images_size));
-                                    self.on_sprite_added(sprite, 0.0);
+                                    self.on_sprite_added_to_page(sprite, 0.0);
                                     images_files_count_processed++;
                                     if (images_files_count_processed === images_files_count_unprocessed) {
-                                        self.pack_sprites();
+                                        self.on_pack_sprites();
                                     }
                                 });
 
@@ -330,7 +235,7 @@ oop.define_class({
                                     unique_tag += "(" + same_images_count + ")"
                                 }
                                 sprite.tag = unique_tag;
-                                self.frames_view.add_frame(self, unique_tag, data.target.result, gb.ss_merge_controller.ui(), gb.ss_merge_controller.ui_j_v2);
+                                self.frames_view.add_frame(self, unique_tag, data.target.result, gb.ss_merge_controller.ui(), gb.ss_merge_controller.ui_j);
                                 self.on_sprite_added_to_table(sprite);
                             });
                         };
@@ -340,53 +245,26 @@ oop.define_class({
             }
         },
 
-        create_animation_configuration: function(atlas_width, atlas_height) {
-            var frames = [];
-            var sortered_sprites = this.m_sprites.sort(function(sprite_1, sprite_2) {
-                return sprite_1.tag.localeCompare(sprite_2.tag, 'en', {
-                    numeric: true
-                });
-            });
-            var sprites_count = sortered_sprites.length;
-            var sprite = null;
-            var position_0 = null;
-            var position_1 = null;
-            for (var i = 0; i < sprites_count; ++i) {
-                sprite = sortered_sprites[i];
-                var position_in_atlas = sprite.position;
-                position_in_atlas.x -= sprite.size.x * sprite.pivot.x;
-                position_in_atlas.y -= sprite.size.y * sprite.pivot.y;
-                position_0 = position_in_atlas;
-                position_1 = gb.vec2.add(position_0, sprite.size);
-                frames.push({
-                    u_0: position_0.x / atlas_width,
-                    v_0: position_0.y / atlas_height,
-                    u_1: position_1.x / atlas_width,
-                    v_1: position_1.y / atlas_height
-                });
-            }
-            return frames;
-        },
-
         on_sprite_pressed: function(entity, state, point, userdata) {
             userdata.set_selected_sprite(entity);
         },
 
         set_selected_sprite: function(sprite) {
+            var ui = gb.ss_merge_controller.html_elements;
             var ui_j = gb.ss_merge_controller.ui_j;
             var sprite_index = this.m_sprites.indexOf(sprite);
             var sprites_count = this.m_sprites.length;
             for (var i = 0; i < sprites_count; ++i) {
                 if (i === sprite_index) {
-                    $(ui_j('frames_list')).animate({
+                    $(ui_j(ui.frames_table)).animate({
                         scrollTop: sprite_index * 170
                     }, 'slow', 'swing', function() {
-                        $(ui_j('frames_list') + ' li').eq(sprite_index).find('p').animate({
+                        $(ui_j(ui.frames_table) + ' li').eq(sprite_index).find('p').animate({
                             backgroundColor: "#f58400"
                         });
                     });
                 } else {
-                    $(ui_j('frames_list') + ' li').eq(i).find('p').css({
+                    $(ui_j(ui.frames_table) + ' li').eq(i).find('p').css({
                         'background': 'black'
                     });
                 }
@@ -419,9 +297,10 @@ oop.define_class({
         },
 
         on_sprites_reordering: function() {
+            var ui = gb.ss_merge_controller.html_elements;
             var ui_j = gb.ss_merge_controller.ui_j;
-            var tags = $(ui_j('frames_list') + " li").map(function() {
-                return $(this).find("#frame-index").text();
+            var tags = $(ui_j(ui.frames_table) + ' li').map(function() {
+                return $(this).find('#ss-merge-frames-table-cell').text();
             });
             var sprites = [];
             var tags_count = tags.length;
@@ -435,11 +314,11 @@ oop.define_class({
             this.m_sprites = sprites;
 
             var sprites_count = this.m_sprites.length;
-            $(ui_j('frames_list')).height(sprites_count > 0 ? sprites_count == 1 ? 170 : 340 : 0);
-            $(ui_j('frames_sort_button')).button(sprites_count > 1 ? 'enable' : 'disable');
+            $(ui_j(ui.frames_table)).height(sprites_count > 0 ? sprites_count == 1 ? 170 : 340 : 0);
+            $(ui_j(ui.frames_sort_button)).button(sprites_count > 1 ? 'enable' : 'disable');
         },
 
-        pack_sprites: function() {
+        on_pack_sprites: function() {
             this.m_merge_algorithm.reset();
             this.m_sprites_on_pages = [];
             var sprites_count = this.m_sprites.length;
@@ -456,14 +335,18 @@ oop.define_class({
                 position.x += sprite.size.x * sprite.pivot.x;
                 position.y += sprite.size.y * sprite.pivot.y;
                 sprite.position = position;
-                sprite.visible = page === this.m_current_page;
+                sprite.visible = false;
                 pages_count = Math.max(pages_count, page + 1);
             }
+
+            var ui = gb.ss_merge_controller.html_elements;
             var ui_j = gb.ss_merge_controller.ui_j;
-            $(ui_j('editing_page_drop_down_box')).find('option').remove().end();
+
+            $(ui_j(ui.editing_page_drop_down_box)).find('option').remove().end();
             for(var i = 0; i < pages_count; ++i) {
-                $(ui_j('editing_page_drop_down_box')).append($("<option></option>").attr("value", i).text('page ' + (i + 1))); 
+                $(ui_j(ui.editing_page_drop_down_box)).append($("<option></option>").attr("value", i).text('page ' + (i + 1))); 
             }
+            this.on_page_changed(0, true);
         },
 
         on_sprite_added_to_table: function(sprite) {
@@ -490,7 +373,7 @@ oop.define_class({
             sprite.release();
         },
 
-        on_sprite_added: function(entity, animated) {
+        on_sprite_added_to_page: function(entity, animated) {
             if (animated) {
                 var action_component = entity.get_component(gb.ces_base_component.type.action);
                 if (!action_component) {
@@ -518,7 +401,7 @@ oop.define_class({
             }
         },
 
-        on_sprite_removed: function(entity, animated) {
+        on_sprite_removed_from_page: function(entity, animated) {
             if (animated) {
                 var action_component = entity.get_component(gb.ces_base_component.type.action);
                 if (!action_component) {
@@ -547,44 +430,16 @@ oop.define_class({
         },
 
         on_add_sprites_on_page: function(page, animated, callback) {
-            var sprites = this.m_sprites_on_pages[page];
-            var sprites_count = sprites.length;
-            var sprite = null;
-            for (var i = 0; i < sprites_count; ++i) {
-                sprite = sprites[i];
-                this.on_sprite_added(sprite, animated);
-            }
-            if (callback) {
-                var check_sprites_status = function() {
-                    var is_sprites_removed = true;
-                    for (var i = 0; i < sprites_count; ++i) {
-                        sprite = sprites[i];
-                        var action_component = sprite.get_component(gb.ces_base_component.type.action);
-                        if (action_component) {
-                            is_sprites_removed = false;
-                            break;
-                        }
-                    }
-                    if (is_sprites_removed) {
-                        setTimeout(callback, 100);
-                    } else {
-                        setTimeout(check_sprites_status, 100);
-                    }
-                };
-                check_sprites_status();
-            }
-        },
-
-        on_remove_sprites_on_page: function(page, animated, callback) {
+            if (page >= 0 && page < this.m_sprites_on_pages.length) {
                 var sprites = this.m_sprites_on_pages[page];
                 var sprites_count = sprites.length;
                 var sprite = null;
                 for (var i = 0; i < sprites_count; ++i) {
                     sprite = sprites[i];
-                    this.on_sprite_removed(sprite, animated);
+                    this.on_sprite_added_to_page(sprite, animated);
                 }
                 if (callback) {
-                    var check_sprites_status = function() {
+                    var update_sprites_status = function() {
                         var is_sprites_removed = true;
                         for (var i = 0; i < sprites_count; ++i) {
                             sprite = sprites[i];
@@ -597,19 +452,144 @@ oop.define_class({
                         if (is_sprites_removed) {
                             setTimeout(callback, 100);
                         } else {
-                            setTimeout(check_sprites_status, 100);
+                            setTimeout(update_sprites_status, 100);
                         }
                     };
-                    check_sprites_status();
+                    update_sprites_status();
                 }
+            } else if (callback) {
+                callback();
+            }
+        },
+
+        on_remove_sprites_from_page: function(page, animated, callback) {
+            if (page >= 0 && page < this.m_sprites_on_pages.length) {
+                var sprites = this.m_sprites_on_pages[page];
+                var sprites_count = sprites.length;
+                var sprite = null;
+                for (var i = 0; i < sprites_count; ++i) {
+                    sprite = sprites[i];
+                    this.on_sprite_removed_from_page(sprite, animated);
+                }
+                if (callback) {
+                    var update_sprites_status = function() {
+                        var is_sprites_removed = true;
+                        for (var i = 0; i < sprites_count; ++i) {
+                            sprite = sprites[i];
+                            var action_component = sprite.get_component(gb.ces_base_component.type.action);
+                            if (action_component) {
+                                is_sprites_removed = false;
+                                break;
+                            }
+                        }
+                        if (is_sprites_removed) {
+                            setTimeout(callback, 100);
+                        } else {
+                            setTimeout(update_sprites_status, 100);
+                        }
+                    };
+                    update_sprites_status();
+                }
+            } else if (callback) {
+                callback();
+            }
         },
 
         on_page_changed: function(index, animated, callback) {
             var self = gb.ss_merge_controller.self();
-            this.on_remove_sprites_on_page(this.m_current_page, animated, function() {
+            this.on_remove_sprites_from_page(this.m_current_page, animated, function() {
                 self.m_current_page = index;
                 self.on_add_sprites_on_page(index, animated, callback);
             }); 
+        },
+
+        on_export_images: function(callback) {
+            var ui = gb.ss_merge_controller.html_elements;
+            var ui_j = gb.ss_merge_controller.ui_j;
+            this.set_selected_sprite(null);
+            var pages_count = this.m_sprites_on_pages.length;
+            var page = 0;
+            var self = this;
+            var images = [];
+            var create_page_shapshot = function(page) {
+                self.on_page_changed(page, true, function() {
+                    var image = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, self.m_page_size, self.m_page_size);
+                    images.push(image);
+                    self.export_view.add_frame(image, page, ui, ui_j);
+                    page++;
+                    if(page < pages_count) {
+                        create_page_shapshot(page);
+                    } else {
+                        self.on_page_changed(0, true);
+                        if(callback) {
+                            callback(images);
+                        }
+                    }
+                });
+            };
+            create_page_shapshot(page);
+        },
+
+        on_export_configuration: function() {
+            var frames = [];
+            var sortered_sprites = this.m_sprites.sort(function(sprite_1, sprite_2) {
+                return sprite_1.tag.localeCompare(sprite_2.tag, 'en', {
+                    numeric: true
+                });
+            });
+            var pages_count = this.m_sprites_on_pages.length;
+            var sprites_count = sortered_sprites.length;
+            var sprite = null;
+            var position_0 = null;
+            var position_1 = null;
+            for (var i = 0; i < sprites_count; ++i) {
+                sprite = sortered_sprites[i];
+                var index = -1;
+                for(var j = 0; j < pages_count; ++j) {
+                    index = this.m_sprites_on_pages[j].findIndex(function(analized_sprite) {
+                        return analized_sprite.tag === sprite.tag;
+                    });
+                    if(index !== -1) {
+                        index = j;
+                        break;
+                    }
+                }
+                var position_in_atlas = sprite.position;
+                position_in_atlas.x -= sprite.size.x * sprite.pivot.x;
+                position_in_atlas.y -= sprite.size.y * sprite.pivot.y;
+                position_0 = position_in_atlas;
+                position_1 = gb.vec2.add(position_0, sprite.size);
+                frames.push({
+                    t_name: 'page_' + index + '.png',
+                    d_name: sprite.tag,
+                    u_0: position_0.x / this.m_page_size,
+                    v_0: position_0.y / this.m_page_size,
+                    u_1: position_1.x / this.m_page_size,
+                    v_1: position_1.y / this.m_page_size
+                });
+            }
+            return frames;
+        },
+
+        on_preview_animation_open: function() {
+            this.set_selected_sprite(null);
+            var self = this;
+            this.on_export_images(function(images) {
+                var frames = self.on_export_configuration();
+                self.deactivate();
+                setTimeout(function() {
+                    var ui = gb.ss_merge_controller.ui();
+                    var ui_j = gb.ss_merge_controller.ui_j;
+                    $(ui_j(ui.export_animation_preview_dialog)).dialog('open');
+                    $('.ui-dialog :button').blur();
+                    self.preview_animation_controller.activate(images, frames);
+                }, 100);
+            });
+        },
+
+        on_preview_animation_close: function() {
+            this.preview_animation_controller.deactivate();
+            this.activate();
         }
     },
 
@@ -621,9 +601,6 @@ oop.define_class({
             return gb.ss_merge_controller.html_elements;
         },
         ui_j: function(element_name) {
-            return '#' + gb.ss_merge_controller.ui()[element_name];
-        }, 
-        ui_j_v2: function(element_name) {
             return '#' + element_name;
         }
     }
