@@ -13,9 +13,12 @@ oop.define_class({
             "</h3>" +
             "<div style=\"background:none; border:0px;\">" +
                 "<button id=" + ui.frames_sort_button + " style=\"margin:2%; width:95%;\">sort by name</button>" +
-                "<ul style=\"list-style-type:none; height:340px; overflow:auto; margin-left:-10%;\" id=\"" + ui.frames_table + "\"></ul>" +
+                "<div style=\"height:340px\" class=\"scroll\">" +
+                    "<ul style=\"list-style-type:none; margin-left:-12.5%;\" id=\"" + ui.frames_table + "\"></ul>" +
+                "</div>" +
             "</div>"
         );
+        $('.scroll').scrollable();
         $(ui_j(ui.frames_table)).height(0);
         $(ui_j(ui.frames_table)).sortable();
         $(ui_j(ui.frames_table)).disableSelection();
@@ -59,7 +62,7 @@ oop.define_class({
         on_frames_count_changed: function(ui, ui_j) {
             var cells = $(ui_j(ui.frames_table)).children();
             var cells_count = cells.length;
-            $(ui_j(ui.frames_table)).height(cells_count > 0 ? cells_count == 1 ? 170 : 340 : 0);
+            $(ui_j(ui.frames_table)).height(cells_count * 170);
             $(ui_j(ui.frames_sort_button)).button(cells_count > 1 ? 'enable' : 'disable');
         }
 	},
