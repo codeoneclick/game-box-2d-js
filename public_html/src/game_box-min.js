@@ -1276,8 +1276,8 @@ oop.define_class({namespace:"gb", name:"resource_accessor", init:function() {
   }
   return b;
 }, get_texture:function(a, b) {
-  var c = this.m_resources[a];
-  if ("undefined" === typeof c) {
+  var c = b ? null : this.m_resources[a];
+  if (!c) {
     c = new gb.texture(a);
     this.m_resources[a] = c;
     var d = new gb.texture_loading_operation(a, c, b);
@@ -3895,6 +3895,7 @@ init:function() {
 }, on_export_images:function(a) {
   var b = gb.ss_merge_controller.html_elements, c = gb.ss_merge_controller.ui_j;
   this.set_selected_sprite(null);
+  this.export_view.cleanup_frames(b, c);
   var d = this.m_sprites_on_pages.length, e = this, g = [], f = function(h) {
     e.on_page_changed(h, !0, function() {
       var k = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, e.m_page_size, e.m_page_size);
@@ -3975,7 +3976,7 @@ oop.define_class({namespace:"gb", name:"ss_merge_import_view", extend:gb.game_ob
 }, release:function() {
 }, methods:{}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ss_merge_frames_view", extend:gb.game_object, init:function(a, b, c) {
-  $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>frames</h3><div style="background:none; border:0px;"><button id=' + b.frames_sort_button + ' style="margin:2%; width:95%;">sort by name</button><div style="height:340px" class="scroll"><ul style="list-style-type:none; margin-left:-10%;" id="' + b.frames_table + '"></ul></div></div>');
+  $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>frames</h3><div style="background:none; border:0px;"><button id=' + b.frames_sort_button + ' style="margin:2%; width:95%;">sort by name</button><div style="height:340px" class="scroll"><ul style="list-style-type:none; margin-left:-12.5%;" id="' + b.frames_table + '"></ul></div></div>');
   $(".scroll").scrollable();
   $(c(b.frames_table)).height(0);
   $(c(b.frames_table)).sortable();
@@ -4049,6 +4050,10 @@ oop.define_class({namespace:"gb", name:"ss_merge_export_view", extend:gb.game_ob
   b + '" href="' + a.src.replace("image/png", "image/octet-stream") + '"  download="page_' + (b + 1) + '.png">download</a></li>');
   $("#" + c.export_save_pages_table_cell_download_button + b).button();
   $(d(c.export_save_pages_table)).height(170 * Math.min(b + 1, 2));
+}, cleanup_frames:function(a, b) {
+  for (var c = $(b(a.export_save_pages_table)).children(), d = c.length, e = 0;e < d;++e) {
+    c[e].remove();
+  }
 }}, static_methods:{}});
 var g_ss_animation_controller = null, g_ss_animation_scene = null;
 oop.define_class({namespace:"gb", name:"ss_animation_controller", init:function() {

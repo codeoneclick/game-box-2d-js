@@ -38,8 +38,8 @@ oop.define_class({
         },
 
         get_texture: function(filename, data) {
-            var resource = this.m_resources[filename];
-            if (typeof resource === 'undefined') {
+            var resource = data ? null : this.m_resources[filename];
+            if (!resource) {
                 resource = new gb.texture(filename);
                 this.m_resources[filename] = resource;
 

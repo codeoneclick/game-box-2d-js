@@ -507,6 +507,7 @@ oop.define_class({
             var ui = gb.ss_merge_controller.html_elements;
             var ui_j = gb.ss_merge_controller.ui_j;
             this.set_selected_sprite(null);
+            this.export_view.cleanup_frames(ui, ui_j);
             var pages_count = this.m_sprites_on_pages.length;
             var page = 0;
             var self = this;

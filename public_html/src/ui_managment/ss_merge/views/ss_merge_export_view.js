@@ -75,6 +75,14 @@ oop.define_class({
             );
             $('#' + ui.export_save_pages_table_cell_download_button + index).button();
             $(ui_j(ui.export_save_pages_table)).height(170 * Math.min(index + 1, 2));
+        },
+
+        cleanup_frames: function(ui, ui_j) {
+            var cells = $(ui_j(ui.export_save_pages_table)).children();
+            var cells_count = cells.length;
+            for(var i = 0; i < cells_count; ++i) {
+                cells[i].remove();
+            }
         }
 	},
 
