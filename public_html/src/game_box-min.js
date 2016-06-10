@@ -3654,7 +3654,7 @@ oop.define_class({namespace:"gb", name:"common_alert_view", init:function(a, b, 
   $(c(b.common_alert_view)).dialog("open");
 }}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"common_error_view", init:function(a, b, c) {
-  $(c(a)).append("<div id=" + b.common_error_view + ' class="ui-state-error ui-corner-all" style="padding: 0 .7em; background:darkorange;"><p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Error: </strong><div id=' + b.common_error_view_textfield + ' style="margin-top: -10.5%; margin-left: 30%;"></div></p></div>');
+  $(c(a)).append("<div id=" + b.common_error_view + ' class="ui-state-error ui-corner-all" style="padding: 0 .7em; background:darkorange;"><p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Error: </strong><div id=' + b.common_error_view_textfield + ' style="margin-top: -4%;"></div></p></div>');
   $(c(b.common_error_view)).dialog({autoOpen:!1, width:450, height:450, modal:!0, show:{effect:"bounce", duration:1E3}, hide:{effect:"clip", duration:250}, buttons:[{text:"Report bug", click:function() {
     location.reload();
   }}, {text:"Ok", click:function() {
@@ -3677,7 +3677,7 @@ init:function() {
   g_ss_merge_controller = this;
   var a = gb.ss_merge_controller.ui(), b = gb.ss_merge_controller.ui_j, c = gb.ss_merge_controller.self();
   window.onerror = function(d, e, g, f, h) {
-    c.error_view.show("Error occured! " + d + "\n(" + e + ":" + g + ")" + h ? "\n\n" + h.stack : "", a, b);
+    c.error_view.show(d + "\n(" + e + ":" + g + ")" + (h ? "\n\n" + h.stack : ""), a, b);
   };
   $(b(a.tab_container)).append($("<div id=" + a.tab_left_panel + ' style="background:black;"/>'));
   $(b(a.tab_container)).append($("<div id=" + a.tab_right_panel + ' style="background:black;"/>'));

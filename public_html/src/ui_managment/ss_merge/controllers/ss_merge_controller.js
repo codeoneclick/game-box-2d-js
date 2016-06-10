@@ -65,7 +65,8 @@ oop.define_class({
         var element = null;
 
         window.onerror = function(message, file, line, column, error) {
-            self.error_view.show("Error occured! " + message + "\n(" + file + ":" + line + ")" + error ? "\n\n" + error.stack : "", ui, ui_j);
+            var stack = error ? "\n\n" + error.stack : "";
+            self.error_view.show(message + "\n(" + file + ":" + line + ")" + stack, ui, ui_j);
         };
 
         $(ui_j(ui.tab_container)).append($("<div id=" + ui.tab_left_panel + " style=\"background:black;\"/>"));

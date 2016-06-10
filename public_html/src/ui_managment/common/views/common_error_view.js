@@ -11,7 +11,7 @@ oop.define_class({
                 "<p>" +
                     "<span class=\"ui-icon ui-icon-alert\" style=\"float: left; margin-right: .3em;\"></span>" +
                     "<strong>Error: </strong>" +
-                    "<div id=" + ui.common_error_view_textfield + " style=\"margin-top: -10.5%; margin-left: 30%;\"></div>" +
+                    "<div id=" + ui.common_error_view_textfield + " style=\"margin-top: -4%;\"></div>" +
                 "</p>" +
             "</div>"
         );
