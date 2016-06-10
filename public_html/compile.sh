@@ -85,6 +85,8 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/game_states_managment/game_transition.js \
 --js=../public_html/src/game_states_managment/game_controller.js \
 --js=../public_html/src/bussines_logic_managment/max_rects_pack_algorithm.js \
+--js=../public_html/src/ui_managment/common/views/common_alert_view.js \
+--js=../public_html/src/ui_managment/common/views/common_error_view.js \
 --js=../public_html/src/ui_managment/ss_merge/controllers/ss_merge_controller.js \
 --js=../public_html/src/ui_managment/ss_merge/views/ss_merge_import_view.js \
 --js=../public_html/src/ui_managment/ss_merge/views/ss_merge_frames_view.js \
@@ -95,4 +97,6 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/editor_managment/selector.js \
 --js=../public_html/src/editor_managment/editor_fabricator.js \
 --js=!../public_html/src/game_box-min.js \
+--create_source_map ../public_html/src/game_box-min.js.map \
+--source_map_format=V3 \
 --formatting=PRETTY_PRINT

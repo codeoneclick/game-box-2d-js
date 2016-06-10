@@ -32,7 +32,6 @@ oop.define_class({
         }
       });
     },
-
     serialize: function(callback) {
       this.m_status = gb.resource_loading_operation.status.in_progress;
       this.m_serializer = new gb.shader_serializer_glsl(this.m_guid, this.m_resource,

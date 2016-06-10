@@ -4,7 +4,6 @@
 oop.define_class({
 	namespace: "gb",
 	name: "ss_merge_packer_view",
-	extend: gb.game_object,
 
 	init: function(controller, ui, ui_j) {
 		$(ui_j(ui.tab_left_panel)).append(

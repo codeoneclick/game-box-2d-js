@@ -50,13 +50,13 @@ var oop = {global:function() {
         g.prototype[k] = h[k];
       }
     }
-    var l = a.static_methods;
-    if (l) {
-      for (k in l) {
-        if ("function" !== typeof l[k]) {
+    var m = a.static_methods;
+    if (m) {
+      for (k in m) {
+        if ("function" !== typeof m[k]) {
           throw Error("class method must be function");
         }
-        g[k] = l[k];
+        g[k] = m[k];
       }
     }
     var n = a.constants;
@@ -443,14 +443,14 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
 }, rotate:function(a) {
   var b = a.x, c = a.y, d = a.z;
   a = Math.cos(b);
-  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), g = Math.cos(d), d = Math.sin(d), f = a * g, h = a * d, k = b * g, l = b * d;
+  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), g = Math.cos(d), d = Math.sin(d), f = a * g, h = a * d, k = b * g, m = b * d;
   this.m_elements[0] = e * g;
   this.m_elements[4] = -e * d;
   this.m_elements[8] = c;
   this.m_elements[1] = h + k * c;
-  this.m_elements[5] = f - l * c;
+  this.m_elements[5] = f - m * c;
   this.m_elements[9] = -b * e;
-  this.m_elements[2] = l - f * c;
+  this.m_elements[2] = m - f * c;
   this.m_elements[6] = k + h * c;
   this.m_elements[10] = a * e;
   this.m_elements[3] = 0;
@@ -602,23 +602,23 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
 }, to_array:function() {
   return this.m_elements;
 }}, static_methods:{multiply:function(a, b) {
-  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, g = c[0], f = c[4], h = c[8], k = c[12], l = c[1], n = c[5], t = c[9], q = c[13], u = c[2], w = c[6], r = c[10], m = c[14], x = c[3], p = c[7], v = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
+  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, g = c[0], f = c[4], h = c[8], k = c[12], m = c[1], n = c[5], t = c[9], q = c[13], u = c[2], v = c[6], r = c[10], l = c[14], x = c[3], p = c[7], w = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
   e.m_elements[0] = g * y + f * C + h * G + k * K;
   e.m_elements[4] = g * z + f * D + h * H + k * L;
   e.m_elements[8] = g * A + f * E + h * I + k * M;
   e.m_elements[12] = g * B + f * F + h * J + k * d;
-  e.m_elements[1] = l * y + n * C + t * G + q * K;
-  e.m_elements[5] = l * z + n * D + t * H + q * L;
-  e.m_elements[9] = l * A + n * E + t * I + q * M;
-  e.m_elements[13] = l * B + n * F + t * J + q * d;
-  e.m_elements[2] = u * y + w * C + r * G + m * K;
-  e.m_elements[6] = u * z + w * D + r * H + m * L;
-  e.m_elements[10] = u * A + w * E + r * I + m * M;
-  e.m_elements[14] = u * B + w * F + r * J + m * d;
-  e.m_elements[3] = x * y + p * C + v * G + c * K;
-  e.m_elements[7] = x * z + p * D + v * H + c * L;
-  e.m_elements[11] = x * A + p * E + v * I + c * M;
-  e.m_elements[15] = x * B + p * F + v * J + c * d;
+  e.m_elements[1] = m * y + n * C + t * G + q * K;
+  e.m_elements[5] = m * z + n * D + t * H + q * L;
+  e.m_elements[9] = m * A + n * E + t * I + q * M;
+  e.m_elements[13] = m * B + n * F + t * J + q * d;
+  e.m_elements[2] = u * y + v * C + r * G + l * K;
+  e.m_elements[6] = u * z + v * D + r * H + l * L;
+  e.m_elements[10] = u * A + v * E + r * I + l * M;
+  e.m_elements[14] = u * B + v * F + r * J + l * d;
+  e.m_elements[3] = x * y + p * C + w * G + c * K;
+  e.m_elements[7] = x * z + p * D + w * H + c * L;
+  e.m_elements[11] = x * A + p * E + w * I + c * M;
+  e.m_elements[15] = x * B + p * F + w * J + c * d;
   return e;
 }, multiply_vec4:function(a, b) {
   var c = new gb.vec4;
@@ -651,8 +651,8 @@ oop.define_class({namespace:"gb", name:"math", constants:{INT16_MAX:32767, INT16
   b = c.x;
   var h = d.x - c.x;
   d = d.y - c.y;
-  var k = Math.sqrt(f * f + a * a), l = Math.sqrt(h * h + d * d);
-  if (f / k === h / l && a / k === d / l) {
+  var k = Math.sqrt(f * f + a * a), m = Math.sqrt(h * h + d * d);
+  if (f / k === h / m && a / k === d / m) {
     return {intersected:!1};
   }
   c = (f * (c.y - g) + a * (e - b)) / (h * a - d * f);
@@ -2557,11 +2557,11 @@ oop.define_class({namespace:"gb", name:"ces_light_mask_component", extend:gb.ces
     e = b[c];
     g.x = Math.cos(e);
     g.y = Math.sin(e);
-    var l = a, n = g.add(a), k = gb.math.INT16_MAX;
+    var m = a, n = g.add(a), k = gb.math.INT16_MAX;
     h.x = f.x;
     h.y = f.y;
     for (var t = 0;t < this.m_shadow_casters_edges.length;++t) {
-      var q = gb.math.intersect(l, n, this.m_shadow_casters_edges[t].point_01, this.m_shadow_casters_edges[t].point_02);
+      var q = gb.math.intersect(m, n, this.m_shadow_casters_edges[t].point_01, this.m_shadow_casters_edges[t].point_02);
       q.intersected && q.distance < k && (k = q.distance, h.x = q.point_x, h.y = q.point_y);
     }
     h.equals(f) || -1 === d.findIndex(function(a) {
@@ -2833,7 +2833,7 @@ oop.define_class({namespace:"gb", name:"ces_deferred_lighting_system", extend:gb
     d = gb.mat4.multiply_vec2(d.position, e);
     for (e = 0;e < this.m_shadow_casters.length;++e) {
       for (var g = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.convex_hull), f = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.transformation), h = (new gb.mat4).identity(), k = this.m_shadow_casters[e].parent;k;) {
-        var l = k.get_component(gb.ces_base_component.type.transformation), h = gb.mat4.multiply(h, l.matrix_m), k = k.parent
+        var m = k.get_component(gb.ces_base_component.type.transformation), h = gb.mat4.multiply(h, m.matrix_m), k = k.parent
       }
       h = gb.mat4.multiply(h, f.matrix_m);
       c.update_mask_geometry(h, g.oriented_vertices);
@@ -2888,48 +2888,48 @@ oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_s
   if (d) {
     var e = a.get_component(gb.ces_base_component.type.light), g = a.get_component(gb.ces_base_component.type.light_mask), f = a.get_component(gb.ces_base_component.type.transformation), h = a.get_component(gb.ces_base_component.type.material), k = a.get_component(gb.ces_base_component.type.geometry);
     if (e && h && k && f) {
-      var l = h.get_material(b, c), n = k.mesh, t = g.mesh;
-      l && a.visible && l.shader && l.shader.is_commited && n && t && (function() {
+      var m = h.get_material(b, c), n = k.mesh, t = g.mesh;
+      m && a.visible && m.shader && m.shader.is_commited && n && t && (function() {
         gl.colorMask(!1, !1, !1, !1);
         gl.depthMask(!1);
-        l.stencil_function = gl.ALWAYS;
-        l.stencil_function_parameter_1 = 1;
-        l.stencil_function_parameter_2 = 255;
-        l.stencil_mask_parameter = 1;
-        l.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
-        l.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform);
-        h.bind(b, c, l);
-        l.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p);
-        l.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v);
-        l.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m);
-        t.bind(l.shader.attributes);
+        m.stencil_function = gl.ALWAYS;
+        m.stencil_function_parameter_1 = 1;
+        m.stencil_function_parameter_2 = 255;
+        m.stencil_mask_parameter = 1;
+        m.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
+        m.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform);
+        h.bind(b, c, m);
+        m.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p);
+        m.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v);
+        m.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m);
+        t.bind(m.shader.attributes);
         t.draw();
-        t.unbind(l.shader.attributes);
+        t.unbind(m.shader.attributes);
         for (var a = e.shadow_casters, f = 0;f < a.length;++f) {
           var g = a[f], k = g.get_component(gb.ces_base_component.type.geometry);
-          g.get_component(gb.ces_base_component.type.material).get_material(b, c) && (k = k.mesh, g = gb.ces_transformation_component.get_absolute_transformation(g, !1), l.shader.set_mat4(g, gb.shader.uniform_type.mat_m), k.bind(l.shader.attributes), k.draw(), k.unbind(l.shader.attributes));
+          g.get_component(gb.ces_base_component.type.material).get_material(b, c) && (k = k.mesh, g = gb.ces_transformation_component.get_absolute_transformation(g, !1), m.shader.set_mat4(g, gb.shader.uniform_type.mat_m), k.bind(m.shader.attributes), k.draw(), k.unbind(m.shader.attributes));
         }
         gl.colorMask(!0, !0, !0, !0);
         gl.depthMask(!0);
-        h.unbind(b, c, l);
+        h.unbind(b, c, m);
       }(), function() {
         var d = gb.ces_transformation_component.get_absolute_transformation(a, !0);
-        l.stencil_function = gl.EQUAL;
-        l.stencil_function_parameter_1 = 1;
-        l.stencil_function_parameter_2 = 255;
-        l.stencil_mask_parameter = 0;
-        l.blending_function_source = gl.SRC_ALPHA;
-        l.blending_function_destination = gl.ONE;
-        l.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
-        l.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_fs_flag_uniform);
-        h.bind(b, c, l);
-        l.shader.set_mat4(d, gb.shader.uniform_type.mat_m);
-        n.bind(l.shader.attributes);
+        m.stencil_function = gl.EQUAL;
+        m.stencil_function_parameter_1 = 1;
+        m.stencil_function_parameter_2 = 255;
+        m.stencil_mask_parameter = 0;
+        m.blending_function_source = gl.SRC_ALPHA;
+        m.blending_function_destination = gl.ONE;
+        m.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
+        m.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_fs_flag_uniform);
+        h.bind(b, c, m);
+        m.shader.set_mat4(d, gb.shader.uniform_type.mat_m);
+        n.bind(m.shader.attributes);
         n.draw();
-        n.unbind(l.shader.attributes);
-        h.unbind(b, c, l);
-      }(), gl.colorMask(!1, !1, !1, !1), gl.depthMask(!1), l.stencil_function = gl.ALWAYS, l.stencil_function_parameter_1 = 0, l.stencil_function_parameter_2 = 255, l.stencil_mask_parameter = 1, l.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_vs_flag_uniform), l.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform), h.bind(b, c, l), l.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m), this.m_screed_quad_mesh.bind(l.shader.attributes), this.m_screed_quad_mesh.draw(), 
-      this.m_screed_quad_mesh.unbind(l.shader.attributes), gl.colorMask(!0, !0, !0, !0), gl.depthMask(!0), h.unbind(b, c, l));
+        n.unbind(m.shader.attributes);
+        h.unbind(b, c, m);
+      }(), gl.colorMask(!1, !1, !1, !1), gl.depthMask(!1), m.stencil_function = gl.ALWAYS, m.stencil_function_parameter_1 = 0, m.stencil_function_parameter_2 = 255, m.stencil_mask_parameter = 1, m.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_vs_flag_uniform), m.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform), h.bind(b, c, m), m.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m), this.m_screed_quad_mesh.bind(m.shader.attributes), this.m_screed_quad_mesh.draw(), 
+      this.m_screed_quad_mesh.unbind(m.shader.attributes), gl.colorMask(!0, !0, !0, !0), gl.depthMask(!0), h.unbind(b, c, m));
     }
     g = a.children;
     for (f = 0;f < g.length;++f) {
@@ -2949,8 +2949,8 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
     if (b.state === gb.input_context.state.released) {
       for (var d = this.m_captured_entities.length, e = 0;e < d;++e) {
         for (var g = this.m_captured_entities[e], f = g.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, k = 0;k < h;++k) {
-          var l = f[k].callback;
-          l(g, b.state, b.point, f[k].userdata);
+          var m = f[k].callback;
+          m(g, b.state, b.point, f[k].userdata);
         }
       }
       this.m_captured_entities = [];
@@ -2959,15 +2959,15 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
       for (b.state === gb.input_context.state.pressed && (d = this.m_captured_entities.findIndex(function(a) {
         return a === c;
       }), -1 === d && this.m_captured_entities.push(c)), f = c.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, e = 0;e < h;++e) {
-        l = f[e].callback, d = this.m_captured_entities.findIndex(function(a) {
+        m = f[e].callback, d = this.m_captured_entities.findIndex(function(a) {
           return a === c;
-        }), -1 !== d && l(c, b.state, b.point, f[e].userdata);
+        }), -1 !== d && m(c, b.state, b.point, f[e].userdata);
       }
     }
     if (b.state === gb.input_context.state.dragged) {
       for (d = this.m_captured_entities.length, e = 0;e < d;++e) {
         for (g = this.m_captured_entities[e], f = g.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, k = 0;k < h;++k) {
-          l = f[k].callback, l(g, b.state, b.point, f[k].userdata);
+          m = f[k].callback, m(g, b.state, b.point, f[k].userdata);
         }
       }
     }
@@ -3568,12 +3568,12 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
   this.m_free_nodes_container[b] || (this.m_free_nodes_container[b] = [], this.m_free_nodes_container[b].push(new gb.vec4(0, 0, this.m_atlas_width, this.m_atlas_height)), console.warn("new atlas page created with index: " + b));
   var c = this.m_free_nodes_container[b];
   this.m_occupied_nodes_container[b] || (this.m_occupied_nodes_container[b] = []);
-  for (var d = this.m_occupied_nodes_container[b], e = !1, g = !1, f = !1, h = !1, k = !1, l = !1, n = 0, t = this.m_atlas_width * this.m_atlas_height + 1, q = -1, u = gb.max_rects_pack_algorithm.heuristic, w = c.length, r = 0;r < w;++r) {
-    var m = c[r];
-    if (m.z >= a.size.x && m.w >= a.size.y || m.z >= a.size.y && m.w >= a.size.x) {
+  for (var d = this.m_occupied_nodes_container[b], e = !1, g = !1, f = !1, h = !1, k = !1, m = !1, n = 0, t = this.m_atlas_width * this.m_atlas_height + 1, q = -1, u = gb.max_rects_pack_algorithm.heuristic, v = c.length, r = 0;r < v;++r) {
+    var l = c[r];
+    if (l.z >= a.size.x && l.w >= a.size.y || l.z >= a.size.y && l.w >= a.size.x) {
       k = !1;
       n = 0;
-      if (m.z >= a.size.y && m.w >= a.size.x && !(m.z >= a.size.x && m.w >= a.size.y)) {
+      if (l.z >= a.size.y && l.w >= a.size.x && !(l.z >= a.size.x && l.w >= a.size.y)) {
         if (!this.m_is_rotation_enabled) {
           continue;
         }
@@ -3584,53 +3584,53 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
       switch(this.m_heuristic) {
         case u.none:
           q = r;
-          r = w;
+          r = v;
           continue;
         case u.TL:
-          for (var n = n + m.y, h = f = !1, x = d.length, p = 0;p < x;++p) {
-            var v = d[p];
-            Math.abs(v.y + v.w / 2 - m.y - m.w / 2) < Math.max(v.w, m.w) / 2 && (v.x + v.z === m.x && (n -= 5, f = !0), v.x === m.x + m.z && (n -= 5, h = !0));
+          for (var n = n + l.y, h = f = !1, x = d.length, p = 0;p < x;++p) {
+            var w = d[p];
+            Math.abs(w.y + w.w / 2 - l.y - l.w / 2) < Math.max(w.w, l.w) / 2 && (w.x + w.z === l.x && (n -= 5, f = !0), w.x === l.x + l.z && (n -= 5, h = !0));
           }
           if (f || !h) {
-            m.x + m.z === this.m_atlas_width && (--n, h = !0), 0 === m.x && (--n, f = !0);
+            l.x + l.z === this.m_atlas_width && (--n, h = !0), 0 === l.x && (--n, f = !0);
           }
           break;
         case u.BAF:
-          n += m.z * m.w;
+          n += l.z * l.w;
           break;
         case u.BSSF:
-          n += Math.min(m.z - a.size.x, m.w - a.size.y);
+          n += Math.min(l.z - a.size.x, l.w - a.size.y);
           break;
         case u.BLSF:
-          n += Math.max(m.z - a.size.x, m.w - a.size.y);
+          n += Math.max(l.z - a.size.x, l.w - a.size.y);
           break;
         case u.MINW:
-          n += m.z;
+          n += l.z;
           break;
         case u.MINH:
-          n += m.w;
+          n += l.w;
       }
-      n < t && (t = n, q = r, e = f, g = h, l = k);
+      n < t && (t = n, q = r, e = f, g = h, m = k);
       k && console.error("implement sprite rotation");
     }
   }
-  l && console.error("implement sprite rotation");
+  m && console.error("implement sprite rotation");
   if (0 <= q) {
     r = q;
-    m = c[q];
-    f = new gb.vec4(m.x, m.y, a.size.x, a.size.y);
-    this.m_heuristic === u.TL && (e || 0 === m.x || m.z + m.x !== this.m_atlas_width || (f.x = this.m_atlas_width - a.size.x, f.y = m.y, f.z = a.size.x, f.w = a.size.y), !e && g && (f.x = m.x + m.z - a.size.x, f.y = m.y, f.z = a.size.x, f.w = a.size.y));
+    l = c[q];
+    f = new gb.vec4(l.x, l.y, a.size.x, a.size.y);
+    this.m_heuristic === u.TL && (e || 0 === l.x || l.z + l.x !== this.m_atlas_width || (f.x = this.m_atlas_width - a.size.x, f.y = l.y, f.z = a.size.x, f.w = a.size.y), !e && g && (f.x = l.x + l.z - a.size.x, f.y = l.y, f.z = a.size.x, f.w = a.size.y));
     d.push(new gb.vec4(f));
-    m.z > a.size.x && (p = new gb.vec4, p.x = m.x + (f.x === m.x ? a.size.x : 0), p.y = m.y, p.z = m.z - a.size.x, p.w = m.w, c.push(p));
-    m.w > a.size.y && (p = new gb.vec4, p.x = m.x, p.y = m.y + a.size.y, p.z = m.z, p.w = m.w - a.size.y, c.push(p));
+    l.z > a.size.x && (p = new gb.vec4, p.x = l.x + (f.x === l.x ? a.size.x : 0), p.y = l.y, p.z = l.z - a.size.x, p.w = l.w, c.push(p));
+    l.w > a.size.y && (p = new gb.vec4, p.x = l.x, p.y = l.y + a.size.y, p.z = l.z, p.w = l.w - a.size.y, c.push(p));
     c.splice(r, 1);
     for (r = 0;r < c.length;++r) {
-      m = c[r], gb.math.rect_intersect(m, f) && (f.x + f.z < m.x + m.z && (p = new gb.vec4, p.x = f.x + f.z, p.y = m.y, p.z = m.x + m.z - f.x - f.z, p.w = m.w, c.push(p)), f.y + f.w < m.y + m.w && (p = new gb.vec4, p.x = m.x, p.y = f.y + f.w, p.z = m.z, p.w = m.y + m.w - f.y - f.w, c.push(p)), f.x > m.x && (p = new gb.vec4, p.x = m.x, p.y = m.y, p.z = f.x - m.x, p.w = m.w, c.push(p)), f.y > m.y && (p = new gb.vec4, p.x = m.x, p.y = m.y, p.z = m.z, p.w = f.y - m.y, c.push(p)), c.splice(r, 1), --r)
+      l = c[r], gb.math.rect_intersect(l, f) && (f.x + f.z < l.x + l.z && (p = new gb.vec4, p.x = f.x + f.z, p.y = l.y, p.z = l.x + l.z - f.x - f.z, p.w = l.w, c.push(p)), f.y + f.w < l.y + l.w && (p = new gb.vec4, p.x = l.x, p.y = f.y + f.w, p.z = l.z, p.w = l.y + l.w - f.y - f.w, c.push(p)), f.x > l.x && (p = new gb.vec4, p.x = l.x, p.y = l.y, p.z = f.x - l.x, p.w = l.w, c.push(p)), f.y > l.y && (p = new gb.vec4, p.x = l.x, p.y = l.y, p.z = l.z, p.w = f.y - l.y, c.push(p)), c.splice(r, 1), --r)
       ;
     }
     for (r = 0;r < c.length;r++) {
       for (p = r + 1;p < c.length;p++) {
-        m = c[r], d = c[r], r != p && gb.math.rect_contains(m, d) && (c.splice(p, 1), --p);
+        l = c[r], d = c[r], r != p && gb.math.rect_contains(l, d) && (c.splice(p, 1), --p);
       }
     }
     return {position:new gb.vec2(f.x, f.y), page:b};
@@ -3640,15 +3640,45 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
   this.m_free_nodes_container = [];
   this.m_occupied_nodes_container = [];
 }}, static_methods:{}});
+oop.define_class({namespace:"gb", name:"common_alert_view", init:function(a, b, c) {
+  $(c(a)).append("<div id=" + b.common_alert_view + ' class="ui-state-error ui-corner-all" style="padding: 0 .7em; background:darkorange;"><p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Warning: </strong><div id=' + b.common_alert_view_textfield + ' style="margin-top: -10.5%; margin-left: 30%;"></div></p></div>');
+  $(c(b.common_alert_view)).dialog({autoOpen:!1, width:390, height:70, modal:!1, show:{effect:"bounce", duration:1E3}, hide:{effect:"clip", duration:250}, open:function(a, e) {
+    setTimeout(function() {
+      $(c(b.common_alert_view)).dialog("close");
+    }, 2E3);
+  }});
+  $(c(b.common_alert_view)).siblings("div.ui-dialog-titlebar").remove();
+}, release:function() {
+}, methods:{show:function(a, b, c) {
+  $(c(b.common_alert_view_textfield)).html(a);
+  $(c(b.common_alert_view)).dialog("open");
+}}, static_methods:{}});
+oop.define_class({namespace:"gb", name:"common_error_view", init:function(a, b, c) {
+  $(c(a)).append("<div id=" + b.common_error_view + ' class="ui-state-error ui-corner-all" style="padding: 0 .7em; background:darkorange;"><p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span><strong>Error: </strong><div id=' + b.common_error_view_textfield + ' style="margin-top: -10.5%; margin-left: 30%;"></div></p></div>');
+  $(c(b.common_error_view)).dialog({autoOpen:!1, width:450, height:450, modal:!0, show:{effect:"bounce", duration:1E3}, hide:{effect:"clip", duration:250}, buttons:[{text:"Report bug", click:function() {
+    location.reload();
+  }}, {text:"Ok", click:function() {
+    location.reload();
+  }}]});
+  $(c(b.common_error_view)).parent().css({background:"black"});
+  $(c(b.common_error_view)).siblings("div.ui-dialog-titlebar").remove();
+}, release:function() {
+}, methods:{show:function(a, b, c) {
+  $(c(b.common_error_view_textfield)).html(a);
+  $(c(b.common_error_view)).dialog("open");
+}}, static_methods:{}});
 var g_ss_merge_controller = null, g_ss_merge_transition = null;
 oop.define_class({namespace:"gb", name:"ss_merge_controller", constants:{html_elements:{tab_container:"ss-merge-tab-container", tab_left_panel:"ss-merge-tab-left-panel", tab_right_panel:"ss-merge-tab-right-panel", import_container:"ss-merge-import-container", import_size_drop_down_box:"ss-merge-size-drop-down-box", import_size_drop_down_box_button:"ss-merge-size-drop-down-box-button", import_drop_zone:"ss-merge-drop-zone", import_add_image_button:"ss-merge-add_image-button", import_add_image_input:"ss-merge-add_image-input", 
-frames_container:"ss-merge-frames-container", frames_sort_button:"ss-merge-frames-sort-button", frames_table:"ss-merge-frames-table", frames_table_cell:"ss-merge-frames-table-cell", frames_table_cell_delete_icon:"ss-merge-frames-table-cell-delete-icon", frames_table_cell_image:"ss-merge-frames-table-cell-image", editing_container:"ss-merge-editing-container", editing_page_drop_down_box:"ss-merge-editing-page-drop-down-box", editing_page_drop_down_box_button:"ss-merge-editing-page-drop-down-box-button", 
+frames_container:"ss-merge-frames-container", frames_sort_button:"ss-merge-frames-sort-button", frames_table:"ss-merge-frames-table", frames_table_scroll:"ss-merge-frames-table_scroll", frames_table_cell:"ss-merge-frames-table-cell", frames_table_cell_delete_icon:"ss-merge-frames-table-cell-delete-icon", frames_table_cell_image:"ss-merge-frames-table-cell-image", editing_container:"ss-merge-editing-container", editing_page_drop_down_box:"ss-merge-editing-page-drop-down-box", editing_page_drop_down_box_button:"ss-merge-editing-page-drop-down-box-button", 
 editing_move_resize_radio_button:"ss-merge-editing-move-resize-radio-button", editing_move_resize_freeform_button:"ss-merge-editing-move-resize-freeform-button", editing_move_resize_snaptogrid_button:"ss-merge-editing-move-resize-snaptogrid-button", editing_pack_algorithm_drop_down_box:"ss-merge-editing-pack-algorithm-drop-down-box", editing_pack_algorithm_drop_down_box_button:"ss-merge-editing-pack-algorithm-drop-down-box-button", editing_spread_button:"ss-merge-editing-spread-button", export_container:"ss-merge-export-container", 
-export_animation_preview_button:"ss-merge-export-animation-preview_button", export_save_atlas_button:"ss-merge-export-atlas-button", export_save_pages_table:"ss-merge-export-save-pages-table", export_save_pages_table_cell:"ss-merge-export-save-pages-table-cell", export_save_pages_table_cell_download_button:"ss-merge-export-save-pages-table-cell-download-button", export_save_frames_button:"ss-merge-export-save-frames-button", export_animation_preview_dialog:"ss-merge-export-animation-preview-dialog"}}, 
+export_filename_input:"ss-merge-export-filename-input", export_animation_preview_button:"ss-merge-export-animation-preview_button", export_save_images_button:"ss-merge-export-atlas-button", export_save_pages_table:"ss-merge-export-save-pages-table", export_save_pages_table_scroll:"ss-merge-export-save-pages-table-scroll", export_save_pages_table_cell:"ss-merge-export-save-pages-table-cell", export_save_pages_table_cell_download_button:"ss-merge-export-save-pages-table-cell-download-button", export_save_frames_button:"ss-merge-export-save-frames-button", 
+export_save_frames_textfield:"ss-merge-export_save-frames-textfield", export_save_frames_download_button:"ss-merge-export_save-frames-download-button", export_animation_preview_dialog:"ss-merge-export-animation-preview-dialog", common_alert_view:"ss-merge-common-alert-view", common_alert_view_textfield:"ss-merge-common-alert-view-textfield", common_error_view:"ss-merge-common-error-view", common_error_view_textfield:"ss-merge-common-error-view-textfield"}, default_filenames:{page:"page", configuration:"configuration"}}, 
 init:function() {
   g_ss_merge_controller = this;
-  var a = gb.ss_merge_controller.ui(), b = gb.ss_merge_controller.ui_j;
-  gb.ss_merge_controller.self();
+  var a = gb.ss_merge_controller.ui(), b = gb.ss_merge_controller.ui_j, c = gb.ss_merge_controller.self();
+  window.onerror = function(d, e, g, f, h) {
+    c.error_view.show("Error occured! " + d + "\n(" + e + ":" + g + ")" + h ? "\n\n" + h.stack : "", a, b);
+  };
   $(b(a.tab_container)).append($("<div id=" + a.tab_left_panel + ' style="background:black;"/>'));
   $(b(a.tab_container)).append($("<div id=" + a.tab_right_panel + ' style="background:black;"/>'));
   $(b(a.tab_right_panel)).append($('<canvas style="width:100%; height:100%;" id="gl_canvas" width="1024" height="1024"></canvas>'));
@@ -3658,6 +3688,9 @@ init:function() {
   this.m_export_view = new gb.ss_merge_export_view(this, a, b);
   $(b(a.tab_container)).tooltip({position:{my:"left top", at:"left+10 top+10", of:"#gl_canvas"}});
   $(b(a.tab_left_panel)).accordion({heightStyle:"content"});
+  $(b(a.tab_left_panel)).on("accordionbeforeactivate", function(d, e) {
+    return 0 < $(e.newHeader).index("h3") && 0 === c.m_sprites.length ? (c.alert_view.show("You need to add sprites at first!", a, b), !1) : !0;
+  });
   new gb.graphics_context;
   g_ss_merge_transition = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json");
   gb.game_controller.get_instance().add_transition(g_ss_merge_transition);
@@ -3667,12 +3700,16 @@ init:function() {
   this.m_importing_images_size = 1;
   this.m_selector = this.m_grid = null;
   this.m_preview_animation_controller = new gb.ss_preview_animation_controller;
+  this.m_alert_view = new gb.common_alert_view(a.tab_left_panel, a, b);
+  this.m_error_view = new gb.common_error_view(a.tab_left_panel, a, b);
   this.m_merge_algorithm = new gb.max_rects_pack_algorithm;
   this.m_merge_algorithm.atlas_width = 1024;
   this.m_merge_algorithm.atlas_height = 1024;
   this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.TL;
   this.m_scene = null;
   this.m_page_size = 1024;
+  this.m_export_image_filename = gb.ss_merge_controller.default_filenames.page;
+  this.m_export_configuration_filename = gb.ss_merge_controller.default_filenames.configuration;
   Object.defineProperty(this, "import_view", {get:function() {
     return this.m_import_view;
   }});
@@ -3685,8 +3722,24 @@ init:function() {
   Object.defineProperty(this, "preview_animation_controller", {get:function() {
     return this.m_preview_animation_controller;
   }});
+  Object.defineProperty(this, "alert_view", {get:function() {
+    return this.m_alert_view;
+  }});
+  Object.defineProperty(this, "error_view", {get:function() {
+    return this.m_error_view;
+  }});
   Object.defineProperty(this, "importing_images_size", {get:function() {
     return this.m_importing_images_size;
+  }});
+  Object.defineProperty(this, "export_image_filename", {get:function() {
+    return this.m_export_image_filename;
+  }, set:function(a) {
+    this.m_export_image_filename = a;
+  }});
+  Object.defineProperty(this, "export_configuration_filename", {get:function() {
+    return this.m_export_configuration_filename;
+  }, set:function(a) {
+    this.m_export_configuration_filename = a;
   }});
   Object.defineProperty(this, "scene", {get:function() {
     return this.m_scene;
@@ -3741,26 +3794,26 @@ init:function() {
           var e = new Image;
           e.src = a.target.result;
           e.onload = function() {
-            b.scene.fabricator.resources_accessor.get_texture(a.target.m_filename, e).add_resource_loading_callback(function(e, f) {
-              for (var g = b.scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
-                e.mag_filter = gl.LINEAR;
-                e.min_filter = gl.LINEAR;
-                e.wrap_mode = gl.CLAMP_TO_EDGE;
-                g.get_component(gb.ces_base_component.type.material).set_texture(e, 0);
-                g.size = new gb.vec2(Math.round(e.width * b.importing_images_size), Math.round(e.height * b.importing_images_size));
-                b.on_sprite_added_to_page(g, 0);
+            b.scene.fabricator.resources_accessor.get_texture(a.target.m_filename, e).add_resource_loading_callback(function(f, g) {
+              for (var h = b.scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+                f.mag_filter = gl.LINEAR;
+                f.min_filter = gl.LINEAR;
+                f.wrap_mode = gl.CLAMP_TO_EDGE;
+                h.get_component(gb.ces_base_component.type.material).set_texture(f, 0);
+                h.size = new gb.vec2(Math.round(f.width * b.importing_images_size), Math.round(f.height * b.importing_images_size));
+                b.on_sprite_added_to_page(h, 0);
                 d++;
                 if (d === c) {
                   b.on_pack_sprites();
                 }
-              }), h = b.m_sprites.length, l = 0, r = null, m = 0;m < h;++m) {
-                r = b.m_sprites[m], -1 !== r.tag.indexOf(a.target.m_filename) && l++;
+              }), u = b.m_sprites.length, v = 0, r = null, l = 0;l < u;++l) {
+                r = b.m_sprites[l], -1 !== r.tag.indexOf(a.target.m_filename) && v++;
               }
-              h = a.target.m_filename;
-              0 !== l && (h += "(" + l + ")");
-              g.tag = h;
-              b.frames_view.add_frame(b, h, a.target.result, gb.ss_merge_controller.ui(), gb.ss_merge_controller.ui_j);
-              b.on_sprite_added_to_table(g);
+              u = a.target.m_filename;
+              0 !== v && (u += "(" + v + ")");
+              h.tag = u;
+              b.frames_view.add_frame(b, u, e, gb.ss_merge_controller.ui(), gb.ss_merge_controller.ui_j);
+              b.on_sprite_added_to_table(h);
             });
           };
         };
@@ -3772,7 +3825,7 @@ init:function() {
   d.set_selected_sprite(a);
 }, set_selected_sprite:function(a) {
   for (var b = gb.ss_merge_controller.html_elements, c = gb.ss_merge_controller.ui_j, d = this.m_sprites.indexOf(a), e = this.m_sprites.length, g = 0;g < e;++g) {
-    g === d ? $(c(b.frames_table)).animate({scrollTop:170 * d}, "slow", "swing", function() {
+    g === d ? $(c(b.frames_table_scroll)).animate({scrollTop:170 * d}, "slow", "swing", function() {
       $(c(b.frames_table) + " li").eq(d).find("p").animate({backgroundColor:"#f58400"});
     }) : $(c(b.frames_table) + " li").eq(g).find("p").css({background:"black"});
   }
@@ -3813,9 +3866,10 @@ init:function() {
   this.on_page_changed(0, !0);
 }, on_sprite_added_to_table:function(a) {
   a.is_touchable = !0;
-  a.get_component(gb.ces_base_component.type.touch_recognize).add_callback(gb.input_context.state.pressed, self.on_sprite_pressed, self);
+  a.get_component(gb.ces_base_component.type.touch_recognize).add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this);
   this.scene.add_child(a);
   this.m_sprites.push(a);
+  aaa.callle(aaa);
 }, on_sprite_removed_from_table:function(a) {
   for (var b = -1, c = null, d = this.m_sprites.length, e = 0;e < d;++e) {
     if (c = gb.ss_merge_controller.self().m_sprites[e], c.tag === a) {
@@ -3892,6 +3946,8 @@ init:function() {
     d.m_current_page = a;
     d.on_add_sprites_on_page(a, b, c);
   });
+}, on_export_filename_changed:function(a) {
+  this.export_configuration_filename = this.export_image_filename = a;
 }, on_export_images:function(a) {
   var b = gb.ss_merge_controller.html_elements, c = gb.ss_merge_controller.ui_j;
   this.set_selected_sprite(null);
@@ -3900,7 +3956,7 @@ init:function() {
     e.on_page_changed(h, !0, function() {
       var k = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, e.m_page_size, e.m_page_size);
       g.push(k);
-      e.export_view.add_frame(k, h, b, c);
+      e.export_view.add_frame(k, e.export_image_filename, h, b, c);
       h++;
       h < d ? f(h) : (e.on_page_changed(0, !0), a && a(g));
     });
@@ -3918,12 +3974,13 @@ init:function() {
         break;
       }
     }
-    g = e.position;
+    g = new gb.vec2(e.position);
     g.x -= e.size.x * e.pivot.x;
     g.y -= e.size.y * e.pivot.y;
     f = gb.vec2.add(g, e.size);
     a.push({t_name:"page_" + k + ".png", d_name:e.tag, u_0:g.x / this.m_page_size, v_0:g.y / this.m_page_size, u_1:f.x / this.m_page_size, v_1:f.y / this.m_page_size});
   }
+  this.export_view.add_frames_configuration(a, this.export_configuration_filename, gb.ss_merge_controller.html_elements, gb.ss_merge_controller.ui_j);
   return a;
 }, on_preview_animation_open:function() {
   this.set_selected_sprite(null);
@@ -3975,8 +4032,8 @@ oop.define_class({namespace:"gb", name:"ss_merge_import_view", extend:gb.game_ob
   });
 }, release:function() {
 }, methods:{}, static_methods:{}});
-oop.define_class({namespace:"gb", name:"ss_merge_frames_view", extend:gb.game_object, init:function(a, b, c) {
-  $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>frames</h3><div style="background:none; border:0px;"><button id=' + b.frames_sort_button + ' style="margin:2%; width:95%;">sort by name</button><div style="height:340px" class="scroll"><ul style="list-style-type:none; margin-left:-12.5%;" id="' + b.frames_table + '"></ul></div></div>');
+oop.define_class({namespace:"gb", name:"ss_merge_frames_view", constants:{image_preview_size:{width:128, height:128}}, init:function(a, b, c) {
+  $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>frames</h3><div style="background:none; border:0px;"><button id=' + b.frames_sort_button + ' style="margin:2%; width:95%;">sort by name</button><div id=' + b.frames_table_scroll + ' style="height:340px" class="scroll"><ul style="list-style-type:none; margin-left:-12.5%;" id="' + b.frames_table + '"></ul></div></div>');
   $(".scroll").scrollable();
   $(c(b.frames_table)).height(0);
   $(c(b.frames_table)).sortable();
@@ -3988,9 +4045,10 @@ oop.define_class({namespace:"gb", name:"ss_merge_frames_view", extend:gb.game_ob
   $(c(b.frames_sort_button)).button("disable");
 }, release:function() {
 }, methods:{add_frame:function(a, b, c, d, e) {
-  var g = this;
+  var g = this, f = c.width / c.height, h = gb.ss_merge_frames_view.image_preview_size.width, k = gb.ss_merge_frames_view.image_preview_size.height;
+  c.width > c.height ? k /= f : c.width < c.height && (h /= f);
   $(e(d.frames_table)).append('<li class="ui-state-default" id=' + b + ' style="height: 160px; margin: 8px; background: none;"><p align="center" style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;" id=' + d.frames_table_cell + ' class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-circle-arrow-e" style="float:left; margin:4px;"/><span id=' + d.frames_table_cell_delete_icon + ' class="ui-icon ui-icon-trash" style="float:right; margin:4px;"/>' + 
-  b + '</p><img style="float:left; margin:2px; height:128px; width:128px;" id=' + d.frames_table_cell_image + ' align="left" src="' + c + '"/></li>');
+  b + '</p><img style="float:left; margin:2px; height:' + k + "px; width:" + h + 'px;" id=' + d.frames_table_cell_image + ' align="left" src="' + c.src + '"/></li>');
   b = $(e(d.frames_table)).children();
   $($(b[b.length - 1]).find("#" + d.frames_table_cell_delete_icon)).click(function() {
     var b = $(this).parent().find("#" + d.frames_table_cell).text();
@@ -4004,7 +4062,7 @@ oop.define_class({namespace:"gb", name:"ss_merge_frames_view", extend:gb.game_ob
   $(b(a.frames_table)).height(170 * c);
   $(b(a.frames_sort_button)).button(1 < c ? "enable" : "disable");
 }}, static_methods:{}});
-oop.define_class({namespace:"gb", name:"ss_merge_packer_view", extend:gb.game_object, init:function(a, b, c) {
+oop.define_class({namespace:"gb", name:"ss_merge_packer_view", init:function(a, b, c) {
   $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>packer</h3><div style="background:none; border:0px;" id=' + b.editing_container + '><div style="width:95%; margin:2%; margin-top:5%"><select id=' + b.editing_page_drop_down_box + '><option selected="selected">page 1</option></select></div><div style="margin:2%;" id=' + b.editing_move_resize_radio_button + '><input type="radio" id=' + b.editing_move_resize_freeform_button + ' name="' + b.editing_move_resize_radio_button + 
   '" checked="checked"><label for=' + b.editing_move_resize_freeform_button + ' style="width:48%;">free form</label><input type="radio" id=' + b.editing_move_resize_snaptogrid_button + ' name="' + b.editing_move_resize_radio_button + '"><label for=' + b.editing_move_resize_snaptogrid_button + ' style="width:52%;">snap to grid</label></div><div title="packing algorithm" style="width:95%; margin:2%; margin-top:5%"><select id=' + b.editing_pack_algorithm_drop_down_box + '><option selected="selected">heuristic - none</option><option>heuristic - TL (top left fit)</option><option>heuristic - BAF (best area fit)</option><option>heuristic - BSSF (best short side fit)</option><option>heuristic - BLSF (best long side fit)</option><option>heuristic - MINW (min width fit)</option><option>heuristic - MINH (min height fit)</option></select></div><button id=' + 
   b.editing_spread_button + ' style="margin:2%; width:95.5%;">spread</button></div>');
@@ -4025,31 +4083,51 @@ oop.define_class({namespace:"gb", name:"ss_merge_packer_view", extend:gb.game_ob
   });
 }, release:function() {
 }, methods:{}, static_methods:{}});
-oop.define_class({namespace:"gb", name:"ss_merge_export_view", extend:gb.game_object, init:function(a, b, c) {
-  $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>export</h3><div style="background:none; border:0px;" id=' + b.export_container + '><button title="preview animation" id=' + b.export_animation_preview_button + ' style="margin:2%; width:95.5%;">preview animation</button><br><button id=' + b.export_save_atlas_button + ' style="margin:2%; width:95.5%;">create images</button><br><ul style="list-style-type:none; height:340px; overflow:auto; margin-left:-10%; margin-top:-0.5%;" id="' + 
-  b.export_save_pages_table + '"/><button id=' + b.export_save_frames_button + ' style="margin:2%; margin-top:-2%; width:95.5%;">create frames configuration</button></div>');
+oop.define_class({namespace:"gb", name:"ss_merge_export_view", init:function(a, b, c) {
+  $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>export</h3><div style="background:none; border:0px;" id=' + b.export_container + '><input class="ui-widget ui-front ui-widget-content ui-corner-all" style="margin:2%; width:94%;" placeholder=" enter filename..." id=' + b.export_filename_input + ' type="text"><button title="preview animation" id=' + b.export_animation_preview_button + ' style="margin:2%; width:95.5%;">preview animation</button><br><button id=' + 
+  b.export_save_images_button + ' style="margin:2%; width:95.5%;">generate images</button><br><div id=' + b.export_save_pages_table_scroll + ' style="height:340px" class="scroll"><ul style="list-style-type:none; margin-left:-10%; margin-top:-0.5%;" id="' + b.export_save_pages_table + '"/></div><button id=' + b.export_save_frames_button + ' style="margin:2%; margin-top:-2%; width:95.5%;">generate frames configuration</button></div>');
   $(c(b.tab_right_panel)).append("<div id=" + b.export_animation_preview_dialog + ' class="ui-dialog" title="Animation"></div>');
-  $(c(b.export_save_atlas_button)).button();
-  $(c(b.export_save_atlas_button)).on("click", function() {
+  $(c(b.export_filename_input)).change(function(d) {
+    $(c(b.export_save_images_button)).button(0 != d.target.value.length ? "enable" : "disable");
+    $(c(b.export_save_frames_button)).button(0 != d.target.value.length ? "enable" : "disable");
+    $(c(b.export_animation_preview_button)).button(0 != d.target.value.length ? "enable" : "disable");
+    if (0 != d.target.value.length) {
+      a.on_export_filename_changed(d.target.value);
+    }
+  });
+  $(c(b.export_save_images_button)).button();
+  $(c(b.export_save_images_button)).on("click", function() {
     a.on_export_images();
   });
-  $(c(b.export_save_pages_table)).height(0);
+  $(c(b.export_save_images_button)).button("disable");
+  $(c(b.export_save_pages_table_scroll)).height(0);
   $(c(b.export_save_pages_table)).sortable();
   $(c(b.export_save_pages_table)).disableSelection();
   $(c(b.export_save_frames_button)).button();
+  $(c(b.export_save_frames_button)).on("click", function() {
+    a.on_export_configuration();
+  });
+  $(c(b.export_save_frames_button)).button("disable");
   $(c(b.export_animation_preview_button)).button();
   $(c(b.export_animation_preview_button)).on("click", function() {
     a.on_preview_animation_open();
   });
+  $(c(b.export_animation_preview_button)).button("disable");
   $(c(b.export_animation_preview_dialog)).dialog({autoOpen:!1, width:512, height:512, modal:!0, show:{effect:"blind", duration:300}, hide:{effect:"blind", duration:300}, beforeClose:function() {
     a.on_preview_animation_close();
   }});
 }, release:function() {
-}, methods:{add_frame:function(a, b, c, d) {
-  $(d(c.export_save_pages_table)).append('<li class="ui-state-default" style="height:160px; margin:8px; background: none;"><p align="center" style="font-size:14px; float:left; margin:4px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;" class="ui-widget-header">page_' + (b + 1) + '.png</p><img style="float:left; margin:2px; height:128px; width:128px;" align="left" src="' + a.src + '"/><a style="margin-top:12%; margin-left:8%;" id="' + c.export_save_pages_table_cell_download_button + 
-  b + '" href="' + a.src.replace("image/png", "image/octet-stream") + '"  download="page_' + (b + 1) + '.png">download</a></li>');
-  $("#" + c.export_save_pages_table_cell_download_button + b).button();
-  $(d(c.export_save_pages_table)).height(170 * Math.min(b + 1, 2));
+}, methods:{add_frame:function(a, b, c, d, e) {
+  $(e(d.export_save_pages_table)).append('<li class="ui-state-default" style="height:160px; margin:8px; background: none;"><p align="center" style="font-size:14px; float:left; margin:4px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;" class="ui-widget-header">' + b + (c + 1) + '.png</p><img style="float:left; margin:2px; height:128px; width:128px;" align="left" src="' + a.src + '"/><a style="margin-top:12%; margin-left:8%;" id="' + d.export_save_pages_table_cell_download_button + 
+  c + '" href="' + a.src.replace("image/png", "image/octet-stream") + '"  download="' + b + (c + 1) + '.png">download</a></li>');
+  $("#" + d.export_save_pages_table_cell_download_button + c).button();
+  $(e(d.export_save_pages_table_scroll)).height(170 * Math.min(c + 1, 2));
+}, add_frames_configuration:function(a, b, c, d) {
+  $(d(c.export_save_frames_textfield)).remove();
+  $(d(c.export_save_frames_download_button)).remove();
+  var e = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(a));
+  $(d(c.export_container)).append("<div id=" + c.export_save_frames_textfield + ' class="ui-widget ui-front ui-widget-content ui-corner-all" style="margin:2%; font-size: 1vw; height: 150px; overflow: hidden; background: gray;">' + JSON.stringify(a) + '</div><a style="margin-top:2%; margin-left:2%; width:95.5%;" id=' + c.export_save_frames_download_button + ' href="data:' + e + '" download="' + b + '.json">download frames configuration</a>');
+  $(d(c.export_save_frames_download_button)).button();
 }, cleanup_frames:function(a, b) {
   for (var c = $(b(a.export_save_pages_table)).children(), d = c.length, e = 0;e < d;++e) {
     c[e].remove();
@@ -4097,12 +4175,12 @@ oop.define_class({namespace:"gb", name:"ss_preview_animation_controller", init:f
     var g = new gb.camera(gl.viewport_width, gl.viewport_height);
     c.camera = g;
     var f = c.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
-      for (var d = f.get_component(gb.ces_base_component.type.material), g = a.length, l = 0;l < g;++l) {
-        var n = c.fabricator.resources_accessor.get_texture("page_" + l + ".png", a[l]);
+      for (var d = f.get_component(gb.ces_base_component.type.material), g = a.length, m = 0;m < g;++m) {
+        var n = c.fabricator.resources_accessor.get_texture("page_" + m + ".png", a[m]);
         n.mag_filter = gl.LINEAR;
         n.min_filter = gl.LINEAR;
         n.wrap_mode = gl.CLAMP_TO_EDGE;
-        d.set_texture(n, l);
+        d.set_texture(n, m);
       }
       c.add_child(f);
       f.size = new gb.vec2(256, 256);

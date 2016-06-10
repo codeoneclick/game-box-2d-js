@@ -21,6 +21,7 @@ oop.define_class({
             frames_container: "ss-merge-frames-container",
             frames_sort_button: "ss-merge-frames-sort-button",
             frames_table: "ss-merge-frames-table",
+            frames_table_scroll: "ss-merge-frames-table_scroll",
             frames_table_cell: "ss-merge-frames-table-cell",
             frames_table_cell_delete_icon: "ss-merge-frames-table-cell-delete-icon",
             frames_table_cell_image: "ss-merge-frames-table-cell-image",
@@ -34,13 +35,25 @@ oop.define_class({
             editing_pack_algorithm_drop_down_box_button: "ss-merge-editing-pack-algorithm-drop-down-box-button",
             editing_spread_button: "ss-merge-editing-spread-button",
             export_container: "ss-merge-export-container",
+            export_filename_input: "ss-merge-export-filename-input",
             export_animation_preview_button: "ss-merge-export-animation-preview_button",
-            export_save_atlas_button: "ss-merge-export-atlas-button",
+            export_save_images_button: "ss-merge-export-atlas-button",
             export_save_pages_table: "ss-merge-export-save-pages-table",
+            export_save_pages_table_scroll: "ss-merge-export-save-pages-table-scroll",
             export_save_pages_table_cell: "ss-merge-export-save-pages-table-cell",
             export_save_pages_table_cell_download_button: "ss-merge-export-save-pages-table-cell-download-button",
             export_save_frames_button: "ss-merge-export-save-frames-button",
-            export_animation_preview_dialog: "ss-merge-export-animation-preview-dialog"
+            export_save_frames_textfield: "ss-merge-export_save-frames-textfield",
+            export_save_frames_download_button: "ss-merge-export_save-frames-download-button",
+            export_animation_preview_dialog: "ss-merge-export-animation-preview-dialog",
+            common_alert_view: "ss-merge-common-alert-view",
+            common_alert_view_textfield: "ss-merge-common-alert-view-textfield",
+            common_error_view: "ss-merge-common-error-view",
+            common_error_view_textfield: "ss-merge-common-error-view-textfield"
+        },
+        default_filenames: {
+            page: "page",
+            configuration: "configuration"
         }
     },
 
@@ -50,6 +63,10 @@ oop.define_class({
         var ui_j = gb.ss_merge_controller.ui_j;
         var self = gb.ss_merge_controller.self();
         var element = null;
+
+        window.onerror = function(message, file, line, column, error) {
+            self.error_view.show("Error occured! " + message + "\n(" + file + ":" + line + ")" + error ? "\n\n" + error.stack : "", ui, ui_j);
+        };
 
         $(ui_j(ui.tab_container)).append($("<div id=" + ui.tab_left_panel + " style=\"background:black;\"/>"));
         $(ui_j(ui.tab_container)).append($("<div id=" + ui.tab_right_panel + " style=\"background:black;\"/>"));
@@ -67,7 +84,17 @@ oop.define_class({
                 of: '#gl_canvas'
             }
         });
-        $(ui_j(ui.tab_left_panel)).accordion({heightStyle: 'content'});
+        $(ui_j(ui.tab_left_panel)).accordion({
+            heightStyle: 'content'
+        });
+        $(ui_j(ui.tab_left_panel)).on("accordionbeforeactivate", function(event, element) {
+            var index = $(element.newHeader).index('h3');
+            if (index > 0 && self.m_sprites.length === 0) {
+                self.alert_view.show("You need to add sprites at first!", ui, ui_j);
+                return false;
+            } 
+            return true;
+        });
 
         var gl_context = new gb.graphics_context();
         g_ss_merge_transition = new gb.game_transition("data/resources/configurations/transitions/transition.spritesheets.merge.json");
@@ -83,6 +110,8 @@ oop.define_class({
         this.m_selector = null;
 
         this.m_preview_animation_controller = new gb.ss_preview_animation_controller();
+        this.m_alert_view = new gb.common_alert_view(ui.tab_left_panel, ui, ui_j);
+        this.m_error_view = new gb.common_error_view(ui.tab_left_panel, ui, ui_j);
 
         this.m_merge_algorithm = new gb.max_rects_pack_algorithm();
         this.m_merge_algorithm.atlas_width = 1024;
@@ -91,6 +120,9 @@ oop.define_class({
 
         this.m_scene = null;
         this.m_page_size = 1024;
+
+        this.m_export_image_filename = gb.ss_merge_controller.default_filenames.page;
+        this.m_export_configuration_filename = gb.ss_merge_controller.default_filenames.configuration;
 
         Object.defineProperty(this, 'import_view', {
             get: function() {
@@ -112,9 +144,35 @@ oop.define_class({
                 return this.m_preview_animation_controller;
             }
         });
+        Object.defineProperty(this, 'alert_view', {
+            get: function() {
+                return this.m_alert_view;
+            }
+        });
+        Object.defineProperty(this, 'error_view', {
+            get: function() {
+                return this.m_error_view;
+            }
+        });
         Object.defineProperty(this, 'importing_images_size', {
             get: function() {
                 return this.m_importing_images_size;
+            }
+        });
+        Object.defineProperty(this, 'export_image_filename', {
+            get: function() {
+                return this.m_export_image_filename;
+            },
+            set: function(value) {
+                this.m_export_image_filename = value;
+            }
+        });
+        Object.defineProperty(this, 'export_configuration_filename', {
+            get: function() {
+                return this.m_export_configuration_filename;
+            },
+            set: function(value) {
+                this.m_export_configuration_filename = value;
             }
         });
         Object.defineProperty(this, 'scene', {
@@ -235,7 +293,7 @@ oop.define_class({
                                     unique_tag += "(" + same_images_count + ")"
                                 }
                                 sprite.tag = unique_tag;
-                                self.frames_view.add_frame(self, unique_tag, data.target.result, gb.ss_merge_controller.ui(), gb.ss_merge_controller.ui_j);
+                                self.frames_view.add_frame(self, unique_tag, image, gb.ss_merge_controller.ui(), gb.ss_merge_controller.ui_j);
                                 self.on_sprite_added_to_table(sprite);
                             });
                         };
@@ -256,7 +314,7 @@ oop.define_class({
             var sprites_count = this.m_sprites.length;
             for (var i = 0; i < sprites_count; ++i) {
                 if (i === sprite_index) {
-                    $(ui_j(ui.frames_table)).animate({
+                    $(ui_j(ui.frames_table_scroll)).animate({
                         scrollTop: sprite_index * 170
                     }, 'slow', 'swing', function() {
                         $(ui_j(ui.frames_table) + ' li').eq(sprite_index).find('p').animate({
@@ -352,9 +410,11 @@ oop.define_class({
         on_sprite_added_to_table: function(sprite) {
             sprite.is_touchable = true;
             var touch_recognize_component = sprite.get_component(gb.ces_base_component.type.touch_recognize);
-            touch_recognize_component.add_callback(gb.input_context.state.pressed, self.on_sprite_pressed, self);
+            touch_recognize_component.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this);
             this.scene.add_child(sprite);
             this.m_sprites.push(sprite);
+
+            aaa.callle(aaa);
         },
 
         on_sprite_removed_from_table: function(unique_tag) {
@@ -503,6 +563,11 @@ oop.define_class({
             }); 
         },
 
+        on_export_filename_changed: function(filename) {
+            this.export_image_filename = filename;
+            this.export_configuration_filename = filename;
+        },
+
         on_export_images: function(callback) {
             var ui = gb.ss_merge_controller.html_elements;
             var ui_j = gb.ss_merge_controller.ui_j;
@@ -516,7 +581,7 @@ oop.define_class({
                 self.on_page_changed(page, true, function() {
                     var image = g_ss_merge_transition.get_ws_technique_result_as_image("ws.savetoimage", 0, self.m_page_size, self.m_page_size);
                     images.push(image);
-                    self.export_view.add_frame(image, page, ui, ui_j);
+                    self.export_view.add_frame(image, self.export_image_filename, page, ui, ui_j);
                     page++;
                     if(page < pages_count) {
                         create_page_shapshot(page);
@@ -555,7 +620,7 @@ oop.define_class({
                         break;
                     }
                 }
-                var position_in_atlas = sprite.position;
+                var position_in_atlas = new gb.vec2(sprite.position);
                 position_in_atlas.x -= sprite.size.x * sprite.pivot.x;
                 position_in_atlas.y -= sprite.size.y * sprite.pivot.y;
                 position_0 = position_in_atlas;
@@ -569,6 +634,9 @@ oop.define_class({
                     v_1: position_1.y / this.m_page_size
                 });
             }
+            var ui = gb.ss_merge_controller.html_elements;
+            var ui_j = gb.ss_merge_controller.ui_j;
+            this.export_view.add_frames_configuration(frames, this.export_configuration_filename, ui, ui_j);
             return frames;
         },
 
