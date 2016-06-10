@@ -1,0 +1,11 @@
+{
+	"technique_name": "ws.savetoimage",
+	"num_passes": "1",
+	"index": "0",
+	"screen_width": "1024",
+	"screen_height": "1024",
+	"clear_color_r": "0.0",
+	"clear_color_g": "0.0",
+	"clear_color_b": "0.0",
+	"clear_color_a": "0.0"
+}

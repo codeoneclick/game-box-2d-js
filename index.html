@@ -4,258 +4,59 @@
         <title>game-box-2d</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
         <link rel="stylesheet" href="libs/jquery.ui-1.11.4/jquery-ui.min.css">
+        <link rel="stylesheet" href="libs/jquery-scrollable-1.2/jquery.scrollable.css">
         <link rel="stylesheet" href="css/main_menu/main_menu.css">
+        <script src="libs/box2d-2.3.1/box2d-min.js"></script>
         <script src="libs/jquery-1.12.3/jquery-min.js"></script>
         <script src="libs/jquery.ui-1.11.4/jquery-ui.min.js"></script>
-        <script src="libs/jquery.layout-1.4.3/jquery.layout-min.js"></script>
+        <script src="libs/jquery-scrollable-1.2/jquery.scrollable-min.js"></script>
         <script src="libs/underscore/underscore-min.js"></script>
         <script src="libs/fps_meter/fps_meter-min.js"></script>
-        <style type="text/css">
-            html, body {
-                background: #666;
-                width:      100%;
-                height:     100%;                   
-                padding:    0;
-                margin:     0;
-                overflow:   auto;
-            }
-        </style>
-
+        <script src="libs/stats-0.16.0/stats-min.js"></script>
         <script type="text/javascript">
-            
-            $(function() {
-                $( "#resizable" ).resizable({
-                    animate: true
-                });
-             });
 
             var g_game_controller = null;
-            var game_logic = null;
-            var g_sprite_01 = null;
-            var g_scene = null;
-
-            function on_mouse_down(event)
-            {
-                console.log(event);
-            }
-
-            function on_mouse_up(event)
-            {
-                console.log(event);
-            }
-
-            function handle_file_select(event) 
-            {
-                console.log(event);
-
-                event.stopPropagation();
-                event.preventDefault();
-
-                var files = event.dataTransfer.files;
-
-                for (var i = 0; i < files.length; ++i) 
-                {
-                    var file = files[i];
-                    if (!file.type.match('image.*')) 
-                    {
-                        continue;
-                    }
-                    console.log(file);
-
-                    var reader = new FileReader();
-
-                    reader.onload = (function(data) {
-                        return function(data) 
-                        {
-                            var image = new Image();
-                            image.src = data.target.result;
-
-                            if(!gb.math.is_pot(image.width) || !gb.math.is_pot(image.height))
-                            {
-                                console.error("wrong image");
-                            }
-                            
-                            var new_texture = g_scene.fabricator.resources_accessor.get_texture(file.name, image);
-                            new_texture.add_resource_loading_callback(function(resource, userdata) {
-                                var material_component = g_sprite_01.get_component(gb.ces_base_component.type.material);
-                                material_component.set_texture(resource, 0);
-                            });
-                        };
-                    })(file);
-                    reader.readAsDataURL(file);
-                }
-            }
-
-            function handle_drag_over(event)
-            {
-                console.log(event);
-
-                event.stopPropagation();
-                event.preventDefault();
-                event.dataTransfer.dropEffect = 'copy';
-            }
             
             function app_start()
             {
-                $("#container").append($("<div class=\"pane ui-layout-north\" id=\"ui-layout-north\"></div>"));
-                $("#container").append($("<div class=\"pane ui-layout-center\" id=\"ui-layout-center\"/>"));
-                $("#container").append($("<div class=\"pane ui-layout-west\" id=\"ui-layout-west\"/>"));
-                $("#ui-layout-center").append($("<canvas id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
-                $("#ui-layout-west").append($("<div id=\"frame-size\">Frame Size</div>"));
-                $("#frame-size").append($("<div id=\"frame-width-slider\">\
-                    <input type=\"text\" id=\"frame-width-value\" readonly\ value=\"Width 32 px\"></div></p>"));
-                $("#frame-size").append($("<div id=\"frame-height-slider\">\
-                    <input type=\"text\" id=\"frame-height-value\" readonly\ value=\"Height 32 px\"></div></p>"));
-                $("#ui-layout-west").append($("<div id=\"images-container\">Images</div>"));
-                $("#images-container").append($("<ul id=\"images-list\">"));
-                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
-                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
-                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
-                $("#images-list").append($("<li class=\"ui-state-default\"></li>"));
-                $("#images-container").append($("</ul>"));
+                var menu_tabs = $("#menu-tabs").tabs();
+                menu_tabs.find(".ui-tabs-nav" ).sortable({
+                            axis: "x",
+                            stop: function() {
+                                menu_tabs.tabs( "refresh" );
+                            }
+                });
+
+                var ss_merge_controller = new gb.ss_merge_controller();
+                ss_merge_controller.activate();
                 
-                $("#ui-layout-west").append($("<div id=\"drop-zone\">Drop Zone</div>"));
+                var ss_animation_controller = new gb.ss_animation_controller();
 
-                var layout = $('#container').layout();
-                $("#radio").buttonset();
-                $("#radio1").click(function(){
-                    alert("The paragraph was clicked.");
+                $("#ss-merge-tab-button").click(function(){
+                    ss_animation_controller.deactivate();
+                    ss_merge_controller.activate();
                 });
 
-                layout.panes.north.css({ height: '36px' }); 
-                layout._sizePane("north", 36);
-
-                layout.panes.west.css({ width: '400px' }); 
-                layout._sizePane("west", 400);
-
-                $( "#frame-width-slider" ).slider({
-                    value:32,
-                    min: 32,
-                    max: 1024,
-                    step: 32,
-                    slide: function( event, ui ) {
-                         $( "#frame-width-value" ).val("Width " + ui.value + " px");   
-                    }
-                });
-
-                $( "#frame-height-slider" ).slider({
-                    value:32,
-                    min: 32,
-                    max: 1024,
-                    step: 32,
-                    slide: function( event, ui ) {
-                         $( "#frame-height-value" ).val("Height " + ui.value + " px");   
-                    }
-                });
-
-                $("#images-list").sortable();
-                $("#images-list").disableSelection();
-
-                var drop_zone = document.getElementById('drop-zone');
-                drop_zone.addEventListener('dragover', handle_drag_over, false);
-                drop_zone.addEventListener('drop', handle_file_select, false);
-
-                var light_source_01 = null;
-                var light_source_02 = null;
-                var angle = 0.0;
-
-                game_logic = new Object;
-                game_logic.on_update = function() {
-                    
-                    angle += 0.1;
-                    if(light_source_01)
-                    {
-                        light_source_01.position.x = 250.0 + Math.sin(angle) * 32.0;
-                        light_source_01.position.y = 250.0 + Math.cos(angle) * 32.0;
-                    }
-
-                    if(light_source_02)
-                    {
-                        light_source_02.position.x = 650.0 + Math.cos(angle) * 64.0;
-                        light_source_02.position.y = 250.0 + Math.sin(angle) * 64.0;
-                    }
-                };
-                loop.add_listener(game_logic);
-
-                var raw_buffer = new ArrayBuffer(2 * 4 + 2 * 4 + 4 * 4);
-                var raw_data = new DataView(raw_buffer);
-
-                raw_data.setFloat32(0, 10.0, true);
-                raw_data.setFloat32(4, 15.0, true);
-
-                raw_data.setFloat32(8, 1.0, true);
-                raw_data.setFloat32(12, -1.0, true);
-
-                raw_data.setFloat32(16, 1.0, true);
-                raw_data.setFloat32(20, 0.0, true);
-                raw_data.setFloat32(24, 0.0, true);
-                raw_data.setFloat32(28, 1.0, true);
-
-                console.log(new Float32Array(raw_buffer));
-
-                var gl_context = new gb.graphics_context();
-
-                g_game_controller = new gb.game_controller();
-                var game_transition = new gb.game_transition("data/resources/configurations/transitions/transition.main.json");
-                g_game_controller.add_transition(game_transition);
-                g_game_controller.goto_transition("data/resources/configurations/transitions/transition.main.json", function(scene) {
-                    
-                    g_scene = scene;
-
-                    var camera = new gb.camera(gl.viewport_width, gl.viewport_height);
-                    scene.camera = camera;
-                    
-                    var sprite_02 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_02.json");
-                    scene.add_child(sprite_02);
-                    sprite_02.position = new gb.vec2(400, 100);
-                    sprite_02.size = new gb.vec2(128, 128);
-                    sprite_02.cast_shadow = true;
-                    
-                    g_sprite_01 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json");
-                    scene.add_child(g_sprite_01);
-                    g_sprite_01.position = new gb.vec2(70, 70);
-                    g_sprite_01.size = new gb.vec2(128, 128);
-                    g_sprite_01.cast_shadow = true;
-
-                    var touch_recognize_component = new gb.ces_touch_recognize_component();
-                    touch_recognize_component.bound = new gb.vec4(0.0, 0.0, 128.0, 128.0);
-                    touch_recognize_component.enable(gb.input_context.state.pressed, true);
-                    touch_recognize_component.enable(gb.input_context.state.dragged, true);
-
-                    touch_recognize_component.add_callback(gb.input_context.state.pressed, function() {
-                        console.log(arguments);
-                    });
-
-                    touch_recognize_component.add_callback(gb.input_context.state.dragged, function() {
-                        console.log(arguments);
-                    });
-                    g_sprite_01.add_component(touch_recognize_component);
-
-                    var grid_01 = scene.fabricator.create_grid("data/resources/configurations/game_objects/sprite_02.json", 128, 128, 32, 32, function() {
-                        grid_01.color = new gb.vec4(1.0, 1.0, 0.0, 1.0);
-                    });
-                    scene.add_child(grid_01);
-
-                    light_source_01 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
-                        light_source_01.position = new gb.vec2(250, 250);
-                        light_source_01.radius = 1024.0;
-                        light_source_01.color = new gb.vec4(1.0, 1.0, 1.0, 1.0);
-                    });
-                    scene.add_child(light_source_01);
-
-                    light_source_02 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
-                        light_source_02.position = new gb.vec2(500, 250);
-                        light_source_02.radius = 512.0;
-                        light_source_02.color = new gb.vec4(1.0, 1.0, 1.0, 1.0);
-                    });
-                    scene.add_child(light_source_02);
+                 $("#ss-animation-tab-button").click(function(){
+                    ss_merge_controller.deactivate();
+                    ss_animation_controller.activate();
                 });
             }
         </script>
     </head>
     <body onload="app_start();">
-        <div class="container" id="container"/>
+        <div id="menu-tabs">
+            <ul id="tabs-list">
+                <li id="ss-merge-tab-button"><a href="#ss-merge-tab-container">SS Merge</a></li>
+                <li id="ss-split-tab-button"><a href="#ss-split-tab">SS Split</a></li>
+                <li id="ss-animation-tab-button"><a href="#ss-animation-tab">SS Animation</a></li>
+            </ul>
+            <div id="ss-merge-tab-container"></div>
+            <div id="ss-split-tab"></div>
+            <div id="ss-animation-tab"></div>
+        </div>
         <script src="src/game_box-min.js"></script>
     </body>
 </html>
