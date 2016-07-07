@@ -50,13 +50,13 @@ var oop = {global:function() {
         g.prototype[k] = h[k];
       }
     }
-    var m = a.static_methods;
-    if (m) {
-      for (k in m) {
-        if ("function" !== typeof m[k]) {
+    var l = a.static_methods;
+    if (l) {
+      for (k in l) {
+        if ("function" !== typeof l[k]) {
           throw Error("class method must be function");
         }
-        g[k] = m[k];
+        g[k] = l[k];
       }
     }
     var n = a.constants;
@@ -443,14 +443,14 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
 }, rotate:function(a) {
   var b = a.x, c = a.y, d = a.z;
   a = Math.cos(b);
-  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), g = Math.cos(d), d = Math.sin(d), f = a * g, h = a * d, k = b * g, m = b * d;
+  var b = Math.sin(b), e = Math.cos(c), c = Math.sin(c), g = Math.cos(d), d = Math.sin(d), f = a * g, h = a * d, k = b * g, l = b * d;
   this.m_elements[0] = e * g;
   this.m_elements[4] = -e * d;
   this.m_elements[8] = c;
   this.m_elements[1] = h + k * c;
-  this.m_elements[5] = f - m * c;
+  this.m_elements[5] = f - l * c;
   this.m_elements[9] = -b * e;
-  this.m_elements[2] = m - f * c;
+  this.m_elements[2] = l - f * c;
   this.m_elements[6] = k + h * c;
   this.m_elements[10] = a * e;
   this.m_elements[3] = 0;
@@ -602,23 +602,23 @@ oop.define_class({namespace:"gb", name:"mat4", init:function() {
 }, to_array:function() {
   return this.m_elements;
 }}, static_methods:{multiply:function(a, b) {
-  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, g = c[0], f = c[4], h = c[8], k = c[12], m = c[1], n = c[5], t = c[9], q = c[13], u = c[2], v = c[6], r = c[10], l = c[14], x = c[3], p = c[7], w = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
+  var c = a.m_elements, d = b.m_elements, e = new gb.mat4, g = c[0], f = c[4], h = c[8], k = c[12], l = c[1], n = c[5], t = c[9], q = c[13], u = c[2], x = c[6], r = c[10], m = c[14], w = c[3], p = c[7], v = c[11], c = c[15], y = d[0], z = d[4], A = d[8], B = d[12], C = d[1], D = d[5], E = d[9], F = d[13], G = d[2], H = d[6], I = d[10], J = d[14], K = d[3], L = d[7], M = d[11], d = d[15];
   e.m_elements[0] = g * y + f * C + h * G + k * K;
   e.m_elements[4] = g * z + f * D + h * H + k * L;
   e.m_elements[8] = g * A + f * E + h * I + k * M;
   e.m_elements[12] = g * B + f * F + h * J + k * d;
-  e.m_elements[1] = m * y + n * C + t * G + q * K;
-  e.m_elements[5] = m * z + n * D + t * H + q * L;
-  e.m_elements[9] = m * A + n * E + t * I + q * M;
-  e.m_elements[13] = m * B + n * F + t * J + q * d;
-  e.m_elements[2] = u * y + v * C + r * G + l * K;
-  e.m_elements[6] = u * z + v * D + r * H + l * L;
-  e.m_elements[10] = u * A + v * E + r * I + l * M;
-  e.m_elements[14] = u * B + v * F + r * J + l * d;
-  e.m_elements[3] = x * y + p * C + w * G + c * K;
-  e.m_elements[7] = x * z + p * D + w * H + c * L;
-  e.m_elements[11] = x * A + p * E + w * I + c * M;
-  e.m_elements[15] = x * B + p * F + w * J + c * d;
+  e.m_elements[1] = l * y + n * C + t * G + q * K;
+  e.m_elements[5] = l * z + n * D + t * H + q * L;
+  e.m_elements[9] = l * A + n * E + t * I + q * M;
+  e.m_elements[13] = l * B + n * F + t * J + q * d;
+  e.m_elements[2] = u * y + x * C + r * G + m * K;
+  e.m_elements[6] = u * z + x * D + r * H + m * L;
+  e.m_elements[10] = u * A + x * E + r * I + m * M;
+  e.m_elements[14] = u * B + x * F + r * J + m * d;
+  e.m_elements[3] = w * y + p * C + v * G + c * K;
+  e.m_elements[7] = w * z + p * D + v * H + c * L;
+  e.m_elements[11] = w * A + p * E + v * I + c * M;
+  e.m_elements[15] = w * B + p * F + v * J + c * d;
   return e;
 }, multiply_vec4:function(a, b) {
   var c = new gb.vec4;
@@ -651,8 +651,8 @@ oop.define_class({namespace:"gb", name:"math", constants:{INT16_MAX:32767, INT16
   b = c.x;
   var h = d.x - c.x;
   d = d.y - c.y;
-  var k = Math.sqrt(f * f + a * a), m = Math.sqrt(h * h + d * d);
-  if (f / k === h / m && a / k === d / m) {
+  var k = Math.sqrt(f * f + a * a), l = Math.sqrt(h * h + d * d);
+  if (f / k === h / l && a / k === d / l) {
     return {intersected:!1};
   }
   c = (f * (c.y - g) + a * (e - b)) / (h * a - d * f);
@@ -2557,11 +2557,11 @@ oop.define_class({namespace:"gb", name:"ces_light_mask_component", extend:gb.ces
     e = b[c];
     g.x = Math.cos(e);
     g.y = Math.sin(e);
-    var m = a, n = g.add(a), k = gb.math.INT16_MAX;
+    var l = a, n = g.add(a), k = gb.math.INT16_MAX;
     h.x = f.x;
     h.y = f.y;
     for (var t = 0;t < this.m_shadow_casters_edges.length;++t) {
-      var q = gb.math.intersect(m, n, this.m_shadow_casters_edges[t].point_01, this.m_shadow_casters_edges[t].point_02);
+      var q = gb.math.intersect(l, n, this.m_shadow_casters_edges[t].point_01, this.m_shadow_casters_edges[t].point_02);
       q.intersected && q.distance < k && (k = q.distance, h.x = q.point_x, h.y = q.point_y);
     }
     h.equals(f) || -1 === d.findIndex(function(a) {
@@ -2833,7 +2833,7 @@ oop.define_class({namespace:"gb", name:"ces_deferred_lighting_system", extend:gb
     d = gb.mat4.multiply_vec2(d.position, e);
     for (e = 0;e < this.m_shadow_casters.length;++e) {
       for (var g = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.convex_hull), f = this.m_shadow_casters[e].get_component(gb.ces_base_component.type.transformation), h = (new gb.mat4).identity(), k = this.m_shadow_casters[e].parent;k;) {
-        var m = k.get_component(gb.ces_base_component.type.transformation), h = gb.mat4.multiply(h, m.matrix_m), k = k.parent
+        var l = k.get_component(gb.ces_base_component.type.transformation), h = gb.mat4.multiply(h, l.matrix_m), k = k.parent
       }
       h = gb.mat4.multiply(h, f.matrix_m);
       c.update_mask_geometry(h, g.oriented_vertices);
@@ -2888,48 +2888,48 @@ oop.define_class({namespace:"gb", name:"ces_render_system", extend:gb.ces_base_s
   if (d) {
     var e = a.get_component(gb.ces_base_component.type.light), g = a.get_component(gb.ces_base_component.type.light_mask), f = a.get_component(gb.ces_base_component.type.transformation), h = a.get_component(gb.ces_base_component.type.material), k = a.get_component(gb.ces_base_component.type.geometry);
     if (e && h && k && f) {
-      var m = h.get_material(b, c), n = k.mesh, t = g.mesh;
-      m && a.visible && m.shader && m.shader.is_commited && n && t && (function() {
+      var l = h.get_material(b, c), n = k.mesh, t = g.mesh;
+      l && a.visible && l.shader && l.shader.is_commited && n && t && (function() {
         gl.colorMask(!1, !1, !1, !1);
         gl.depthMask(!1);
-        m.stencil_function = gl.ALWAYS;
-        m.stencil_function_parameter_1 = 1;
-        m.stencil_function_parameter_2 = 255;
-        m.stencil_mask_parameter = 1;
-        m.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
-        m.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform);
-        h.bind(b, c, m);
-        m.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p);
-        m.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v);
-        m.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m);
-        t.bind(m.shader.attributes);
+        l.stencil_function = gl.ALWAYS;
+        l.stencil_function_parameter_1 = 1;
+        l.stencil_function_parameter_2 = 255;
+        l.stencil_mask_parameter = 1;
+        l.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
+        l.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform);
+        h.bind(b, c, l);
+        l.shader.set_mat4(d.camera.matrix_p, gb.shader.uniform_type.mat_p);
+        l.shader.set_mat4(d.camera.matrix_v, gb.shader.uniform_type.mat_v);
+        l.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m);
+        t.bind(l.shader.attributes);
         t.draw();
-        t.unbind(m.shader.attributes);
+        t.unbind(l.shader.attributes);
         for (var a = e.shadow_casters, f = 0;f < a.length;++f) {
           var g = a[f], k = g.get_component(gb.ces_base_component.type.geometry);
-          g.get_component(gb.ces_base_component.type.material).get_material(b, c) && (k = k.mesh, g = gb.ces_transformation_component.get_absolute_transformation(g, !1), m.shader.set_mat4(g, gb.shader.uniform_type.mat_m), k.bind(m.shader.attributes), k.draw(), k.unbind(m.shader.attributes));
+          g.get_component(gb.ces_base_component.type.material).get_material(b, c) && (k = k.mesh, g = gb.ces_transformation_component.get_absolute_transformation(g, !1), l.shader.set_mat4(g, gb.shader.uniform_type.mat_m), k.bind(l.shader.attributes), k.draw(), k.unbind(l.shader.attributes));
         }
         gl.colorMask(!0, !0, !0, !0);
         gl.depthMask(!0);
-        h.unbind(b, c, m);
+        h.unbind(b, c, l);
       }(), function() {
         var d = gb.ces_transformation_component.get_absolute_transformation(a, !0);
-        m.stencil_function = gl.EQUAL;
-        m.stencil_function_parameter_1 = 1;
-        m.stencil_function_parameter_2 = 255;
-        m.stencil_mask_parameter = 0;
-        m.blending_function_source = gl.SRC_ALPHA;
-        m.blending_function_destination = gl.ONE;
-        m.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
-        m.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_fs_flag_uniform);
-        h.bind(b, c, m);
-        m.shader.set_mat4(d, gb.shader.uniform_type.mat_m);
-        n.bind(m.shader.attributes);
+        l.stencil_function = gl.EQUAL;
+        l.stencil_function_parameter_1 = 1;
+        l.stencil_function_parameter_2 = 255;
+        l.stencil_mask_parameter = 0;
+        l.blending_function_source = gl.SRC_ALPHA;
+        l.blending_function_destination = gl.ONE;
+        l.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_vs_flag_uniform);
+        l.set_custom_shader_uniform(0, gb.ces_render_system.light_mask_fs_flag_uniform);
+        h.bind(b, c, l);
+        l.shader.set_mat4(d, gb.shader.uniform_type.mat_m);
+        n.bind(l.shader.attributes);
         n.draw();
-        n.unbind(m.shader.attributes);
-        h.unbind(b, c, m);
-      }(), gl.colorMask(!1, !1, !1, !1), gl.depthMask(!1), m.stencil_function = gl.ALWAYS, m.stencil_function_parameter_1 = 0, m.stencil_function_parameter_2 = 255, m.stencil_mask_parameter = 1, m.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_vs_flag_uniform), m.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform), h.bind(b, c, m), m.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m), this.m_screed_quad_mesh.bind(m.shader.attributes), this.m_screed_quad_mesh.draw(), 
-      this.m_screed_quad_mesh.unbind(m.shader.attributes), gl.colorMask(!0, !0, !0, !0), gl.depthMask(!0), h.unbind(b, c, m));
+        n.unbind(l.shader.attributes);
+        h.unbind(b, c, l);
+      }(), gl.colorMask(!1, !1, !1, !1), gl.depthMask(!1), l.stencil_function = gl.ALWAYS, l.stencil_function_parameter_1 = 0, l.stencil_function_parameter_2 = 255, l.stencil_mask_parameter = 1, l.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_vs_flag_uniform), l.set_custom_shader_uniform(1, gb.ces_render_system.light_mask_fs_flag_uniform), h.bind(b, c, l), l.shader.set_mat4((new gb.mat4).identity(), gb.shader.uniform_type.mat_m), this.m_screed_quad_mesh.bind(l.shader.attributes), this.m_screed_quad_mesh.draw(), 
+      this.m_screed_quad_mesh.unbind(l.shader.attributes), gl.colorMask(!0, !0, !0, !0), gl.depthMask(!0), h.unbind(b, c, l));
     }
     g = a.children;
     for (f = 0;f < g.length;++f) {
@@ -2949,8 +2949,8 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
     if (b.state === gb.input_context.state.released) {
       for (var d = this.m_captured_entities.length, e = 0;e < d;++e) {
         for (var g = this.m_captured_entities[e], f = g.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, k = 0;k < h;++k) {
-          var m = f[k].callback;
-          m(g, b.state, b.point, f[k].userdata);
+          var l = f[k].callback;
+          l(g, b.state, b.point, f[k].userdata);
         }
       }
       this.m_captured_entities = [];
@@ -2959,15 +2959,15 @@ oop.define_class({namespace:"gb", name:"ces_touches_system", extend:gb.ces_base_
       for (b.state === gb.input_context.state.pressed && (d = this.m_captured_entities.findIndex(function(a) {
         return a === c;
       }), -1 === d && this.m_captured_entities.push(c)), f = c.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, e = 0;e < h;++e) {
-        m = f[e].callback, d = this.m_captured_entities.findIndex(function(a) {
+        l = f[e].callback, d = this.m_captured_entities.findIndex(function(a) {
           return a === c;
-        }), -1 !== d && m(c, b.state, b.point, f[e].userdata);
+        }), -1 !== d && l(c, b.state, b.point, f[e].userdata);
       }
     }
     if (b.state === gb.input_context.state.dragged) {
       for (d = this.m_captured_entities.length, e = 0;e < d;++e) {
         for (g = this.m_captured_entities[e], f = g.get_component(gb.ces_base_component.type.touch_recognize), f = f.get_callbacks(b.state), h = f.length, k = 0;k < h;++k) {
-          m = f[k].callback, m(g, b.state, b.point, f[k].userdata);
+          l = f[k].callback, l(g, b.state, b.point, f[k].userdata);
         }
       }
     }
@@ -3000,7 +3000,7 @@ oop.define_class({namespace:"gb", name:"ces_animation_system", extend:gb.ces_bas
   if (c && d && e && (d.current_switch_frame_deltatime -= b, 0 > d.current_switch_frame_deltatime)) {
     var g = d.frames, f = (d.current_frame + 1) % g.length;
     d.current_switch_frame_deltatime = d.switch_frame_deltatime;
-    g && (d.current_frame = f, d = g[d.current_frame], e.swap_texture_to_active(d.t_name), c.update_mesh_texcoord_attributes(d.u_0, d.v_0, d.u_1, d.v_1), console.log("frame: ", d.d_name));
+    g && (d.current_frame = f, d = g[d.current_frame], e.swap_texture_to_active(d.t_name), c.update_mesh_texcoord_attributes(d.u_0, d.v_0, d.u_1, d.v_1));
   }
   c = a.children;
   for (e = 0;e < c.length;++e) {
@@ -3568,12 +3568,12 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
   this.m_free_nodes_container[b] || (this.m_free_nodes_container[b] = [], this.m_free_nodes_container[b].push(new gb.vec4(0, 0, this.m_atlas_width, this.m_atlas_height)), console.warn("new atlas page created with index: " + b));
   var c = this.m_free_nodes_container[b];
   this.m_occupied_nodes_container[b] || (this.m_occupied_nodes_container[b] = []);
-  for (var d = this.m_occupied_nodes_container[b], e = !1, g = !1, f = !1, h = !1, k = !1, m = !1, n = 0, t = this.m_atlas_width * this.m_atlas_height + 1, q = -1, u = gb.max_rects_pack_algorithm.heuristic, v = c.length, r = 0;r < v;++r) {
-    var l = c[r];
-    if (l.z >= a.size.x && l.w >= a.size.y || l.z >= a.size.y && l.w >= a.size.x) {
+  for (var d = this.m_occupied_nodes_container[b], e = !1, g = !1, f = !1, h = !1, k = !1, l = !1, n = 0, t = this.m_atlas_width * this.m_atlas_height + 1, q = -1, u = gb.max_rects_pack_algorithm.heuristic, x = c.length, r = 0;r < x;++r) {
+    var m = c[r];
+    if (m.z >= a.size.x && m.w >= a.size.y || m.z >= a.size.y && m.w >= a.size.x) {
       k = !1;
       n = 0;
-      if (l.z >= a.size.y && l.w >= a.size.x && !(l.z >= a.size.x && l.w >= a.size.y)) {
+      if (m.z >= a.size.y && m.w >= a.size.x && !(m.z >= a.size.x && m.w >= a.size.y)) {
         if (!this.m_is_rotation_enabled) {
           continue;
         }
@@ -3584,53 +3584,53 @@ oop.define_class({namespace:"gb", name:"max_rects_pack_algorithm", constants:{he
       switch(this.m_heuristic) {
         case u.none:
           q = r;
-          r = v;
+          r = x;
           continue;
         case u.TL:
-          for (var n = n + l.y, h = f = !1, x = d.length, p = 0;p < x;++p) {
-            var w = d[p];
-            Math.abs(w.y + w.w / 2 - l.y - l.w / 2) < Math.max(w.w, l.w) / 2 && (w.x + w.z === l.x && (n -= 5, f = !0), w.x === l.x + l.z && (n -= 5, h = !0));
+          for (var n = n + m.y, h = f = !1, w = d.length, p = 0;p < w;++p) {
+            var v = d[p];
+            Math.abs(v.y + v.w / 2 - m.y - m.w / 2) < Math.max(v.w, m.w) / 2 && (v.x + v.z === m.x && (n -= 5, f = !0), v.x === m.x + m.z && (n -= 5, h = !0));
           }
           if (f || !h) {
-            l.x + l.z === this.m_atlas_width && (--n, h = !0), 0 === l.x && (--n, f = !0);
+            m.x + m.z === this.m_atlas_width && (--n, h = !0), 0 === m.x && (--n, f = !0);
           }
           break;
         case u.BAF:
-          n += l.z * l.w;
+          n += m.z * m.w;
           break;
         case u.BSSF:
-          n += Math.min(l.z - a.size.x, l.w - a.size.y);
+          n += Math.min(m.z - a.size.x, m.w - a.size.y);
           break;
         case u.BLSF:
-          n += Math.max(l.z - a.size.x, l.w - a.size.y);
+          n += Math.max(m.z - a.size.x, m.w - a.size.y);
           break;
         case u.MINW:
-          n += l.z;
+          n += m.z;
           break;
         case u.MINH:
-          n += l.w;
+          n += m.w;
       }
-      n < t && (t = n, q = r, e = f, g = h, m = k);
+      n < t && (t = n, q = r, e = f, g = h, l = k);
       k && console.error("implement sprite rotation");
     }
   }
-  m && console.error("implement sprite rotation");
+  l && console.error("implement sprite rotation");
   if (0 <= q) {
     r = q;
-    l = c[q];
-    f = new gb.vec4(l.x, l.y, a.size.x, a.size.y);
-    this.m_heuristic === u.TL && (e || 0 === l.x || l.z + l.x !== this.m_atlas_width || (f.x = this.m_atlas_width - a.size.x, f.y = l.y, f.z = a.size.x, f.w = a.size.y), !e && g && (f.x = l.x + l.z - a.size.x, f.y = l.y, f.z = a.size.x, f.w = a.size.y));
+    m = c[q];
+    f = new gb.vec4(m.x, m.y, a.size.x, a.size.y);
+    this.m_heuristic === u.TL && (e || 0 === m.x || m.z + m.x !== this.m_atlas_width || (f.x = this.m_atlas_width - a.size.x, f.y = m.y, f.z = a.size.x, f.w = a.size.y), !e && g && (f.x = m.x + m.z - a.size.x, f.y = m.y, f.z = a.size.x, f.w = a.size.y));
     d.push(new gb.vec4(f));
-    l.z > a.size.x && (p = new gb.vec4, p.x = l.x + (f.x === l.x ? a.size.x : 0), p.y = l.y, p.z = l.z - a.size.x, p.w = l.w, c.push(p));
-    l.w > a.size.y && (p = new gb.vec4, p.x = l.x, p.y = l.y + a.size.y, p.z = l.z, p.w = l.w - a.size.y, c.push(p));
+    m.z > a.size.x && (p = new gb.vec4, p.x = m.x + (f.x === m.x ? a.size.x : 0), p.y = m.y, p.z = m.z - a.size.x, p.w = m.w, c.push(p));
+    m.w > a.size.y && (p = new gb.vec4, p.x = m.x, p.y = m.y + a.size.y, p.z = m.z, p.w = m.w - a.size.y, c.push(p));
     c.splice(r, 1);
     for (r = 0;r < c.length;++r) {
-      l = c[r], gb.math.rect_intersect(l, f) && (f.x + f.z < l.x + l.z && (p = new gb.vec4, p.x = f.x + f.z, p.y = l.y, p.z = l.x + l.z - f.x - f.z, p.w = l.w, c.push(p)), f.y + f.w < l.y + l.w && (p = new gb.vec4, p.x = l.x, p.y = f.y + f.w, p.z = l.z, p.w = l.y + l.w - f.y - f.w, c.push(p)), f.x > l.x && (p = new gb.vec4, p.x = l.x, p.y = l.y, p.z = f.x - l.x, p.w = l.w, c.push(p)), f.y > l.y && (p = new gb.vec4, p.x = l.x, p.y = l.y, p.z = l.z, p.w = f.y - l.y, c.push(p)), c.splice(r, 1), --r)
+      m = c[r], gb.math.rect_intersect(m, f) && (f.x + f.z < m.x + m.z && (p = new gb.vec4, p.x = f.x + f.z, p.y = m.y, p.z = m.x + m.z - f.x - f.z, p.w = m.w, c.push(p)), f.y + f.w < m.y + m.w && (p = new gb.vec4, p.x = m.x, p.y = f.y + f.w, p.z = m.z, p.w = m.y + m.w - f.y - f.w, c.push(p)), f.x > m.x && (p = new gb.vec4, p.x = m.x, p.y = m.y, p.z = f.x - m.x, p.w = m.w, c.push(p)), f.y > m.y && (p = new gb.vec4, p.x = m.x, p.y = m.y, p.z = m.z, p.w = f.y - m.y, c.push(p)), c.splice(r, 1), --r)
       ;
     }
     for (r = 0;r < c.length;r++) {
       for (p = r + 1;p < c.length;p++) {
-        l = c[r], d = c[r], r != p && gb.math.rect_contains(l, d) && (c.splice(p, 1), --p);
+        m = c[r], d = c[r], r != p && gb.math.rect_contains(m, d) && (c.splice(p, 1), --p);
       }
     }
     return {position:new gb.vec2(f.x, f.y), page:b};
@@ -3667,21 +3667,36 @@ oop.define_class({namespace:"gb", name:"common_error_view", init:function(a, b, 
   $(c(b.common_error_view_textfield)).html(a);
   $(c(b.common_error_view)).dialog("open");
 }}, static_methods:{}});
+oop.define_class({namespace:"gb", name:"common_progress_view", init:function(a, b, c) {
+  $(c(a)).append("<div id=" + b.common_progress_view + ' class="ui-state-error" style="background:darkorange;"><div id=' + b.common_progress_view_bar + ' style="height: 30px;"></div><p><span class="ui-icon ui-icon-clock" style="float: left; margin-right: .3em;"></span><div id=' + b.common_progress_view_textfield + "></div></p></div>");
+  $(c(b.common_progress_view_bar)).progressbar({value:!1});
+  $(c(b.common_progress_view)).dialog({autoOpen:!1, width:520, height:120, modal:!1, show:{effect:"bounce", duration:1E3}, hide:{effect:"clip", duration:250}});
+  $(c(b.common_progress_view)).siblings("div.ui-dialog-titlebar").remove();
+}, release:function() {
+}, methods:{show:function(a, b) {
+  $(b(a.common_progress_view)).dialog("open");
+}, hide:function(a, b) {
+  $(b(a.common_progress_view_bar)).progressbar("value", !1);
+  $(b(a.common_progress_view)).dialog("close");
+}, update_progress:function(a, b, c, d) {
+  $(d(c.common_progress_view_textfield)).html(a);
+  $(d(c.common_progress_view_bar)).progressbar("value", b);
+}}, static_methods:{}});
 var g_ss_merge_controller = null, g_ss_merge_transition = null;
 oop.define_class({namespace:"gb", name:"ss_merge_controller", constants:{html_elements:{tab_container:"ss-merge-tab-container", tab_left_panel:"ss-merge-tab-left-panel", tab_right_panel:"ss-merge-tab-right-panel", import_container:"ss-merge-import-container", import_size_drop_down_box:"ss-merge-size-drop-down-box", import_size_drop_down_box_button:"ss-merge-size-drop-down-box-button", import_drop_zone:"ss-merge-drop-zone", import_add_image_button:"ss-merge-add_image-button", import_add_image_input:"ss-merge-add_image-input", 
 frames_container:"ss-merge-frames-container", frames_sort_button:"ss-merge-frames-sort-button", frames_table:"ss-merge-frames-table", frames_table_scroll:"ss-merge-frames-table_scroll", frames_table_cell:"ss-merge-frames-table-cell", frames_table_cell_delete_icon:"ss-merge-frames-table-cell-delete-icon", frames_table_cell_image:"ss-merge-frames-table-cell-image", editing_container:"ss-merge-editing-container", editing_page_drop_down_box:"ss-merge-editing-page-drop-down-box", editing_page_drop_down_box_button:"ss-merge-editing-page-drop-down-box-button", 
 editing_move_resize_radio_button:"ss-merge-editing-move-resize-radio-button", editing_move_resize_freeform_button:"ss-merge-editing-move-resize-freeform-button", editing_move_resize_snaptogrid_button:"ss-merge-editing-move-resize-snaptogrid-button", editing_pack_algorithm_drop_down_box:"ss-merge-editing-pack-algorithm-drop-down-box", editing_pack_algorithm_drop_down_box_button:"ss-merge-editing-pack-algorithm-drop-down-box-button", editing_spread_button:"ss-merge-editing-spread-button", export_container:"ss-merge-export-container", 
 export_filename_input:"ss-merge-export-filename-input", export_animation_preview_button:"ss-merge-export-animation-preview_button", export_save_images_button:"ss-merge-export-atlas-button", export_save_pages_table:"ss-merge-export-save-pages-table", export_save_pages_table_scroll:"ss-merge-export-save-pages-table-scroll", export_save_pages_table_cell:"ss-merge-export-save-pages-table-cell", export_save_pages_table_cell_download_button:"ss-merge-export-save-pages-table-cell-download-button", export_save_frames_button:"ss-merge-export-save-frames-button", 
-export_save_frames_textfield:"ss-merge-export_save-frames-textfield", export_save_frames_download_button:"ss-merge-export_save-frames-download-button", export_animation_preview_dialog:"ss-merge-export-animation-preview-dialog", common_alert_view:"ss-merge-common-alert-view", common_alert_view_textfield:"ss-merge-common-alert-view-textfield", common_error_view:"ss-merge-common-error-view", common_error_view_textfield:"ss-merge-common-error-view-textfield"}, default_filenames:{page:"page", configuration:"configuration"}}, 
-init:function() {
+export_save_frames_textfield:"ss-merge-export_save-frames-textfield", export_save_frames_download_button:"ss-merge-export_save-frames-download-button", export_animation_preview_dialog:"ss-merge-export-animation-preview-dialog", common_alert_view:"ss-merge-common-alert-view", common_alert_view_textfield:"ss-merge-common-alert-view-textfield", common_error_view:"ss-merge-common-error-view", common_error_view_textfield:"ss-merge-common-error-view-textfield", common_progress_view:"ss-merge-common-progress-view", 
+common_progress_view_bar:"ss-merge-common-progress-view-bar", common_progress_view_textfield:"ss-merge-common-progress-view-textfield"}, default_filenames:{page:"page", configuration:"configuration"}}, init:function() {
   g_ss_merge_controller = this;
   var a = gb.ss_merge_controller.ui(), b = gb.ss_merge_controller.ui_j, c = gb.ss_merge_controller.self();
   window.onerror = function(d, e, g, f, h) {
     c.error_view.show(d + "\n(" + e + ":" + g + ")" + (h ? "\n\n" + h.stack : ""), a, b);
   };
-  $(b(a.tab_container)).append($("<div id=" + a.tab_left_panel + ' style="background:black;"/>'));
-  $(b(a.tab_container)).append($("<div id=" + a.tab_right_panel + ' style="background:black;"/>'));
-  $(b(a.tab_right_panel)).append($('<canvas style="width:100%; height:100%;" id="gl_canvas" width="1024" height="1024"></canvas>'));
+  $(b(a.tab_container)).append($("<div id=" + a.tab_left_panel + ' style="background:black; margin-top: 2px;"/>'));
+  $(b(a.tab_container)).append($("<div id=" + a.tab_right_panel + ' style="background:black; margin-top: 2px;"/>'));
+  $(b(a.tab_right_panel)).append($('<canvas id="gl_canvas" width="1024" height="1024"></canvas>'));
   this.m_import_view = new gb.ss_merge_import_view(this, a, b);
   this.m_frames_view = new gb.ss_merge_frames_view(this, a, b);
   this.m_packer_view = new gb.ss_merge_packer_view(this, a, b);
@@ -3702,11 +3717,12 @@ init:function() {
   this.m_preview_animation_controller = new gb.ss_preview_animation_controller;
   this.m_alert_view = new gb.common_alert_view(a.tab_left_panel, a, b);
   this.m_error_view = new gb.common_error_view(a.tab_left_panel, a, b);
+  this.m_progress_view = new gb.common_progress_view(a.tab_left_panel, a, b);
   this.m_merge_algorithm = new gb.max_rects_pack_algorithm;
   this.m_merge_algorithm.atlas_width = 1024;
   this.m_merge_algorithm.atlas_height = 1024;
   this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.TL;
-  this.m_scene = null;
+  this.m_animated_sprite = this.m_scene = null;
   this.m_page_size = 1024;
   this.m_export_image_filename = gb.ss_merge_controller.default_filenames.page;
   this.m_export_configuration_filename = gb.ss_merge_controller.default_filenames.configuration;
@@ -3728,6 +3744,9 @@ init:function() {
   Object.defineProperty(this, "error_view", {get:function() {
     return this.m_error_view;
   }});
+  Object.defineProperty(this, "progress_view", {get:function() {
+    return this.m_progress_view;
+  }});
   Object.defineProperty(this, "importing_images_size", {get:function() {
     return this.m_importing_images_size;
   }});
@@ -3745,6 +3764,11 @@ init:function() {
     return this.m_scene;
   }, set:function(a) {
     this.m_scene = a;
+  }});
+  Object.defineProperty(this, "animated_sprite", {get:function() {
+    return this.m_animated_sprite;
+  }, set:function(a) {
+    this.m_animated_sprite = a;
   }});
 }, release:function() {
 }, methods:{activate:function() {
@@ -3766,9 +3790,11 @@ init:function() {
       }
     }
     a.on_pack_sprites();
-    c = new gb.editor_fabricator;
-    c.scene_fabricator = b.fabricator;
-    a.m_selector = c.create_selector();
+    a.animated_sprite = b.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.animation.json", function() {
+      a.scene.add_child(a.animated_sprite);
+      a.animated_sprite.size = new gb.vec2(256, 256);
+      a.animated_sprite.position = new gb.vec2(256, 256);
+    });
   });
 }, deactivate:function() {
   var a = this.m_sprites.length;
@@ -3784,41 +3810,44 @@ init:function() {
 }, on_move_resize_mode_changed:function(a) {
   self.m_selector.is_align_movement = a;
 }, on_images_importing:function(a) {
-  for (var b = this, c = a.length, d = 0, e = 0;e < c;++e) {
-    var g = a[e];
-    if (g.type.match("image.*")) {
-      var f = new FileReader;
-      f.m_filename = g.name;
-      f.onload = function(a) {
+  var b = this, c = gb.ss_merge_controller.html_elements, d = gb.ss_merge_controller.ui_j;
+  b.progress_view.show(c, d);
+  for (var e = a.length, g = 0, f = 0;f < e;++f) {
+    var h = a[f];
+    if (h.type.match("image.*")) {
+      var k = new FileReader;
+      k.m_filename = h.name;
+      k.onload = function(a) {
         return function(a) {
-          var e = new Image;
-          e.src = a.target.result;
-          e.onload = function() {
-            b.scene.fabricator.resources_accessor.get_texture(a.target.m_filename, e).add_resource_loading_callback(function(f, g) {
-              for (var h = b.scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
-                f.mag_filter = gl.LINEAR;
-                f.min_filter = gl.LINEAR;
-                f.wrap_mode = gl.CLAMP_TO_EDGE;
-                h.get_component(gb.ces_base_component.type.material).set_texture(f, 0);
-                h.size = new gb.vec2(Math.round(f.width * b.importing_images_size), Math.round(f.height * b.importing_images_size));
-                b.on_sprite_added_to_page(h, 0);
-                d++;
-                if (d === c) {
-                  b.on_pack_sprites();
-                }
-              }), u = b.m_sprites.length, v = 0, r = null, l = 0;l < u;++l) {
-                r = b.m_sprites[l], -1 !== r.tag.indexOf(a.target.m_filename) && v++;
+          var f = new Image;
+          f.src = a.target.result;
+          f.onload = function() {
+            b.scene.fabricator.resources_accessor.get_texture(a.target.m_filename, f).add_resource_loading_callback(function(h, k) {
+              for (var l = b.scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.savetoimage.json", function() {
+                h.mag_filter = gl.LINEAR;
+                h.min_filter = gl.LINEAR;
+                h.wrap_mode = gl.CLAMP_TO_EDGE;
+                l.get_component(gb.ces_base_component.type.material).set_texture(h, 0);
+                l.size = new gb.vec2(Math.round(h.width * b.importing_images_size), Math.round(h.height * b.importing_images_size));
+                b.on_sprite_added_to_page(l, 0);
+                g++;
+                b.progress_view.update_progress("Loading images...", !1, c, d);
+                g === e && (b.progress_view.update_progress("Generating animation...", !1, c, d), b.on_pack_sprites(), b.on_generate_animation(function() {
+                  b.progress_view.hide(c, d);
+                }));
+              }), r = b.m_sprites.length, m = 0, w = null, p = 0;p < r;++p) {
+                w = b.m_sprites[p], -1 !== w.tag.indexOf(a.target.m_filename) && m++;
               }
-              u = a.target.m_filename;
-              0 !== v && (u += "(" + v + ")");
-              h.tag = u;
-              b.frames_view.add_frame(b, u, e, gb.ss_merge_controller.ui(), gb.ss_merge_controller.ui_j);
-              b.on_sprite_added_to_table(h);
+              r = a.target.m_filename;
+              0 !== m && (r += "(" + m + ")");
+              l.tag = r;
+              b.frames_view.add_frame(b, r, f, gb.ss_merge_controller.ui(), gb.ss_merge_controller.ui_j);
+              b.on_sprite_added_to_table(l);
             });
           };
         };
-      }(g);
-      f.readAsDataURL(g);
+      }(h);
+      k.readAsDataURL(h);
     }
   }
 }, on_sprite_pressed:function(a, b, c, d) {
@@ -3869,7 +3898,6 @@ init:function() {
   a.get_component(gb.ces_base_component.type.touch_recognize).add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this);
   this.scene.add_child(a);
   this.m_sprites.push(a);
-  aaa.callle(aaa);
 }, on_sprite_removed_from_table:function(a) {
   for (var b = -1, c = null, d = this.m_sprites.length, e = 0;e < d;++e) {
     if (c = gb.ss_merge_controller.self().m_sprites[e], c.tag === a) {
@@ -3950,7 +3978,6 @@ init:function() {
   this.export_configuration_filename = this.export_image_filename = a;
 }, on_export_images:function(a) {
   var b = gb.ss_merge_controller.html_elements, c = gb.ss_merge_controller.ui_j;
-  this.set_selected_sprite(null);
   this.export_view.cleanup_frames(b, c);
   var d = this.m_sprites_on_pages.length, e = this, g = [], f = function(h) {
     e.on_page_changed(h, !0, function() {
@@ -3982,6 +4009,21 @@ init:function() {
   }
   this.export_view.add_frames_configuration(a, this.export_configuration_filename, gb.ss_merge_controller.html_elements, gb.ss_merge_controller.ui_j);
   return a;
+}, on_generate_animation:function(a) {
+  var b = this;
+  this.scene.remove_child(this.animated_sprite);
+  this.on_export_images(function(c) {
+    for (var d = b.on_export_configuration(), e = b.animated_sprite.get_component(gb.ces_base_component.type.material), g = c.length, f = 0;f < g;++f) {
+      var h = b.scene.fabricator.resources_accessor.get_texture("page_" + f + ".png", c[f]);
+      h.mag_filter = gl.LINEAR;
+      h.min_filter = gl.LINEAR;
+      h.wrap_mode = gl.CLAMP_TO_EDGE;
+      e.set_texture(h, f);
+    }
+    b.animated_sprite.add_animation("animation", d);
+    b.scene.add_child(b.animated_sprite);
+    a && a();
+  });
 }, on_preview_animation_open:function() {
   this.set_selected_sprite(null);
   var a = this;
@@ -4034,7 +4076,7 @@ oop.define_class({namespace:"gb", name:"ss_merge_import_view", extend:gb.game_ob
 }, methods:{}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ss_merge_frames_view", constants:{image_preview_size:{width:128, height:128}}, init:function(a, b, c) {
   $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>frames</h3><div style="background:none; border:0px;"><button id=' + b.frames_sort_button + ' style="margin:2%; width:95%;">sort by name</button><div id=' + b.frames_table_scroll + ' style="height:340px" class="scroll"><ul style="list-style-type:none; margin-left:-12.5%;" id="' + b.frames_table + '"></ul></div></div>');
-  $(".scroll").scrollable();
+  $(".scroll").scrollable({autoHide:!1, transferScrolling:!1, mouseWheelMaxDelta:.1});
   $(c(b.frames_table)).height(0);
   $(c(b.frames_table)).sortable();
   $(c(b.frames_table)).disableSelection();
@@ -4085,7 +4127,8 @@ oop.define_class({namespace:"gb", name:"ss_merge_packer_view", init:function(a, 
 }, methods:{}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ss_merge_export_view", init:function(a, b, c) {
   $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>export</h3><div style="background:none; border:0px;" id=' + b.export_container + '><input class="ui-widget ui-front ui-widget-content ui-corner-all" style="margin:2%; width:94%;" placeholder=" enter filename..." id=' + b.export_filename_input + ' type="text"><button title="preview animation" id=' + b.export_animation_preview_button + ' style="margin:2%; width:95.5%;">preview animation</button><br><button id=' + 
-  b.export_save_images_button + ' style="margin:2%; width:95.5%;">generate images</button><br><div id=' + b.export_save_pages_table_scroll + ' style="height:340px" class="scroll"><ul style="list-style-type:none; margin-left:-10%; margin-top:-0.5%;" id="' + b.export_save_pages_table + '"/></div><button id=' + b.export_save_frames_button + ' style="margin:2%; margin-top:-2%; width:95.5%;">generate frames configuration</button></div>');
+  b.export_save_images_button + ' style="margin:2%; width:95.5%;">generate images</button><br><div id=' + b.export_save_pages_table_scroll + ' style="height:340px; overflow: hidden;" class="scroll"><ul style="list-style-type:none; margin-left:-10%; margin-top:-0.5%;" id="' + b.export_save_pages_table + '"/></div><button id=' + b.export_save_frames_button + ' style="margin:2%; width:95.5%;">generate frames configuration</button></div>');
+  $(".scroll").scrollable({autoHide:!1, transferScrolling:!1, mouseWheelMaxDelta:.1});
   $(c(b.tab_right_panel)).append("<div id=" + b.export_animation_preview_dialog + ' class="ui-dialog" title="Animation"></div>');
   $(c(b.export_filename_input)).change(function(d) {
     $(c(b.export_save_images_button)).button(0 != d.target.value.length ? "enable" : "disable");
@@ -4126,7 +4169,7 @@ oop.define_class({namespace:"gb", name:"ss_merge_export_view", init:function(a, 
   $(d(c.export_save_frames_textfield)).remove();
   $(d(c.export_save_frames_download_button)).remove();
   var e = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(a));
-  $(d(c.export_container)).append("<div id=" + c.export_save_frames_textfield + ' class="ui-widget ui-front ui-widget-content ui-corner-all" style="margin:2%; font-size: 1vw; height: 150px; overflow: hidden; background: gray;">' + JSON.stringify(a) + '</div><a style="margin-top:2%; margin-left:2%; width:95.5%;" id=' + c.export_save_frames_download_button + ' href="data:' + e + '" download="' + b + '.json">download frames configuration</a>');
+  $(d(c.export_container)).append("<div id=" + c.export_save_frames_textfield + ' class="ui-widget ui-front ui-widget-content" style="margin:2%; font-size: 1vw; height: 150px; overflow: hidden; background: gray;">' + JSON.stringify(a) + '</div><a style="margin-top:2%; margin-left:2%; width:95.5%;" id=' + c.export_save_frames_download_button + ' href="data:' + e + '" download="' + b + '.json">download frames configuration</a>');
   $(d(c.export_save_frames_download_button)).button();
 }, cleanup_frames:function(a, b) {
   for (var c = $(b(a.export_save_pages_table)).children(), d = c.length, e = 0;e < d;++e) {
@@ -4175,12 +4218,12 @@ oop.define_class({namespace:"gb", name:"ss_preview_animation_controller", init:f
     var g = new gb.camera(gl.viewport_width, gl.viewport_height);
     c.camera = g;
     var f = c.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
-      for (var d = f.get_component(gb.ces_base_component.type.material), g = a.length, m = 0;m < g;++m) {
-        var n = c.fabricator.resources_accessor.get_texture("page_" + m + ".png", a[m]);
+      for (var d = f.get_component(gb.ces_base_component.type.material), g = a.length, l = 0;l < g;++l) {
+        var n = c.fabricator.resources_accessor.get_texture("page_" + l + ".png", a[l]);
         n.mag_filter = gl.LINEAR;
         n.min_filter = gl.LINEAR;
         n.wrap_mode = gl.CLAMP_TO_EDGE;
-        d.set_texture(n, m);
+        d.set_texture(n, l);
       }
       c.add_child(f);
       f.size = new gb.vec2(256, 256);

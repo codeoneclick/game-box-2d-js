@@ -87,6 +87,7 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/bussines_logic_managment/max_rects_pack_algorithm.js \
 --js=../public_html/src/ui_managment/common/views/common_alert_view.js \
 --js=../public_html/src/ui_managment/common/views/common_error_view.js \
+--js=../public_html/src/ui_managment/common/views/common_progress_view.js \
 --js=../public_html/src/ui_managment/ss_merge/controllers/ss_merge_controller.js \
 --js=../public_html/src/ui_managment/ss_merge/views/ss_merge_import_view.js \
 --js=../public_html/src/ui_managment/ss_merge/views/ss_merge_frames_view.js \

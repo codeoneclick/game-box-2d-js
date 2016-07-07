@@ -45,7 +45,6 @@ oop.define_class({
                         var frame = frames[animation_component.current_frame];
                         material_component.swap_texture_to_active(frame.t_name);
                         geometry_component.update_mesh_texcoord_attributes(frame.u_0, frame.v_0, frame.u_1, frame.v_1);
-                        console.log("frame: ", frame.d_name);
                     }
                 }
             }

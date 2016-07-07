@@ -49,7 +49,10 @@ oop.define_class({
             common_alert_view: "ss-merge-common-alert-view",
             common_alert_view_textfield: "ss-merge-common-alert-view-textfield",
             common_error_view: "ss-merge-common-error-view",
-            common_error_view_textfield: "ss-merge-common-error-view-textfield"
+            common_error_view_textfield: "ss-merge-common-error-view-textfield",
+            common_progress_view: "ss-merge-common-progress-view",
+            common_progress_view_bar: "ss-merge-common-progress-view-bar",
+            common_progress_view_textfield: "ss-merge-common-progress-view-textfield"
         },
         default_filenames: {
             page: "page",
@@ -69,9 +72,9 @@ oop.define_class({
             self.error_view.show(message + "\n(" + file + ":" + line + ")" + stack, ui, ui_j);
         };
 
-        $(ui_j(ui.tab_container)).append($("<div id=" + ui.tab_left_panel + " style=\"background:black;\"/>"));
-        $(ui_j(ui.tab_container)).append($("<div id=" + ui.tab_right_panel + " style=\"background:black;\"/>"));
-        $(ui_j(ui.tab_right_panel)).append($("<canvas style=\"width:100%; height:100%;\" id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
+        $(ui_j(ui.tab_container)).append($("<div id=" + ui.tab_left_panel + " style=\"background:black; margin-top: 2px;\"/>"));
+        $(ui_j(ui.tab_container)).append($("<div id=" + ui.tab_right_panel + " style=\"background:black; margin-top: 2px;\"/>"));
+        $(ui_j(ui.tab_right_panel)).append($("<canvas id=\"gl_canvas\" width=\"1024\" height=\"1024\"></canvas>"));
 
         this.m_import_view = new gb.ss_merge_import_view(this, ui, ui_j);
         this.m_frames_view = new gb.ss_merge_frames_view(this, ui, ui_j);
@@ -113,6 +116,7 @@ oop.define_class({
         this.m_preview_animation_controller = new gb.ss_preview_animation_controller();
         this.m_alert_view = new gb.common_alert_view(ui.tab_left_panel, ui, ui_j);
         this.m_error_view = new gb.common_error_view(ui.tab_left_panel, ui, ui_j);
+        this.m_progress_view = new gb.common_progress_view(ui.tab_left_panel, ui, ui_j);
 
         this.m_merge_algorithm = new gb.max_rects_pack_algorithm();
         this.m_merge_algorithm.atlas_width = 1024;
@@ -120,6 +124,7 @@ oop.define_class({
         this.m_merge_algorithm.heuristic = gb.max_rects_pack_algorithm.heuristic.TL;
 
         this.m_scene = null;
+        this.m_animated_sprite = null;
         this.m_page_size = 1024;
 
         this.m_export_image_filename = gb.ss_merge_controller.default_filenames.page;
@@ -155,6 +160,11 @@ oop.define_class({
                 return this.m_error_view;
             }
         });
+        Object.defineProperty(this, 'progress_view', {
+            get: function() {
+                return this.m_progress_view;
+            }
+        });
         Object.defineProperty(this, 'importing_images_size', {
             get: function() {
                 return this.m_importing_images_size;
@@ -182,6 +192,14 @@ oop.define_class({
             },
             set: function(value) {
                 this.m_scene = value;
+            }
+        });
+        Object.defineProperty(this, 'animated_sprite', {
+            get: function() {
+                return this.m_animated_sprite;
+            },
+            set: function(value) {
+                this.m_animated_sprite = value;
             }
         });
     },
@@ -218,9 +236,12 @@ oop.define_class({
                     }
                 }
                 self.on_pack_sprites();
-                var editor_fabricator = new gb.editor_fabricator();
-                editor_fabricator.scene_fabricator = scene.fabricator;
-                self.m_selector = editor_fabricator.create_selector();
+
+                self.animated_sprite = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.animation.json", function() {
+                    self.scene.add_child(self.animated_sprite);
+                    self.animated_sprite.size = new gb.vec2(256, 256);
+                    self.animated_sprite.position = new gb.vec2(256, 256);
+                });
             });
         },
 
@@ -247,6 +268,11 @@ oop.define_class({
 
         on_images_importing: function(images_files) {
             var self = this;
+            var ui = gb.ss_merge_controller.html_elements;
+            var ui_j = gb.ss_merge_controller.ui_j;
+
+            self.progress_view.show(ui, ui_j);
+            
             var images_files_count_unprocessed = images_files.length;
             var images_files_count_processed = 0;
             for (var i = 0; i < images_files_count_unprocessed; ++i) {
@@ -264,7 +290,7 @@ oop.define_class({
                         image.onload = function() {
                             var texture = self.scene.fabricator.resources_accessor.get_texture(data.target.m_filename, image);
                             texture.add_resource_loading_callback(function(resource, userdata) {
-                                var sprite = self.scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.json", function() {
+                                var sprite = self.scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite.savetoimage.json", function() {
                                     resource.mag_filter = gl.LINEAR;
                                     resource.min_filter = gl.LINEAR;
                                     resource.wrap_mode = gl.CLAMP_TO_EDGE;
@@ -274,8 +300,13 @@ oop.define_class({
                                                               Math.round(resource.height * self.importing_images_size));
                                     self.on_sprite_added_to_page(sprite, 0.0);
                                     images_files_count_processed++;
+                                    self.progress_view.update_progress("Loading images...", false, ui, ui_j);
                                     if (images_files_count_processed === images_files_count_unprocessed) {
+                                        self.progress_view.update_progress("Generating animation...", false, ui, ui_j);
                                         self.on_pack_sprites();
+                                        self.on_generate_animation(function() {
+                                            self.progress_view.hide(ui, ui_j);
+                                        });
                                     }
                                 });
 
@@ -414,8 +445,6 @@ oop.define_class({
             touch_recognize_component.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this);
             this.scene.add_child(sprite);
             this.m_sprites.push(sprite);
-
-            aaa.callle(aaa);
         },
 
         on_sprite_removed_from_table: function(unique_tag) {
@@ -572,7 +601,6 @@ oop.define_class({
         on_export_images: function(callback) {
             var ui = gb.ss_merge_controller.html_elements;
             var ui_j = gb.ss_merge_controller.ui_j;
-            this.set_selected_sprite(null);
             this.export_view.cleanup_frames(ui, ui_j);
             var pages_count = this.m_sprites_on_pages.length;
             var page = 0;
@@ -639,6 +667,29 @@ oop.define_class({
             var ui_j = gb.ss_merge_controller.ui_j;
             this.export_view.add_frames_configuration(frames, this.export_configuration_filename, ui, ui_j);
             return frames;
+        },
+
+        on_generate_animation: function(callback) {
+            var self = this;
+            this.scene.remove_child(this.animated_sprite);
+            this.on_export_images(function(images) {
+                var frames = self.on_export_configuration();
+                var material_component = self.animated_sprite.get_component(gb.ces_base_component.type.material);
+                var images_count = images.length;
+                for(var i = 0; i < images_count; ++i) {
+                    var image = images[i];
+                    var texture = self.scene.fabricator.resources_accessor.get_texture("page_" + i + ".png", image);
+                    texture.mag_filter = gl.LINEAR;
+                    texture.min_filter = gl.LINEAR;
+                    texture.wrap_mode = gl.CLAMP_TO_EDGE;
+                    material_component.set_texture(texture, i);
+                }
+                self.animated_sprite.add_animation("animation", frames);
+                self.scene.add_child(self.animated_sprite);
+                if(callback) {
+                    callback();
+                }
+            });
         },
 
         on_preview_animation_open: function() {

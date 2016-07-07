@@ -16,12 +16,16 @@ oop.define_class({
                 "<br>" +
                 "<button id=" + ui.export_save_images_button + " style=\"margin:2%; width:95.5%;\">generate images</button>" +
                 "<br>" +
-                "<div id=" + ui.export_save_pages_table_scroll + " style=\"height:340px\" class=\"scroll\">" +
+                "<div id=" + ui.export_save_pages_table_scroll + " style=\"height:340px; overflow: hidden;\" class=\"scroll\">" +
                     "<ul style=\"list-style-type:none; margin-left:-10%; margin-top:-0.5%;\" id=\"" + ui.export_save_pages_table + "\"/>" +
                 "</div>" +
-                "<button id=" + ui.export_save_frames_button + " style=\"margin:2%; margin-top:-2%; width:95.5%;\">generate frames configuration</button>" +
+                "<button id=" + ui.export_save_frames_button + " style=\"margin:2%; width:95.5%;\">generate frames configuration</button>" +
             "</div>"
         );
+
+        $('.scroll').scrollable({'autoHide': false,
+                                 'transferScrolling': false,
+                                 'mouseWheelMaxDelta': 0.1});
 
         $(ui_j(ui.tab_right_panel)).append(
             "<div id=" + ui.export_animation_preview_dialog + " class=\"ui-dialog\" title=\"Animation\"></div>"
@@ -101,7 +105,7 @@ oop.define_class({
             $(ui_j(ui.export_save_frames_download_button)).remove();
             var configuration_json = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuration));
             $(ui_j(ui.export_container)).append(
-                "<div id=" + ui.export_save_frames_textfield + " class=\"ui-widget ui-front ui-widget-content ui-corner-all\" style=\"margin:2%; font-size: 1vw; height: 150px; overflow: hidden; background: gray;\">" +
+                "<div id=" + ui.export_save_frames_textfield + " class=\"ui-widget ui-front ui-widget-content\" style=\"margin:2%; font-size: 1vw; height: 150px; overflow: hidden; background: gray;\">" +
                     JSON.stringify(configuration) +
                 "</div>" +
                 "<a style=\"margin-top:2%; margin-left:2%; width:95.5%;\" id=" + ui.export_save_frames_download_button + " href=\"data:" + configuration_json + "\" download=\"" + filename + ".json\">download frames configuration</a>"

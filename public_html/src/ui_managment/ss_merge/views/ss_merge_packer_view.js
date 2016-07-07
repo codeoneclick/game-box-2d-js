@@ -15,7 +15,7 @@ oop.define_class({
                     "<select id=" + ui.editing_page_drop_down_box + ">" +
                         "<option selected=\"selected\">page 1</option>" +
                     "</select>" +
-                "</div>" + 
+                "</div>" +
                 "<div style=\"margin:2%;\" id=" + ui.editing_move_resize_radio_button + ">" + 
                     "<input type=\"radio\" id=" + ui.editing_move_resize_freeform_button + " name=\"" + ui.editing_move_resize_radio_button + "\" checked=\"checked\">" +
                     "<label for=" + ui.editing_move_resize_freeform_button + " style=\"width:48%;\">free form</label>" +

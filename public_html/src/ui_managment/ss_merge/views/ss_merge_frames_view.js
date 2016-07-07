@@ -23,7 +23,9 @@ oop.define_class({
                 "</div>" +
             "</div>"
         );
-        $('.scroll').scrollable();
+        $('.scroll').scrollable({'autoHide': false,
+                                 'transferScrolling': false,
+                                 'mouseWheelMaxDelta': 0.1});
         $(ui_j(ui.frames_table)).height(0);
         $(ui_j(ui.frames_table)).sortable();
         $(ui_j(ui.frames_table)).disableSelection();
