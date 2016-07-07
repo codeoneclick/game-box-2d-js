@@ -92,6 +92,7 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/ui_managment/ss_merge/views/ss_merge_import_view.js \
 --js=../public_html/src/ui_managment/ss_merge/views/ss_merge_frames_view.js \
 --js=../public_html/src/ui_managment/ss_merge/views/ss_merge_packer_view.js \
+--js=../public_html/src/ui_managment/ss_merge/views/ss_merge_animations_view.js \
 --js=../public_html/src/ui_managment/ss_merge/views/ss_merge_export_view.js \
 --js=../public_html/src/ui_managment/ss_animation_controller.js \
 --js=../public_html/src/ui_managment/ss_merge/controllers/ss_preview_animation_controller.js \

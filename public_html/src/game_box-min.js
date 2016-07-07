@@ -3685,10 +3685,12 @@ oop.define_class({namespace:"gb", name:"common_progress_view", init:function(a, 
 var g_ss_merge_controller = null, g_ss_merge_transition = null;
 oop.define_class({namespace:"gb", name:"ss_merge_controller", constants:{html_elements:{tab_container:"ss-merge-tab-container", tab_left_panel:"ss-merge-tab-left-panel", tab_right_panel:"ss-merge-tab-right-panel", import_container:"ss-merge-import-container", import_size_drop_down_box:"ss-merge-size-drop-down-box", import_size_drop_down_box_button:"ss-merge-size-drop-down-box-button", import_drop_zone:"ss-merge-drop-zone", import_add_image_button:"ss-merge-add_image-button", import_add_image_input:"ss-merge-add_image-input", 
 frames_container:"ss-merge-frames-container", frames_sort_button:"ss-merge-frames-sort-button", frames_table:"ss-merge-frames-table", frames_table_scroll:"ss-merge-frames-table_scroll", frames_table_cell:"ss-merge-frames-table-cell", frames_table_cell_delete_icon:"ss-merge-frames-table-cell-delete-icon", frames_table_cell_image:"ss-merge-frames-table-cell-image", editing_container:"ss-merge-editing-container", editing_page_drop_down_box:"ss-merge-editing-page-drop-down-box", editing_page_drop_down_box_button:"ss-merge-editing-page-drop-down-box-button", 
-editing_move_resize_radio_button:"ss-merge-editing-move-resize-radio-button", editing_move_resize_freeform_button:"ss-merge-editing-move-resize-freeform-button", editing_move_resize_snaptogrid_button:"ss-merge-editing-move-resize-snaptogrid-button", editing_pack_algorithm_drop_down_box:"ss-merge-editing-pack-algorithm-drop-down-box", editing_pack_algorithm_drop_down_box_button:"ss-merge-editing-pack-algorithm-drop-down-box-button", editing_spread_button:"ss-merge-editing-spread-button", export_container:"ss-merge-export-container", 
-export_filename_input:"ss-merge-export-filename-input", export_animation_preview_button:"ss-merge-export-animation-preview_button", export_save_images_button:"ss-merge-export-atlas-button", export_save_pages_table:"ss-merge-export-save-pages-table", export_save_pages_table_scroll:"ss-merge-export-save-pages-table-scroll", export_save_pages_table_cell:"ss-merge-export-save-pages-table-cell", export_save_pages_table_cell_download_button:"ss-merge-export-save-pages-table-cell-download-button", export_save_frames_button:"ss-merge-export-save-frames-button", 
-export_save_frames_textfield:"ss-merge-export_save-frames-textfield", export_save_frames_download_button:"ss-merge-export_save-frames-download-button", export_animation_preview_dialog:"ss-merge-export-animation-preview-dialog", common_alert_view:"ss-merge-common-alert-view", common_alert_view_textfield:"ss-merge-common-alert-view-textfield", common_error_view:"ss-merge-common-error-view", common_error_view_textfield:"ss-merge-common-error-view-textfield", common_progress_view:"ss-merge-common-progress-view", 
-common_progress_view_bar:"ss-merge-common-progress-view-bar", common_progress_view_textfield:"ss-merge-common-progress-view-textfield"}, default_filenames:{page:"page", configuration:"configuration"}}, init:function() {
+editing_move_resize_radio_button:"ss-merge-editing-move-resize-radio-button", editing_move_resize_freeform_button:"ss-merge-editing-move-resize-freeform-button", editing_move_resize_snaptogrid_button:"ss-merge-editing-move-resize-snaptogrid-button", editing_pack_algorithm_drop_down_box:"ss-merge-editing-pack-algorithm-drop-down-box", editing_pack_algorithm_drop_down_box_button:"ss-merge-editing-pack-algorithm-drop-down-box-button", editing_spread_button:"ss-merge-editing-spread-button", animations_container:"ss-merge-animations-container", 
+animations_current_animation_drop_down_box:"ss-merge-animations-current-animation-drop-down-box", animations_current_animation_drop_down_box_button:"ss-merge-animations-current-animation-drop-down-box-button", animations_add_animation_button:"ss-merge-animations-add-animation-button", animations_table:"ss-merge-animations-table", animations_table_scroll:"ss-merge-animations-table-scroll", animations_table_cell:"ss-merge-animations-table-cell", animations_table_cell_animation_name_textfield:"ss-merge-animations-table-cell-animation-name-textfield", 
+animations_table_cell_frames_label:"ss-merge-animations-table-cell-frames-label", animations_table_cell_frames_slider:"ss-merge-animations-table-cell-frames-slider", animations_table_cell_delete_icon:"ss-merge-animations-table-cell-delete-icon", animations_table_cell_apply_button:"ss-merge-animations-table-cell-apply-button", export_container:"ss-merge-export-container", export_filename_input:"ss-merge-export-filename-input", export_animation_preview_button:"ss-merge-export-animation-preview_button", 
+export_save_images_button:"ss-merge-export-atlas-button", export_save_pages_table:"ss-merge-export-save-pages-table", export_save_pages_table_scroll:"ss-merge-export-save-pages-table-scroll", export_save_pages_table_cell:"ss-merge-export-save-pages-table-cell", export_save_pages_table_cell_download_button:"ss-merge-export-save-pages-table-cell-download-button", export_save_frames_button:"ss-merge-export-save-frames-button", export_save_frames_textfield:"ss-merge-export_save-frames-textfield", export_save_frames_download_button:"ss-merge-export_save-frames-download-button", 
+export_animation_preview_dialog:"ss-merge-export-animation-preview-dialog", common_alert_view:"ss-merge-common-alert-view", common_alert_view_textfield:"ss-merge-common-alert-view-textfield", common_error_view:"ss-merge-common-error-view", common_error_view_textfield:"ss-merge-common-error-view-textfield", common_progress_view:"ss-merge-common-progress-view", common_progress_view_bar:"ss-merge-common-progress-view-bar", common_progress_view_textfield:"ss-merge-common-progress-view-textfield"}, default_filenames:{page:"page", 
+configuration:"configuration"}}, init:function() {
   g_ss_merge_controller = this;
   var a = gb.ss_merge_controller.ui(), b = gb.ss_merge_controller.ui_j, c = gb.ss_merge_controller.self();
   window.onerror = function(d, e, g, f, h) {
@@ -3700,6 +3702,7 @@ common_progress_view_bar:"ss-merge-common-progress-view-bar", common_progress_vi
   this.m_import_view = new gb.ss_merge_import_view(this, a, b);
   this.m_frames_view = new gb.ss_merge_frames_view(this, a, b);
   this.m_packer_view = new gb.ss_merge_packer_view(this, a, b);
+  this.m_animations_view = new gb.ss_merge_animations_view(this, a, b);
   this.m_export_view = new gb.ss_merge_export_view(this, a, b);
   $(b(a.tab_container)).tooltip({position:{my:"left top", at:"left+10 top+10", of:"#gl_canvas"}});
   $(b(a.tab_left_panel)).accordion({heightStyle:"content"});
@@ -3713,8 +3716,7 @@ common_progress_view_bar:"ss-merge-common-progress-view-bar", common_progress_vi
   this.m_sprites_on_pages = [];
   this.m_current_page = 0;
   this.m_importing_images_size = 1;
-  this.m_selector = this.m_grid = null;
-  this.m_preview_animation_controller = new gb.ss_preview_animation_controller;
+  this.m_grid = null;
   this.m_alert_view = new gb.common_alert_view(a.tab_left_panel, a, b);
   this.m_error_view = new gb.common_error_view(a.tab_left_panel, a, b);
   this.m_progress_view = new gb.common_progress_view(a.tab_left_panel, a, b);
@@ -3850,17 +3852,6 @@ common_progress_view_bar:"ss-merge-common-progress-view-bar", common_progress_vi
       k.readAsDataURL(h);
     }
   }
-}, on_sprite_pressed:function(a, b, c, d) {
-  d.set_selected_sprite(a);
-}, set_selected_sprite:function(a) {
-  for (var b = gb.ss_merge_controller.html_elements, c = gb.ss_merge_controller.ui_j, d = this.m_sprites.indexOf(a), e = this.m_sprites.length, g = 0;g < e;++g) {
-    g === d ? $(c(b.frames_table_scroll)).animate({scrollTop:170 * d}, "slow", "swing", function() {
-      $(c(b.frames_table) + " li").eq(d).find("p").animate({backgroundColor:"#f58400"});
-    }) : $(c(b.frames_table) + " li").eq(g).find("p").css({background:"black"});
-  }
-  e = null;
-  this.m_selector.target && (g = this.m_selector.target, this.scene.add_child(g), g.position = this.m_selector.position, g.rotation = this.m_selector.rotation, e = g.get_component(gb.ces_base_component.type.touch_recognize), e.add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this), this.scene.add_box2d_body(g));
-  a ? (this.scene.remove_box2d_body(a), this.m_selector.position = a.position, this.m_selector.rotation = a.rotation, this.m_selector.target = a, e = a.get_component(gb.ces_base_component.type.touch_recognize), e.remove_callback(gb.input_context.state.pressed, this.on_sprite_pressed), this.m_selector.bounding_quad.remove_from_parent(), this.scene.add_child(this.m_selector.bounding_quad)) : this.m_selector.target = null;
 }, on_sprites_reordering:function() {
   for (var a = gb.ss_merge_controller.html_elements, b = gb.ss_merge_controller.ui_j, c = $(b(a.frames_table) + " li").map(function() {
     return $(this).find("#ss-merge-frames-table-cell").text();
@@ -3894,8 +3885,6 @@ common_progress_view_bar:"ss-merge-common-progress-view-bar", common_progress_vi
   }
   this.on_page_changed(0, !0);
 }, on_sprite_added_to_table:function(a) {
-  a.is_touchable = !0;
-  a.get_component(gb.ces_base_component.type.touch_recognize).add_callback(gb.input_context.state.pressed, this.on_sprite_pressed, this);
   this.scene.add_child(a);
   this.m_sprites.push(a);
 }, on_sprite_removed_from_table:function(a) {
@@ -4024,22 +4013,6 @@ common_progress_view_bar:"ss-merge-common-progress-view-bar", common_progress_vi
     b.scene.add_child(b.animated_sprite);
     a && a();
   });
-}, on_preview_animation_open:function() {
-  this.set_selected_sprite(null);
-  var a = this;
-  this.on_export_images(function(b) {
-    var c = a.on_export_configuration();
-    a.deactivate();
-    setTimeout(function() {
-      var d = gb.ss_merge_controller.ui(), e = gb.ss_merge_controller.ui_j;
-      $(e(d.export_animation_preview_dialog)).dialog("open");
-      $(".ui-dialog :button").blur();
-      a.preview_animation_controller.activate(b, c);
-    }, 100);
-  });
-}, on_preview_animation_close:function() {
-  this.preview_animation_controller.deactivate();
-  this.activate();
 }}, static_methods:{self:function() {
   return g_ss_merge_controller;
 }, ui:function() {
@@ -4125,6 +4098,48 @@ oop.define_class({namespace:"gb", name:"ss_merge_packer_view", init:function(a, 
   });
 }, release:function() {
 }, methods:{}, static_methods:{}});
+oop.define_class({namespace:"gb", name:"ss_merge_animations_view", init:function(a, b, c) {
+  var d = this;
+  $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>animations</h3><div style="background:none; border:0px;" id=' + b.animations_container + '><div style="width:95%; margin:2%; margin-top:5%"><select id=' + b.animations_current_animation_drop_down_box + '><option selected="selected">all frames</option></select></div><button id=' + b.animations_add_animation_button + ' style="margin:2%; width:95.5%;">add animation</button><div id=' + b.animations_table_scroll + 
+  ' style="height:20px" class="scroll"><ul style="list-style-type:none; margin-left:-12.5%;" id="' + b.animations_table + '"></ul></div></div>');
+  $(c(b.animations_current_animation_drop_down_box)).selectmenu();
+  $(c(b.animations_current_animation_drop_down_box_button)).css({width:"100%"});
+  $(c(b.animations_current_animation_drop_down_box)).on("selectmenuselect", function(a, b) {
+  });
+  $(c(b.animations_add_animation_button)).button();
+  $(c(b.animations_add_animation_button)).on("click", function() {
+    d.add_animation(a, b, c);
+  });
+  $(".scroll").scrollable({autoHide:!1, transferScrolling:!1, mouseWheelMaxDelta:.1});
+  $(c(b.animations_table)).height(0);
+  $(c(b.animations_table)).sortable();
+  $(c(b.animations_table)).disableSelection();
+}, release:function() {
+}, methods:{add_animation:function(a, b, c) {
+  var d = this;
+  $(c(b.animations_table)).append('<li class="ui-state-default" style="height: 200px; margin: 8px; background: none;"><p align="center" style="font-size:14px; float:left; margin:2px; margin-left:-0.25%; margin-top:-0.25%; height:24px; width:100%; border-color: #666;" id=' + b.animations_table_cell + ' class="ui-widget-header" style="margin:4px;"><span class="ui-icon ui-icon-circle-arrow-e" style="float:left; margin:4px;"/><span id=' + b.animations_table_cell_delete_icon + ' class="ui-icon ui-icon-trash" style="float:right; margin:4px;"/></p><p><input class="ui-widget ui-front ui-widget-content ui-corner-all" style="margin:2%; width:94%;" placeholder=" animation name..." id=' + 
+  b.animations_table_cell_animation_name_textfield + ' type="text"><label style="margin-left: 3%;" for="' + b.animations_table_cell_frames_label + '">frames: </label><input type="text" id=' + b.animations_table_cell_frames_label + ' readonly style="background: black; margin-top: 3%; border: 0; color: #f6931f; font-weight: bold;"></p><div style="width: 88%; margin-left: 5.25%;" id=' + b.animations_table_cell_frames_slider + '></div><a style="margin-top:6%; margin-left:2%; width:95.5%;" id=' + b.animations_table_cell_apply_button + 
+  ">apply</a></li>");
+  a = $(c(b.animations_table)).children();
+  a = a[a.length - 1];
+  $(a).find(c(b.animations_table_cell_animation_name_textfield)).change(function(a) {
+    $(this).parent().parent().find(c(b.animations_table_cell_apply_button)).button(0 != a.target.value.length ? "enable" : "disable");
+  });
+  $(a).find(c(b.animations_table_cell_frames_slider)).slider({range:!0, min:0, max:100, values:[0, 100], slide:function(a, d) {
+    $(this).parent().find(c(b.animations_table_cell_frames_label)).val(d.values[0] + " - " + d.values[1]);
+  }});
+  $(a).find(c(b.animations_table_cell_frames_label)).val("0 - 100");
+  $(a).find(c(b.animations_table_cell_apply_button)).button();
+  $(a).find(c(b.animations_table_cell_apply_button)).button("disable");
+  $(a).find(c(b.animations_table_cell_delete_icon)).click(function() {
+    $(this).parent().parent().remove();
+    d.on_animations_count_changed(b, c);
+  });
+  this.on_animations_count_changed(b, c);
+}, on_animations_count_changed:function(a, b) {
+  var c = $(b(a.animations_table)).children().length;
+  $(b(a.animations_table)).height(210 * c);
+}}, static_methods:{}});
 oop.define_class({namespace:"gb", name:"ss_merge_export_view", init:function(a, b, c) {
   $(c(b.tab_left_panel)).append('<h3><span class="ui-icon ui-icon-note" style="float:left; margin:2px;"></span>export</h3><div style="background:none; border:0px;" id=' + b.export_container + '><input class="ui-widget ui-front ui-widget-content ui-corner-all" style="margin:2%; width:94%;" placeholder=" enter filename..." id=' + b.export_filename_input + ' type="text"><button title="preview animation" id=' + b.export_animation_preview_button + ' style="margin:2%; width:95.5%;">preview animation</button><br><button id=' + 
   b.export_save_images_button + ' style="margin:2%; width:95.5%;">generate images</button><br><div id=' + b.export_save_pages_table_scroll + ' style="height:340px; overflow: hidden;" class="scroll"><ul style="list-style-type:none; margin-left:-10%; margin-top:-0.5%;" id="' + b.export_save_pages_table + '"/></div><button id=' + b.export_save_frames_button + ' style="margin:2%; width:95.5%;">generate frames configuration</button></div>');
