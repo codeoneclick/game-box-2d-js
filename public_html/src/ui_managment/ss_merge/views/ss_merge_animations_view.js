@@ -18,15 +18,13 @@ oop.define_class({
                     "</select>" +
                 "</div>" +
                 "<button id=" + ui.animations_add_animation_button + " style=\"margin:2%; width:95.5%;\">add animation</button>" +
-                "<div id=" + ui.animations_table_scroll + " style=\"height:20px\" class=\"scroll\">" +
+                "<div id=" + ui.animations_table_scroll + " style=\"height:0px\" class=\"scroll\">" +
                     "<ul style=\"list-style-type:none; margin-left:-12.5%;\" id=\"" + ui.animations_table + "\"></ul>" +
                 "</div>" +
             "</div>"
         );
         $(ui_j(ui.animations_current_animation_drop_down_box)).selectmenu();
-        $(ui_j(ui.animations_current_animation_drop_down_box_button)).css({
-            'width': '100%'
-        });
+        $(ui_j(ui.animations_current_animation_drop_down_box_button)).css({'width': '100%'});
         $(ui_j(ui.animations_current_animation_drop_down_box)).on("selectmenuselect", function(event, ui) { 
 
         });
@@ -41,6 +39,14 @@ oop.define_class({
         $(ui_j(ui.animations_table)).height(0);
         $(ui_j(ui.animations_table)).sortable();
         $(ui_j(ui.animations_table)).disableSelection();
+
+        this.m_animations_names_cache = [];
+
+        Object.defineProperty(this, 'animations_names_cache', {
+            get: function() {
+                return this.m_animations_names_cache;
+            }
+        });
 	},
 
 	release: function() {
@@ -71,35 +77,103 @@ oop.define_class({
             var cell = cells[cells.length - 1];
 
             $(cell).find(ui_j(ui.animations_table_cell_animation_name_textfield)).change(function(event) {
-                $(this).parent().parent().find(ui_j(ui.animations_table_cell_apply_button)).button(event.target.value.length != 0 ? 'enable' : 'disable');
+                var current_animation_name = event.target.value;
+                var animations = controller.animations;
+                var is_animation_with_same_name_exist = false;
+                for(animation_name in animations) {
+                    if(animation_name === current_animation_name) {
+                        is_animation_with_same_name_exist = true;
+                        break;
+                    }
+                }
+                if(current_animation_name.length != 0 && !is_animation_with_same_name_exist)
+                {
+                    $(this).parent().parent().find(ui_j(ui.animations_table_cell_apply_button)).button('enable');
+                }
+                else
+                {
+                    $(this).parent().parent().find(ui_j(ui.animations_table_cell_apply_button)).button('disable');
+                    controller.on_show_alert_view('Animation with same name already exist!');
+                }
             });
 
             $(cell).find(ui_j(ui.animations_table_cell_frames_slider)).slider({
                 range: true,
                 min: 0,
-                max: 100,
-                values: [0, 100],
+                max: controller.frames_count,
+                values: [0, controller.frames_count],
                 slide: function(event, element) {
                     $(this).parent().find(ui_j(ui.animations_table_cell_frames_label)).val(element.values[0] + " - " + element.values[1]);
                 }
             });
-            $(cell).find(ui_j(ui.animations_table_cell_frames_label)).val("0 - 100");
+            $(cell).find(ui_j(ui.animations_table_cell_frames_label)).val("0 - " + controller.frames_count);
 
             $(cell).find(ui_j(ui.animations_table_cell_apply_button)).button();
             $(cell).find(ui_j(ui.animations_table_cell_apply_button)).button('disable');
-
-            $(cell).find(ui_j(ui.animations_table_cell_delete_icon)).click(function() {
-                $(this).parent().parent().remove();
-                self.on_animations_count_changed(ui, ui_j);
+            $(cell).find(ui_j(ui.animations_table_cell_apply_button)).on('click', function() {
+                var cell = $(this).parent();
+                var current_animation_name = $(cell).find(ui_j(ui.animations_table_cell_animation_name_textfield)).val();
+                var cached_animation_name = self.animations_names_cache[$(cell).find(ui_j(ui.animations_table_cell_animation_name_textfield))];
+                var frames_indices = $(cell).find(ui_j(ui.animations_table_cell_frames_slider)).slider('option', 'values');
+                var animations = controller.animations;
+                controller.on_apply_animation(cached_animation_name, current_animation_name, frames_indices);
+                self.on_apply_animation(controller, ui, ui_j);
+                self.animations_names_cache[$(cell).find(ui_j(ui.animations_table_cell_animation_name_textfield))] = current_animation_name;
             });
 
+            $(cell).find(ui_j(ui.animations_table_cell_delete_icon)).click(function() {
+                var cell = $(this).parent().parent();
+                var animation_name = $(cell).find(ui_j(ui.animations_table_cell_animation_name_textfield)).val();
+                cell.remove();
+                var options = $(ui_j(ui.animations_current_animation_drop_down_box)).children();
+                var options_count = options.length;
+                var option = null;
+                for(var i = 0; i < options_count; ++i) {
+                    option = options[i];
+                    if ($(option).text() === animation_name) {
+                        $(option).remove();
+                    }
+                }
+                $(ui_j(ui.animations_current_animation_drop_down_box)).selectmenu('refresh');
+                $(ui_j(ui.animations_current_animation_drop_down_box_button)).css({'width': '100%'});
+                self.on_animations_count_changed(ui, ui_j);
+            });
             this.on_animations_count_changed(ui, ui_j);
+        },
+
+        on_apply_animation: function(controller, ui, ui_j) {
+            $(ui_j(ui.animations_current_animation_drop_down_box)).find('option').remove().end();
+            $(ui_j(ui.animations_current_animation_drop_down_box)).append($("<option></option>").text("all frames")); 
+            var animations = controller.animations;
+            for(animation_name in animations) {
+                $(ui_j(ui.animations_current_animation_drop_down_box)).append($("<option></option>").text(animation_name)); 
+            }
+            $(ui_j(ui.animations_current_animation_drop_down_box)).selectmenu('refresh');
+            $(ui_j(ui.animations_current_animation_drop_down_box_button)).css({'width': '100%'});
         },
 
         on_animations_count_changed: function(ui, ui_j) {
             var cells = $(ui_j(ui.animations_table)).children();
             var cells_count = cells.length;
-            $(ui_j(ui.animations_table)).height(cells_count * 210);
+            var height = cells_count * 210;
+            $(ui_j(ui.animations_table)).height(height);
+            $(ui_j(ui.animations_table_scroll)).css({
+                'height': Math.min(430, height + cells_count * 10)
+            });
+        },
+
+        on_frames_count_changed: function(controller, ui, ui_j) {
+            var cells = $(ui_j(ui.animations_table)).children();
+            var cells_count = cells.length;
+            var cell = null;
+            for(var i = 0; i < cells_count; ++i) {
+                cell = cells[i];
+                $(cell).find(ui_j(ui.animations_table_cell_frames_label)).val("0 - " + controller.frames_count);
+                $(cell).find(ui_j(ui.animations_table_cell_frames_slider)).slider({
+                    min: 0,
+                    max: controller.frames_count,
+                });
+            }
         }
 	},
 

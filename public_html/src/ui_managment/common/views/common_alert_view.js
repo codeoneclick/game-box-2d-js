@@ -18,7 +18,7 @@ oop.define_class({
         $(ui_j(ui.common_alert_view)).dialog({
             autoOpen: false,
             width: 390,
-            height: 70,
+            height: 140,
             modal: false,
             show: {
                 effect: "bounce",

@@ -99,6 +99,6 @@ java -jar ../compiler/closure-compiler.jar \
 --js=../public_html/src/editor_managment/selector.js \
 --js=../public_html/src/editor_managment/editor_fabricator.js \
 --js=!../public_html/src/game_box-min.js \
---create_source_map ../public_html/src/game_box-min.js.map \
---source_map_format=V3 \
---formatting=PRETTY_PRINT
+#--create_source_map ../public_html/src/game_box-min.js.map \
+#--source_map_format=V3 \
+#--formatting=PRETTY_PRINT

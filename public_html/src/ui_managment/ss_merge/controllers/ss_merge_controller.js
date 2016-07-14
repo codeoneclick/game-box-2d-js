@@ -106,7 +106,7 @@ oop.define_class({
         $(ui_j(ui.tab_left_panel)).on("accordionbeforeactivate", function(event, element) {
             var index = $(element.newHeader).index('h3');
             if (index > 0 && self.m_sprites.length === 0) {
-                self.alert_view.show("You need to add sprites at first!", ui, ui_j);
+                self.on_show_alert_view("You need to add sprites at first!");
                 return false;
             } 
             return true;
@@ -117,6 +117,7 @@ oop.define_class({
         gb.game_controller.get_instance().add_transition(g_ss_merge_transition);
 
         this.m_sprites = [];
+        this.m_animations = [];
         this.m_sprites_on_pages = [];
         this.m_current_page = 0;
         this.m_importing_images_size = 1.0;
@@ -149,14 +150,14 @@ oop.define_class({
                 return this.m_frames_view;
             }
         });
+        Object.defineProperty(this, 'animation_view', {
+            get: function() {
+                return this.m_animations_view;
+            }
+        });
         Object.defineProperty(this, 'export_view', {
             get: function() {
                 return this.m_export_view;
-            }
-        });
-        Object.defineProperty(this, 'preview_animation_controller', {
-            get: function() {
-                return this.m_preview_animation_controller;
             }
         });
         Object.defineProperty(this, 'alert_view', {
@@ -209,6 +210,16 @@ oop.define_class({
             },
             set: function(value) {
                 this.m_animated_sprite = value;
+            }
+        });
+        Object.defineProperty(this, 'frames_count', {
+            get: function() {
+                return this.m_sprites.length;
+            }
+        });
+        Object.defineProperty(this, 'animations', {
+            get: function() {
+                return this.m_animations;
             }
         });
     },
@@ -416,6 +427,17 @@ oop.define_class({
             this.m_sprites.splice(sprite_index, 1);
             this.scene.remove_child(sprite);
             sprite.release();
+
+            var ui = gb.ss_merge_controller.html_elements;
+            var ui_j = gb.ss_merge_controller.ui_j;
+            var self = this;
+            this.progress_view.show(ui, ui_j);
+            this.progress_view.update_progress("Generating animation...", false, ui, ui_j);
+            this.on_pack_sprites();
+            this.on_generate_animation(function() {
+                self.progress_view.hide(ui, ui_j);
+            });
+            this.animation_view.on_frames_count_changed(this, ui, ui_j);
         },
 
         on_sprite_added_to_page: function(entity, animated) {
@@ -645,7 +667,20 @@ oop.define_class({
                     callback();
                 }
             });
-        }
+        },
+
+        on_apply_animation: function(cached_animation_name, current_animation_name, frames_indices) {
+            if(cached_animation_name) {
+                delete this.m_animations[cached_animation_name];
+            }
+            this.m_animations[current_animation_name] = frames_indices;
+        },
+
+        on_show_alert_view: function(message) {
+            var ui = gb.ss_merge_controller.html_elements;
+            var ui_j = gb.ss_merge_controller.ui_j;
+            this.alert_view.show(message, ui, ui_j);
+        } 
     },
 
     static_methods: {
