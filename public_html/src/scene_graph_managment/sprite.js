@@ -125,13 +125,20 @@ oop.define_class({
 	},
 
 	methods: {
-		add_animation: function(animation_name, frames) {
+		set_animations_configuration: function(animations_configuration) {
 			var animation_component = this.get_component(gb.ces_base_component.type.animation);
 			if(!animation_component) {
 				animation_component = new gb.ces_animation_component();
 				this.add_component(animation_component);
 			}
-			animation_component.add_animation(animation_name, frames);
+			animation_component.set_animations_configuration(animations_configuration);
+		},
+
+		play_animation: function(animation_name) {
+			var animation_component = this.get_component(gb.ces_base_component.type.animation);
+			if(animation_component) {
+				animation_component.current_animation = animation_name;
+			}
 		}
 	},
 

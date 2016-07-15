@@ -121,6 +121,7 @@ oop.define_class({
         this.m_sprites_on_pages = [];
         this.m_current_page = 0;
         this.m_importing_images_size = 1.0;
+        this.m_current_animation_name = "all frames";
 
         this.m_grid = null;
 
@@ -220,6 +221,14 @@ oop.define_class({
         Object.defineProperty(this, 'animations', {
             get: function() {
                 return this.m_animations;
+            }
+        });
+        Object.defineProperty(this, 'current_animation_name', {
+            get: function() {
+                return this.m_current_animation_name;
+            },
+            set: function(value) {
+                this.m_current_animation_name = value;
             }
         });
     },
@@ -640,17 +649,37 @@ oop.define_class({
                     v_1: position_1.y / this.m_page_size
                 });
             }
+
+            var frames_count = frames.length;
+            var animations_configuration = [];
+            animations_configuration["frames"] = frames;
+            animations_configuration["animations"] = [];
+
+            animations_configuration["animations"].push({
+                name: "all frames",
+                first_frame: 0,
+                last_frame: frames_count,
+            });
+
+            for(animation_name in this.animations) {
+                animations_configuration["animations"].push({
+                    name: animation_name,
+                    first_frame: this.animations[animation_name][0],
+                    last_frame: this.animations[animation_name][1],
+                });
+            }
+
             var ui = gb.ss_merge_controller.html_elements;
             var ui_j = gb.ss_merge_controller.ui_j;
-            this.export_view.add_frames_configuration(frames, this.export_configuration_filename, ui, ui_j);
-            return frames;
+            this.export_view.add_frames_configuration(animations_configuration, this.export_configuration_filename, ui, ui_j);
+            return animations_configuration;
         },
 
         on_generate_animation: function(callback) {
             var self = this;
             this.scene.remove_child(this.animated_sprite);
             this.on_export_images(function(images) {
-                var frames = self.on_export_configuration();
+                var animations_configuration = self.on_export_configuration();
                 var material_component = self.animated_sprite.get_component(gb.ces_base_component.type.material);
                 var images_count = images.length;
                 for(var i = 0; i < images_count; ++i) {
@@ -661,7 +690,8 @@ oop.define_class({
                     texture.wrap_mode = gl.CLAMP_TO_EDGE;
                     material_component.set_texture(texture, i);
                 }
-                self.animated_sprite.add_animation("animation", frames);
+                self.animated_sprite.set_animations_configuration(animations_configuration);
+                self.animated_sprite.play_animation(self.current_animation_name);
                 self.scene.add_child(self.animated_sprite);
                 if(callback) {
                     callback();
@@ -674,6 +704,15 @@ oop.define_class({
                 delete this.m_animations[cached_animation_name];
             }
             this.m_animations[current_animation_name] = frames_indices;
+
+            var animations_configuration = this.on_export_configuration();
+            this.animated_sprite.set_animations_configuration(animations_configuration);
+            this.animated_sprite.play_animation(this.current_animation_name);
+        },
+
+        on_current_animation_changed: function(animation_name) {
+            this.current_animation_name = animation_name;
+            this.animated_sprite.play_animation(this.current_animation_name);
         },
 
         on_show_alert_view: function(message) {

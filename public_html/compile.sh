@@ -1,6 +1,9 @@
 #!/bin/bash
-
+#ADVANCED_OPTIMIZATIONS
+#SIMPLE_OPTIMIZATIONS
+#WHITESPACE_ONLY
 java -jar ../compiler/closure-compiler.jar \
+--compilation_level WHITESPACE_ONLY \
 --js_output_file ../public_html/src/game_box-min.js \
 --js=../public_html/main/common.js \
 --js=../public_html/src/math/vec2.js \

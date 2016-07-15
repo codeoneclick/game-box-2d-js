@@ -67,9 +67,22 @@ oop.define_class({
 
 	methods: {
 
-		add_animation: function(animation_name, frames) {
-			this.m_frames[animation_name] = frames;
-			this.current_animation = animation_name;
+		set_animations_configuration: function(animations_configuration) {
+			this.m_frames = [];
+			var animations = animations_configuration["animations"];
+			var frames = animations_configuration["frames"];
+			var animations_count = animations.length;
+			for(var i = 0; i < animations_count; ++i) {
+				animation = animations[i];
+				var animation_name = animation.name;
+				var first_frame = animation.first_frame;
+				var last_frame = animation.last_frame;
+
+				this.m_frames[animation_name] = [];
+				for(var j = first_frame; j < last_frame; ++j) {
+					this.m_frames[animation_name].push(frames[j]);
+				}
+			}
 		}
 	},
 

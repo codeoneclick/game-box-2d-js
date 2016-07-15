@@ -26,7 +26,7 @@ oop.define_class({
         $(ui_j(ui.animations_current_animation_drop_down_box)).selectmenu();
         $(ui_j(ui.animations_current_animation_drop_down_box_button)).css({'width': '100%'});
         $(ui_j(ui.animations_current_animation_drop_down_box)).on("selectmenuselect", function(event, ui) { 
-
+            controller.on_current_animation_changed(ui.item.value);
         });
         $(ui_j(ui.animations_add_animation_button)).button();
         $(ui_j(ui.animations_add_animation_button)).on('click', function() {
