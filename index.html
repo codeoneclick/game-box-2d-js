@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>game-box-2d</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+        <link rel="stylesheet" href="libs/jquery.ui-1.11.4/jquery-ui.min.css">
+        <link rel="stylesheet" href="libs/jquery-scrollable-1.2/jquery.scrollable.css">
+        <link rel="stylesheet" href="css/main_menu/main_menu.css">
+        <script src="libs/box2d-2.3.1/box2d-min.js"></script>
+        <script src="libs/jquery-1.12.3/jquery-min.js"></script>
+        <script src="libs/jquery.ui-1.11.4/jquery-ui.min.js"></script>
+        <script src="libs/jquery-scrollable-1.2/jquery.scrollable-min.js"></script>
+        <script src="libs/underscore/underscore-min.js"></script>
+        <script src="libs/fps_meter/fps_meter-min.js"></script>
+        <script src="libs/stats-0.16.0/stats-min.js"></script>
+        <script type="text/javascript">
+
+            var g_game_controller = null;
+            
+            function app_start()
+            {
+                var menu_tabs = $("#main-container").tabs();
+                menu_tabs.find(".ui-tabs-nav" ).sortable({
+                            axis: "x",
+                            stop: function() {
+                                menu_tabs.tabs( "refresh" );
+                            }
+                });
+
+                var ss_merge_controller = new gb.ss_merge_controller();
+                ss_merge_controller.activate();
+                
+                var ss_animation_controller = new gb.ss_animation_controller();
+
+                $("#ss-merge-tab-button").click(function(){
+                    ss_animation_controller.deactivate();
+                    ss_merge_controller.activate();
+                });
+
+                 $("#ss-animation-tab-button").click(function(){
+                    ss_merge_controller.deactivate();
+                    ss_animation_controller.activate();
+                });
+            }
+        </script>
+    </head>
+    <body onload="app_start();">
+        <div id="main-container">
+            <ul id="main-menu">
+                <li id="ss-merge-container-button"><a href="#ss-merge-main-container">SS Merge</a></li>
+                <!--<li id="ss-split-tab-button"><a href="#ss-split-tab">SS Split</a></li>-->
+                <!--<li id="ss-animation-tab-button"><a href="#ss-animation-tab">SS Animation</a></li>-->
+            </ul>
+            <div id="ss-merge-main-container"></div>
+            <!--<div id="ss-split-tab"></div>-->
+            <!--<div id="ss-animation-tab"></div>-->
+        </div>
+        <script src="src/game_box-min.js"></script>
+    </body>
+</html>
