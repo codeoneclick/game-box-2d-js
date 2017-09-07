@@ -17,7 +17,7 @@
             var light_rotation = 0.0;
 
             function on_update() {
-                light_rotation += 0.5;
+                light_rotation += 0.05;
                 var light_01_position = new gb.vec2(250.0 + Math.cos(light_rotation) * 75.0,
                                                     250.0 + Math.sin(light_rotation) * 75.0);
                 light_source_01.position = light_01_position;
@@ -25,7 +25,7 @@
                 var light_02_position = new gb.vec2(350.0 + Math.cos(light_rotation) * -75.0,
                                                     400.0 + Math.sin(light_rotation) * 25.0);
                 light_source_02.position = light_02_position;
-                setTimeout(on_update, 300);
+                setTimeout(on_update, 60);
             }
 
             function app_start()
