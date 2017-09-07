@@ -21,6 +21,8 @@
                 var light_01_position = new gb.vec2(250.0 + cos(light_rotation) * 50.0,
                                                     250.0 + sin(light_rotation) * 50.0);
                 light_source_01.position = light_01_position;
+                console.log(light_01_position);
+                setTimeout(on_update, 60);
             }
 
             function app_start()
@@ -59,7 +61,7 @@
                     });
                     scene.add_child(light_source_02);
 
-                    setInterval(on_update, 1);
+                    on_update();
                 });
             }
         </script>
