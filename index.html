@@ -12,6 +12,16 @@
         <script type="text/javascript">
             
             var g_game_controller = null;
+            var light_source_01 = null;
+            var light_source_02 = null;
+            var light_rotation = 0.0;
+
+            function on_update() {
+                light_rotation += 0.5;
+                var light_01_position = new gb.vec2(250.0 + cos(light_rotation) * 50.0,
+                                                    250.0 + sin(light_rotation) * 50.0);
+                light_source_01.position = light_01_position;
+            }
 
             function app_start()
             {
@@ -35,19 +45,21 @@
                     sprite_01.size = new gb.vec2(128, 128);
                     sprite_01.cast_shadow = true;
 
-                    var light_source_01 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
+                    light_source_01 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
                         light_source_01.position = new gb.vec2(250, 250);
                         light_source_01.radius = 512.0;
                         light_source_01.color = new gb.vec4(1.0, 0.0, 0.0, 1.0);
                     });
                     scene.add_child(light_source_01);
 
-                    var light_source_02 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
+                    light_source_02 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
                         light_source_02.position = new gb.vec2(350, 450);
                         light_source_02.radius = 256.0;
                         light_source_02.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
                     });
                     scene.add_child(light_source_02);
+
+                    setInterval(on_update, 1);
                 });
             }
         </script>
