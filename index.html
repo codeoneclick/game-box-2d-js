@@ -17,7 +17,7 @@
             var light_rotation = 0.0;
 
             function on_update() {
-                light_rotation += 0.05;
+                light_rotation += 0.005;
                 var light_01_position = new gb.vec2(250.0 + Math.cos(light_rotation) * 75.0,
                                                     250.0 + Math.sin(light_rotation) * 75.0);
                 light_source_01.position = light_01_position;
