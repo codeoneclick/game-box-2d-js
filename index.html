@@ -4,59 +4,56 @@
         <title>game-box-2d</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-        <link rel="stylesheet" href="libs/jquery.ui-1.11.4/jquery-ui.min.css">
-        <link rel="stylesheet" href="libs/jquery-scrollable-1.2/jquery.scrollable.css">
-        <link rel="stylesheet" href="css/main_menu/main_menu.css">
-        <script src="libs/box2d-2.3.1/box2d-min.js"></script>
-        <script src="libs/jquery-1.12.3/jquery-min.js"></script>
-        <script src="libs/jquery.ui-1.11.4/jquery-ui.min.js"></script>
-        <script src="libs/jquery-scrollable-1.2/jquery.scrollable-min.js"></script>
-        <script src="libs/underscore/underscore-min.js"></script>
-        <script src="libs/fps_meter/fps_meter-min.js"></script>
-        <script src="libs/stats-0.16.0/stats-min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+        <script src="lib/underscore/underscore-min.js"></script>
+        <script src="lib/fps_meter/fps_meter-min.js"></script>
         <script type="text/javascript">
-
-            var g_game_controller = null;
             
+            var g_game_controller = null;
+
             function app_start()
             {
-                var menu_tabs = $("#menu-tabs").tabs();
-                menu_tabs.find(".ui-tabs-nav" ).sortable({
-                            axis: "x",
-                            stop: function() {
-                                menu_tabs.tabs( "refresh" );
-                            }
-                });
+                g_game_controller = new gb.game_controller();
+                var game_transition = new gb.game_transition("data/resources/configurations/transitions/transition.main.json");
+                g_game_controller.add_transition(game_transition);
+                g_game_controller.goto_transition("data/resources/configurations/transitions/transition.main.json", function(scene) {
+                    
+                    var camera = new gb.camera(gl.viewport_width, gl.viewport_height);
+                    scene.camera = camera;
+                    
+                    var sprite_02 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_02.json");
+                    scene.add_child(sprite_02);
+                    sprite_02.position = new gb.vec2(0, 0);
+                    sprite_02.size = new gb.vec2(480, 640);
+                    sprite_02.cast_shadow = true;
+                    
+                    var sprite_01 = scene.fabricator.create_sprite("data/resources/configurations/game_objects/sprite_01.json");
+                    scene.add_child(sprite_01);
+                    sprite_01.position = new gb.vec2(70, 70);
+                    sprite_01.size = new gb.vec2(128, 128);
+                    sprite_01.cast_shadow = true;
 
-                var ss_merge_controller = new gb.ss_merge_controller();
-                ss_merge_controller.activate();
-                
-                var ss_animation_controller = new gb.ss_animation_controller();
+                    var light_source_01 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
+                        light_source_01.position = new gb.vec2(250, 250);
+                        light_source_01.radius = 512.0;
+                        light_source_01.color = new gb.vec4(1.0, 0.0, 0.0, 1.0);
+                    });
+                    scene.add_child(light_source_01);
 
-                $("#ss-merge-tab-button").click(function(){
-                    ss_animation_controller.deactivate();
-                    ss_merge_controller.activate();
-                });
-
-                 $("#ss-animation-tab-button").click(function(){
-                    ss_merge_controller.deactivate();
-                    ss_animation_controller.activate();
+                    var light_source_02 = scene.fabricator.create_light_source("data/resources/configurations/game_objects/light_source_01.json", function() {
+                        light_source_02.position = new gb.vec2(350, 450);
+                        light_source_02.radius = 256.0;
+                        light_source_02.color = new gb.vec4(0.0, 1.0, 0.0, 1.0);
+                    });
+                    scene.add_child(light_source_02);
                 });
             }
         </script>
     </head>
     <body onload="app_start();">
-        <div id="menu-tabs">
-            <ul id="tabs-list">
-                <li id="ss-merge-tab-button"><a href="#ss-merge-tab-container">SS Merge</a></li>
-                <li id="ss-split-tab-button"><a href="#ss-split-tab">SS Split</a></li>
-                <li id="ss-animation-tab-button"><a href="#ss-animation-tab">SS Animation</a></li>
-            </ul>
-            <div id="ss-merge-tab-container"></div>
-            <div id="ss-split-tab"></div>
-            <div id="ss-animation-tab"></div>
-        </div>
+        <canvas id="gl_canvas" style="border: none; position: absolute; left: 50%; top: 50%; margin-right: -50%; transform: translate(-50%, -50%) " width="640" height="480"></canvas>
         <script src="src/game_box-min.js"></script>
     </body>
 </html>

@@ -1,8 +1,0 @@
-{
-    "guid": "transition.demo",
-    "main_technique_filename": "data/resources/configurations/techniques/main_technique/spritesheets.animation.technique.json",
-    "ws_techniques": [{
-        "filename": "data/resources/configurations/techniques/ws_techniques/ws.technique.base.json"
-    }],
-    "ss_techniques": []
-}

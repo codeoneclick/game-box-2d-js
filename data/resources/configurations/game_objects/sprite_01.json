@@ -1,0 +1,6 @@
+{
+    "materials": 
+    [{ "filename": "data/resources/configurations/game_objects/materials/material.sprite_01.base.json"},
+    { "filename": "data/resources/configurations/game_objects/materials/material.sprite_01.forward.normal.json"},
+    { "filename": "data/resources/configurations/game_objects/materials/material.sprite_01.deferred.lighting.json"}]
+}
