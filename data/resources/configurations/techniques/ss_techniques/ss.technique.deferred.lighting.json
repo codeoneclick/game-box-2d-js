@@ -1,6 +1,6 @@
 {
 	"technique_name": "ss.deferred.lighting",
-	"screen_width": "640",
-	"screen_height": "480",
+	"screen_width": "1024",
+	"screen_height": "768",
 	"material_filename": "data/resources/configurations/techniques/materials/material.ss.deferred.lighting.json"
 }
